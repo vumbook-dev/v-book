@@ -10,13 +10,13 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item active">
-              <a class="nav-link" href="#">Home</a>
+              <a class="nav-link" id="vb-home" data-nav="home" href="/">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Editor</a>
+              <a class="nav-link" id="vb-editor" data-nav="editor" href="/">Editor</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Books</a>
+              <a class="nav-link" id="vb-books" data-nav="books" href="/">Books</a>
             </li>
           </ul>
           <!-- <form class="form-inline mt-2 mt-md-0">
