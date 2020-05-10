@@ -9,7 +9,6 @@
 </form>
 </div>
 <script type="text/javascript" src="../js/editor.js"></script>
-<script src="https://cdn.ckeditor.com/ckeditor5/19.0.0/classic/ckeditor.js"></script>
 <script type="text/javascript">
 //TEXT EDITOR
 ClassicEditor
