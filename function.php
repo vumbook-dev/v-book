@@ -5,10 +5,9 @@ function redirectToPages($path = ""){
     if(isset($_SESSION['page'])){
         $path = $_SESSION['page'];
         $state = $_SESSION['state'];
-        echo "$('a[data-nav=$path]').click();";
+        echo "loadPage('$path',vbloader);";
         echo "history.pushState($state, `V-Book > $path`, `./$path`);";
-    }else{
-        echo "console.log('Nothing')";
+        echo "$('title').text(`V-Book > $path`);";
     }
 
     session_destroy();

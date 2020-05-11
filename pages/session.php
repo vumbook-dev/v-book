@@ -5,6 +5,7 @@ $path = ltrim($path,"/");
 switch($path){
     case "editor"; $state = 1; break;
     case "create-books"; $state = 2; break;
+    case "contents"; $state = 3; break;
     default: $state = 0; break;
 }
 

@@ -13,7 +13,7 @@
             <li class="nav-item active">
               <a class="nav-link" id="0" data-nav="home" href="/home">Home</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item d-none">
               <a class="nav-link" id="1" data-nav="editor" href="/editor">Editor</a>
             </li>
             <li class="nav-item">

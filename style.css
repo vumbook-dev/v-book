@@ -4,9 +4,72 @@
 * Prototype version: 1.0  */
 
 
+/*** CREATE BOOK PAGE ***/
+#vb-show-content .form-group{
+  display:flex;
+  flex-wrap: wrap;
+}
+#vb-show-content .form-group > span:nth-child(1){
+  flex: 30%;
+}
 
+#vb-show-content .form-group > span:nth-child(2){
+  flex: 40%;
+}
 
+#vb-show-content .form-group > button{
+  flex: 30%;
+  height: 38px;
+  right: 0;
+  margin-top: 32px;
+  flex: 10%;
+  border-radius: 0 .25rem .25rem 0;
+  margin-left: -2px;
+}
 
+#book-title{
+  border-radius: .25rem 0 0 .25rem;
+}
+
+#sub-title{
+  margin-left: -1px;
+  border-left: 0;
+  background: transparent;
+  border-radius: 0;
+}
+
+.list-item-vbtitle > span:first-child{
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  width: 50%;
+}
+
+.list-item-vbtitle > span >small{
+  flex:1;
+}
+
+span.vbook-title{
+  flex: 100%;
+}
+
+ul.title-list-group > li{
+  border-bottom: 1px solid rgba(0,0,0,.125);
+  border-bottom-width: 1px!important;
+  border-radius: 0!important;
+  position: relative;
+  padding: .75rem 1.25rem; 
+}
+
+span.vb-status{
+  font-weight: normal;
+  margin-top: -20px;
+}
+
+.vb-btn-disable{
+  cursor:not-allowed;
+}
 
 
 
