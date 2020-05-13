@@ -39,23 +39,23 @@ jQuery(document).ready(function($){
 
     loadPage("home",vbloader);
 
-    $(document).on("click","li.nav-item > a, a.navbar-brand",function(e){            
-            let link = $(this).data("nav");
-            let active = $(this).parent("li");
-            //window.location.hash = link;
-            e.preventDefault();
+    // $(document).on("click","li.nav-item > a, a.navbar-brand",function(e){            
+    //         let link = $(this).data("nav");
+    //         let active = $(this).parent("li");
+    //         //window.location.hash = link;
+    //         e.preventDefault();
 
-            if(link == "home"){
-                $("li.active").removeClass("active");
-                $(".navbar-nav > li:first-child").addClass("active");
-                $('title').text(`V-Book`);
-                history.replaceState(0, '', './');
-            }else{
-                $("li.active").removeClass("active");
-                active.addClass("active");
-            }    
+    //         if(link == "home"){
+    //             $("li.active").removeClass("active");
+    //             $(".navbar-nav > li:first-child").addClass("active");
+    //             $('title').text(`V-Book`);
+    //             history.replaceState(0, '', './');
+    //         }else{
+    //             $("li.active").removeClass("active");
+    //             active.addClass("active");
+    //         }    
 
-            loadPage(link,vbloader);
-    });
+    //         loadPage(link,vbloader);
+    // });
 
 });

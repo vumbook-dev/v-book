@@ -1,6 +1,7 @@
 <?php
 if(isset($_POST['data'])){
     $key = $_POST['data'];
+    $key = $key - 1;
     $list = file_get_contents("../json/books-list-title.json");
     $book = json_decode($list);    
 ?>
@@ -10,7 +11,7 @@ if(isset($_POST['data'])){
 </div>
 
 <div class="col-sm-12 bc-wrap">
-    <form action="/" method="post">
+    <form action="/" method="get" autocomplete="off">
     
     <div class="form-group">
     <span>

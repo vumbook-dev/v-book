@@ -10,14 +10,14 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-              <a class="nav-link" id="0" data-nav="home" href="/home">Home</a>
+            <li class="nav-item active mx-2">
+              <a class="nav-link" id="0" data-nav="home" href="/home/">Home</a>
             </li>
             <li class="nav-item d-none">
-              <a class="nav-link" id="1" data-nav="editor" href="/editor">Editor</a>
+              <a class="nav-link" id="1" data-nav="editor" href="/editor/">Editor</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link btn btn-success text-white" id="2" data-nav="create-books" href="/create-books">Create Books</a>
+              <a class="nav-link btn btn-success text-white" id="2" data-nav="create-books" href="/create-books/">Create Books</a>
             </li>
           </ul>
           <!-- <form class="form-inline mt-2 mt-md-0">

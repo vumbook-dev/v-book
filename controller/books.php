@@ -11,13 +11,16 @@ if(isset($_POST['action'])){
             $title = $_POST['title'];
             $hash = "$title".rand(0,1000);
             $id = md5($hash);
-            $newBook = array("id" => $id, "title" => $title, "subtitle" => $sub, "status" => "unpublished", "chapter" => array());
+            $storage = "{$title}-".substr($id,-6);
+            $newBook = array("id" => $id, "title" => $title, "subtitle" => $sub, "storage" => $storage, "status" => "unpublished", "chapter" => array());
             $oldData = file_get_contents("../json/books-list-title.json");
             $arrayData = json_decode($oldData,true);
             $arrayData[] = $newBook;
             $json = json_encode($arrayData);
             file_put_contents("../json/books-list-title.json",$json);
+            file_put_contents("../json/book-content/{$storage}.json","[]");
             echo $title;
+            //$_POST = array();
         }
     }
 
@@ -29,7 +32,7 @@ if(isset($_POST['action'])){
             $archivedData = file_get_contents("../json/archive-book-title.json");
             $active = json_decode($allData,true);
             $inactive = json_decode($archivedData,true);
-            $archive = array("id" => $active[$k]['id'], "title" => $active[$k]['title'], "subtitle" => $active[$k]['subtitle'], "status" => $active[$k]['status'], "unpublished", "chapter" => $active[$k]['chapter']);
+            $archive = array("id" => $active[$k]['id'], "title" => $active[$k]['title'], "subtitle" => $active[$k]['subtitle'], "storage" => $active[$k]['storage'], "status" => $active[$k]['status'], "unpublished", "chapter" => $active[$k]['chapter']);
             unset($active[$k]);
             $active = array_values($active);
 
@@ -42,6 +45,7 @@ if(isset($_POST['action'])){
             file_put_contents("../json/archive-book-title.json",$newInActive);
             echo $archive['title'];
             //print_r($data);
+            //$_POST = array();
         }
     }
 

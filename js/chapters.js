@@ -30,10 +30,42 @@ jQuery(document).ready(function(){
     }
 
     //SUBMIT BOOK CHAPTER
-    $(document).on('submit','.bc-wrap > form',function(e){
+    $(document).on('submit','.bc-wrap form',function(e){
         e.preventDefault();
         let input = $("#chapter-name");
         let chapter = input.val();
-        addBookChapter(chapter,input);
+        //$(this).off(e);
+        addBookChapter(chapter,input);        
+        setTimeout(function(){
+            $("form").reset();
+        },500);
     });
+
+    //ADD CONTENT IN DATABASE
+    function addContent(id,name,key,chapter){
+        $.ajax({
+            method: "POST",
+            url: "../controller/content.php",
+            data: {id:id,content:name,key:key,chapter:chapter,action:"add"},
+            dataType: "text",
+            success: function(data){
+                alert(data);
+            }
+        })
+    }
+
+    //SUBMIT CONTENT TITLE
+    $(document).on('click','.vb-new-content',function(){
+        let parent = $(this).parents(".tc-wrap");
+        let input = parent.find("input.content-name");
+        let content = input.val();
+        let id = parent.find("input[type=hidden]").val();
+        let key = $(this).data("key");
+        let chapter = $(this).data("chapter");
+
+        addContent(id,content,key,chapter);
+        //alert("It's working "+content);
+        input.val("");
+    });
+
 });

@@ -53,7 +53,7 @@ span.vbook-title{
   flex: 100%;
 }
 
-ul.title-list-group > li{
+ul.title-list-group > li, ul.chapter-list-group > li{
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-bottom-width: 1px!important;
   border-radius: 0!important;
@@ -70,6 +70,10 @@ span.vb-status{
   cursor:not-allowed;
 }
 
+/*** BOOK CHAPTER ***/
+#chapter-accordion{
+  padding-left:0;
+}
 
 
 

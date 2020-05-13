@@ -3,9 +3,10 @@
 function crud_btn($listKey,$action,$pages = 0){
     $na = ($pages == 0)? "vb-btn-disable" : "";
     $disable = ($pages == 0)? "disabled" : "";
+    $book = $listKey + 1;
     $btn = '<span class="vb-wrap-btn px-2">
     <button id="vb-view" class="btn btn-success '.$na.'" data-key="'.$listKey.'" '.$disable.'><i class="fa fa-eye" aria-hidden="true"></i> View</button>
-    <button id="3" class="btn btn-primary mx-1 vb-link" data-key="'.$listKey.'" data-page="book-chapter">'.$action.'</button>
+    <a id="3" class="btn btn-primary mx-1 vb-link" href="/book-chapter/?'.$book.'" data-page="book-chapter">'.$action.'</a>
     <button class="btn btn-danger vb-delete" data-key="'.$listKey.'" data-toggle="modal" data-target="#vb-delete-modal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
     </span>';
     return $btn;
@@ -83,12 +84,12 @@ require_once "modal.php"; ?>
         });
 
         //ADD CONTENT
-        $(document).on("click",".vb-link",function(){
-            let page = $(this).data("page");
-            let key = $(this).data("key");
-            history.pushState(4, `V-Book ${page}`, `./${page}`);
-            sendToPage(page,vbloader,key);
-        });
+        // $(document).on("click",".vb-link",function(){
+        //     let page = $(this).data("page");
+        //     let key = $(this).data("key");
+        //     history.pushState(4, `V-Book ${page}`, `./${page}`);
+        //     sendToPage(page,vbloader,key);
+        // });
 
     });
 </script>

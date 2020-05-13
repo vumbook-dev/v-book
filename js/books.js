@@ -23,6 +23,7 @@ jQuery(document).ready(function($){
                 listBooks();
                 input.val("");
                 subInput.val("");
+                //loadPage("create-books","");
             }
         });
     }
@@ -34,6 +35,8 @@ jQuery(document).ready(function($){
         let title = titleInput.val();
         let subInput = $(this).find("input[name=sub-title]");
         let subtitle = subInput.val();
+        //$(this).off(e);
         createBook(title,titleInput,subtitle,subInput);
+        //$(this).reset();
     });    
 });

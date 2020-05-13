@@ -3,7 +3,7 @@
 </div>
 
 <div class="col-sm-12 cb-wrap">
-    <form action="/" method="post">
+    <form action="/create-books" method="get" autocomplete="off">
     <div class="form-group">
         <span>
             <label for="book title">Main Title</label>
