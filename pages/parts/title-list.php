@@ -5,7 +5,7 @@ function crud_btn($listKey,$action,$pages = 0){
     $disable = ($pages == 0)? "disabled" : "";
     $btn = '<span class="vb-wrap-btn px-2">
     <button id="vb-view" class="btn btn-success '.$na.'" data-key="'.$listKey.'" '.$disable.'><i class="fa fa-eye" aria-hidden="true"></i> View</button>
-    <button id="3" class="btn btn-primary mx-1 vb-link" data-key="'.$listKey.'" data-page="contents">'.$action.'</button>
+    <button id="3" class="btn btn-primary mx-1 vb-link" data-key="'.$listKey.'" data-page="book-chapter">'.$action.'</button>
     <button class="btn btn-danger vb-delete" data-key="'.$listKey.'" data-toggle="modal" data-target="#vb-delete-modal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
     </span>';
     return $btn;
@@ -16,7 +16,7 @@ $titles = json_decode($list);
 
 $html = '<ul class="title-list-group">';
 foreach($titles as $key => $info){
-    $table = count($info->tcontent);
+    $table = count($info->chapter);
     $badge = ($info->status == "unpublished")? "secondary" : "success";
     $action = ($table > 0)? '<i class="fa fa-pencil-squire-o" aria-hidden="true"></i> Edit Content' : '<i class="fa fa-plus-circle" aria-hidden="true"></i> Add Content';
     $html .= '<li class="list-item-vbtitle d-flex justify-content-between align-items-center">';
@@ -85,8 +85,9 @@ require_once "modal.php"; ?>
         //ADD CONTENT
         $(document).on("click",".vb-link",function(){
             let page = $(this).data("page");
+            let key = $(this).data("key");
             history.pushState(4, `V-Book ${page}`, `./${page}`);
-            loadPage(page,vbloader);
+            sendToPage(page,vbloader,key);
         });
 
     });

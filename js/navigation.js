@@ -2,6 +2,7 @@ jQuery(document).ready(function($){
 
     window.vbloader = '<div class="col vb-loading"><div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>';
 
+    //GET PAGE
     window.loadPage = function(link,loader){
         $.ajax({
             method: "GET",
@@ -16,6 +17,25 @@ jQuery(document).ready(function($){
             }
         });
     };
+
+    //SEND DATA TO PAGE
+    window.sendToPage = function(link,loader,data){
+        $.ajax({
+            method: "POST",
+            url: "/pages/"+link+".php",
+            data: {data:data},
+            dataType: "text",
+            beforeSend: function(){
+                $("#vb-show-content").html(loader);
+            },
+            success: function(data){
+                setTimeout(function(){
+                    $("#vb-show-content").html(data);
+                },400);                    
+            }
+
+        })
+    }
 
     loadPage("home",vbloader);
 
