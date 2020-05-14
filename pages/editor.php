@@ -5,7 +5,7 @@
     </div>
 </form>
 </div>
-<script type="text/javascript" src="../js/editor.js"></script>
+<!-- <script type="text/javascript" src="../js/editor.js"></script> -->
 <script type="text/javascript">
 //TEXT EDITOR
 ClassicEditor

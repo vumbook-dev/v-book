@@ -18,7 +18,7 @@ jQuery(document).ready(function(){
     function addBookChapter(chapter,input){
         $.ajax({
             method: "POST",
-            url: "../controller/chapters.php",
+            url: "../model/chapters.php",
             data: {key:bookKey,chapter:chapter,action:"add"},
             dataType: "text",
             success: function(){
@@ -42,7 +42,7 @@ jQuery(document).ready(function(){
     });
 
     //LOAD CHAPTER PART
-    function loadChapterPart(chapter){
+    window.loadChapterPart = function(chapter){
         let wrap = $("span.vb-chapter"+chapter);
         let title = wrap.find("input[type=hidden]").data("title");
         let id = wrap.find("input[type=hidden]").val();
@@ -72,7 +72,7 @@ jQuery(document).ready(function(){
     function addContent(id,name,key,title){
         $.ajax({
             method: "POST",
-            url: "../controller/content.php",
+            url: "../model/content.php",
             data: {id:id,name:name,chapter:key,title:title,action:"add"},
             dataType: "text",
             success: function(data){
@@ -105,18 +105,21 @@ jQuery(document).ready(function(){
             data: {chapter:chapter,key:key,name:name,file:file},
             dataType: "text",
             success: function(data){
-                $("#editors-modal-container").html(data);
+                $("#editors-modal-container").html(data);                 
             }
         });
     }
 
     //GET LIGHTBOX EDITOR
-    $(document).on("click",".list-item-vbcontent>span",function(){
+    $(document).on("click",".list-item-vbcontent span.showing-lightbox",function(){
         let chapter = $(this).data("chapter");
         let key = $(this).data("key");
-        let name = $(this).parent(".list-item-vbcontent").find("span:first-child").text();
+        let name = $(this).parents(".list-item-vbcontent").find("span:first-child").text();
         let file = $(this).data("name");
-        showEditor(chapter,key,name,file);
+        let icon = $(this).find("i").data("status");
+        if(icon < 1){
+            showEditor(chapter,key,name,file);
+        } 
     });
 
     //REMOVE LIGHTBOX
@@ -132,16 +135,38 @@ jQuery(document).ready(function(){
 
         $.ajax({
             method: "POST",
-            url: "../controller/content.php",
+            url: "../model/content.php",
             data: {text:text,key:key,file:file,action:"update"},
             dataType: "text",
-            success: function(data){
-                alert(data);
+            success: function(){
                 setTimeout(function(){
                     $("#vb-modal-editor, .modal-backdrop").remove();
+                    loadChapterPart(key);
+                    //$("#btn-content"+key).html('<i class="fa fa-pencil text-muted" data-status="1" aria-hidden="true"></i>');
                 },1500);
             }
         })
+    });
+
+    //GET MODAL DELETE
+    function deleteChContent(chapter,content,title){
+        $.ajax({
+            method:"POST",
+            url:"/pages/parts/modal.php",
+            data: {chapter:chapter,content:content,title:title},
+            dataType: "text",
+            success: function(data){
+                $("#delete-modal-container").html(data);
+            }
+        });
+    }
+
+    //DELETE CHAPTER PART
+    $(document).on("click","span.vb-dlt-content",function(){        
+        let content = $(this).data("key");
+        let title = $(this).parents("li.list-item-vbcontent").find("span:first-child").text();
+        let chapter = $(this).data("chapter");
+        deleteChContent(chapter,content,title);
     });
 
 

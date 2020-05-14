@@ -8,9 +8,11 @@ function redirectToPages($path = ""){
         if(isset($_SESSION['book'])){
             $book = $_SESSION['book'];
             echo "history.pushState($state, `V-Book > $path`, `./$path/book={$book}`);";
+            //echo "history.replaceState($state, `V-Book > $path`, `./$path/book={$book}`);";
             echo "sendToPage('$path',vbloader,$book);";
         }else{
             echo "history.pushState($state, `V-Book > $path`, `./$path/`);";
+            //echo "history.replaceState($state, `V-Book > $path`, `./$path/`);";
             echo "loadPage('$path',vbloader);";
         }        
         echo "$('title').text(`V-Book > $path`);";

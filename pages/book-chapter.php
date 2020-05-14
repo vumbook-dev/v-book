@@ -4,6 +4,7 @@ if(isset($_POST['data'])){
     $key = $key - 1;
     $list = file_get_contents("../json/books-list-title.json");
     $book = json_decode($list);    
+    $file = $book[$key]->storage;
 ?>
 
 <div class="col-sm-12">
@@ -29,8 +30,10 @@ if(isset($_POST['data'])){
 
     </div>
 </div>
+<input id="vb-ttl-cdidtfyr" data-universal="<?php echo $file; ?>" type="hidden">
 
 <div id="editors-modal-container"></div>
+<div id="delete-modal-container"></div>
 <script type="text/javascript" src="../js/chapters.js"></script>
 <?php
 

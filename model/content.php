@@ -33,5 +33,21 @@ if(isset($_POST['action'])){
             file_put_contents("../json/book-content/{$file}.json",$json);
             echo "Added Successfully";
         }
+    }elseif($action == "delete"){
+        //DELETE CHAPTER CONTENT
+        if(isset($_POST['key']) && isset($_POST['lctn'])){
+            $key = $_POST['key'];
+            $file = $_POST['lctn'];
+
+            $list = file_get_contents("../json/book-content/{$file}.json");
+            $content = json_decode($list);
+            unset($content[$key]);
+            $content = array_values($content);
+
+            $json = json_encode($content);
+            file_put_contents("../json/book-content/{$file}.json",$json);
+            echo "Deleted Successfully";
+        }
+        
     }
 }

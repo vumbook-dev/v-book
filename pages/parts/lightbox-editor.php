@@ -23,7 +23,7 @@ $text = $contentlist[$key]->content;
         <?php require_once "../editor.php"; ?>
       </div>
       <div class="modal-footer">       
-        <input id="vbcc-text" type="hidden" value="<?php //echo $text; ?>">
+        <input id="vbcc-text" type="hidden" value="<?php echo $text; ?>">
         <button id="vb-submit-content" type="button" class="btn btn-primary" data-file="<?php echo $file; ?>" data-chapter="<?php echo $chapter; ?>" data-key="<?php echo $key; ?>" data-key="<?php echo $file; ?>">Submit</button>       
       </div>
     </div>
@@ -31,13 +31,14 @@ $text = $contentlist[$key]->content;
 </div>
 <div class="modal-backdrop show"></div>
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 jQuery(document).ready(function(){
-    setTimeout(function(){
-        //let text = $("input#vbcc-text").val();
-        //$(".ck-editor__main div.ck-editor__editable").prepend();
-    },1000);    
+  setTimeout(function(){
+      let ptext = $("input#vbcc-text").val();
+      $("#vb-editor div.ck-editor__editable p").html(ptext);
+      alert(ptext);
+  },5000); 
 });
-</script>
+</script> -->
 
 <?php } ?>

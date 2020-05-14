@@ -3,9 +3,11 @@
 function crud_btn($listKey,$action,$pages = 0){
     $na = ($pages == 0)? "vb-btn-disable" : "";
     $disable = ($pages == 0)? "disabled" : "";
+    $icon = ($pages == 0)? "fa-eye-slash" : "fa-eye";
+    $btnClass = ($pages == 0)? "btn-secondary" : "btn-success";
     $book = $listKey + 1;
     $btn = '<span class="vb-wrap-btn px-2">
-    <button id="vb-view" class="btn btn-success '.$na.'" data-key="'.$listKey.'" '.$disable.'><i class="fa fa-eye" aria-hidden="true"></i> View</button>
+    <button id="vb-view" class="btn '.$btnClass.' '.$na.'" data-key="'.$listKey.'" '.$disable.'><i class="fa '.$icon.'" aria-hidden="true"></i> View</button>
     <a id="3" class="btn btn-primary mx-1 vb-link" href="/book-chapter/book='.$book.'" data-page="book-chapter">'.$action.'</a>
     <button class="btn btn-danger vb-delete" data-key="'.$listKey.'" data-toggle="modal" data-target="#vb-delete-modal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
     </span>';
@@ -19,7 +21,7 @@ $html = '<ul class="title-list-group">';
 foreach($titles as $key => $info){
     $table = count($info->chapter);
     $badge = ($info->status == "unpublished")? "secondary" : "success";
-    $action = ($table > 0)? '<i class="fa fa-pencil-squire-o" aria-hidden="true"></i> Edit Content' : '<i class="fa fa-plus-circle" aria-hidden="true"></i> Add Content';
+    $action = ($table > 0)? '<i class="fa fa-pencil" aria-hidden="true"></i> Edit Content' : '<i class="fa fa-plus-circle" aria-hidden="true"></i> Add Content';
     $html .= '<li class="list-item-vbtitle d-flex justify-content-between align-items-center">';
     $html .= '<span class="h5"><span class="vbook-title">'.$info->title.'</span><small>'.$info->subtitle.'</small><span class="badge badge-'.$badge.' badge-pill p-2 ml-3 vb-status">'.$info->status.'</span></span>';
     $html .= '<span class="float-right">'.crud_btn($key,$action,$table);
@@ -53,7 +55,7 @@ require_once "modal.php"; ?>
             let modal = $("#vb-delete-modal"); 
             $.ajax({
                 method: "POST",
-                url: "../controller/books.php",
+                url: "../model/books.php",
                 data: {key:key,action:"delete"},
                 dataType: "text",
                 beforeSend: function(){

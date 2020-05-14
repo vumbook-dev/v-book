@@ -15,7 +15,7 @@ jQuery(document).ready(function($){
     function createBook(title,input,sub,subInput){
         $.ajax({
             method: "POST",
-            url: "../controller/books.php",
+            url: "../model/books.php",
             data: {title:title,subTitle:sub,action:"add"},
             dataType: "text",
             success: function(){

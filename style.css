@@ -84,7 +84,7 @@ span.vb-status{
 
 li.list-item-vbcontent > span i{
   color: #555;
-  font-size: 12px;;
+  font-size: 14px;;
 }
 
 li.list-item-vbcontent > span i:hover{
@@ -104,6 +104,9 @@ div.ck-editor__editable{
   height:350px;
 }
 
+span.vb-btn-wrap > span{
+  padding: 5px;
+}
 
 
 
