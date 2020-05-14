@@ -12,10 +12,10 @@ if(isset($_POST['key'])){
     foreach($chapterlist as $key => $chapter){
         $x = json_decode($chapterlist[$key]);
         $html .= '<li class="list-item-vbtitle d-flex justify-content-between align-items-center"><h6>'.$x->name;
-        $html .= '</h6><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#'.$key.'chapter" aria-expanded="false" aria-controls="'.$key.'chapter">Show</button></li>';
+        $html .= '</h6><button type="button" class="btn btn-primary btn-chapter" data-chapter="'.$key.'" data-toggle="collapse" data-target="#'.$key.'chapter" aria-expanded="false" aria-controls="'.$key.'chapter">Show</button></li>';
         $html .= '<div class="collapse" id="'.$key.'chapter" data-parent="#chapter-accordion"><div class="card card-body">';
-        $html .= '<div class="row"><div class="vbcontent-list col-sm-8"></div>';
-        $html .= contentForm($key,$book[$k]->id,$key);
+        $html .= '<div class="row"><div class="col-sm-8" id="vbcontent-list'.$key.'"></div>';
+        $html .= contentForm($key,$book[$k]->id,$book[$k]->title);
         $html .= '</div>';
         $html .= '</div></div>';
     }

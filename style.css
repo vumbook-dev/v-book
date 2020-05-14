@@ -3,6 +3,13 @@
 * Author: Jojimer Castino
 * Prototype version: 1.0  */
 
+main{
+  height: 100vh;
+  overflow-y:scroll;
+}
+main::-webkit-scrollbar{
+  width:0;
+}
 
 /*** CREATE BOOK PAGE ***/
 #vb-show-content .cb-wrap .form-group{
@@ -53,7 +60,7 @@ span.vbook-title{
   flex: 100%;
 }
 
-ul.title-list-group > li, ul.chapter-list-group > li{
+ul.title-list-group > li, ul.chapter-list-group > li, ul.vb-contentlist-wrap > li{
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-bottom-width: 1px!important;
   border-radius: 0!important;
@@ -75,7 +82,27 @@ span.vb-status{
   padding-left:0;
 }
 
+li.list-item-vbcontent > span i{
+  color: #555;
+  font-size: 12px;;
+}
 
+li.list-item-vbcontent > span i:hover{
+  opacity: .5;
+}
+
+li.list-item-vbcontent > span{
+  cursor: pointer;
+}
+
+div.modal-editor-wrap{
+  width: 80%;
+  margin: 50px auto;
+}
+
+div.ck-editor__editable{
+  height:350px;
+}
 
 
 

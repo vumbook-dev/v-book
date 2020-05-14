@@ -29,7 +29,7 @@
     </header>
 
     <!-- Begin page content -->
-    <main role="main" class="container">
+    <main role="main" class="container pb-5">
       <section class="row" id="vb-show-content">
       </section>
     </main>

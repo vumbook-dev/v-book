@@ -10,7 +10,7 @@ function get_string_between($string, $start, $end){
 
 $url = $_SERVER['REQUEST_URI'];
 $path = get_string_between($url,"/","/");
-$book = substr($url, strpos($url, "?") + 1);
+$book = substr($url, strpos($url, "=") + 1);
 switch($path){
     case "editor"; $state = 1; break;
     case "create-books"; $state = 2; break;
@@ -28,6 +28,6 @@ if($state !== 0 && $state !== 3){
     $_SESSION['state'] = $state;
     $_SESSION['book'] = $book;
 }
-// echo $path;
-// echo $book;
+echo $path;
+
 header("Location: /");

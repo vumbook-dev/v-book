@@ -1,6 +1,6 @@
-<!-- <footer class="footer bg-dark">
+<footer class="footer bg-dark">
     <span class="text-white py-2 px-4 d-block">Prototype version 1.0</span>
-</footer> -->
+</footer>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

@@ -6,7 +6,7 @@ function crud_btn($listKey,$action,$pages = 0){
     $book = $listKey + 1;
     $btn = '<span class="vb-wrap-btn px-2">
     <button id="vb-view" class="btn btn-success '.$na.'" data-key="'.$listKey.'" '.$disable.'><i class="fa fa-eye" aria-hidden="true"></i> View</button>
-    <a id="3" class="btn btn-primary mx-1 vb-link" href="/book-chapter/?'.$book.'" data-page="book-chapter">'.$action.'</a>
+    <a id="3" class="btn btn-primary mx-1 vb-link" href="/book-chapter/book='.$book.'" data-page="book-chapter">'.$action.'</a>
     <button class="btn btn-danger vb-delete" data-key="'.$listKey.'" data-toggle="modal" data-target="#vb-delete-modal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
     </span>';
     return $btn;

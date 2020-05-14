@@ -30,6 +30,7 @@ if(isset($_POST['data'])){
     </div>
 </div>
 
+<div id="editors-modal-container"></div>
 <script type="text/javascript" src="../js/chapters.js"></script>
 <?php
 
