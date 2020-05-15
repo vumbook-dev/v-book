@@ -16,8 +16,9 @@ if(isset($_POST['data'])){
     
     <div class="form-group">
     <span>
-        <label for="Chapter">New Chapter</label>
+        <label for="Chapter">New Chapter <small>Put text inside of this <strong class="h4">{...}</strong> for chapter subtitle</small></label>
         <input name="chapter-name" id="chapter-name" type="text" class="form-control">
+        
     </span>
     <button class="btn btn-primary float-right px-5" style="margin-top:-38px;" data-key="<?php echo $key; ?>">Add New</button>
     </div>
@@ -32,8 +33,7 @@ if(isset($_POST['data'])){
 </div>
 <input id="vb-ttl-cdidtfyr" data-universal="<?php echo $file; ?>" type="hidden">
 
-<div id="editors-modal-container"></div>
-<div id="delete-modal-container"></div>
+<div id="vb-modal-container"></div>
 <script type="text/javascript" src="../js/chapters.js"></script>
 <?php
 

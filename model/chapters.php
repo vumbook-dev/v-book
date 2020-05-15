@@ -11,8 +11,10 @@ if(isset($_POST['action'])){
             $book = $booklist[$key];
             $chapterArray = $book->chapter;
 
-            $chapter = $_POST['chapter'];
-            $newChapter = array("name" => $chapter, "type" => 1);
+            $xchapter = $_POST['chapter'];
+            $chapter = explode("{", $xchapter);
+            (count($chapter) == 1) ? $ichapter = $chapter[0] : $ichapter = "$chapter[0] <small class='vb-content-subtitle'>". rtrim($chapter[1],"}") ."</small>";
+            $newChapter = array("name" => $ichapter, "type" => 1);
             $newChapter = json_encode($newChapter);
             $chapterArray[] = $newChapter;
             $booklist[$key]->chapter = $chapterArray;

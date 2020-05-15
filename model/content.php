@@ -27,11 +27,12 @@ if(isset($_POST['action'])){
             $key = $_POST['key'];
             $list = file_get_contents("../json/book-content/{$file}.json");
             $contentlist = json_decode($list);
+            $chapter = $contentlist[$key]->chapter;
 
             $contentlist[$key]->content = $text;
             $json = json_encode($contentlist);
             file_put_contents("../json/book-content/{$file}.json",$json);
-            echo "Added Successfully";
+            echo $chapter;
         }
     }elseif($action == "delete"){
         //DELETE CHAPTER CONTENT

@@ -106,13 +106,44 @@ div.ck-editor__editable{
 
 span.vb-btn-wrap > span{
   padding: 5px;
+  margin:0 5px;
 }
 
 
+/*** CONTENT PREVIEW ***/
+#vb-preview{
+  height: 75vh;
+  overflow-y: scroll;
+  text-align: left;
+  width: 400px;
+  margin: 0 auto;
+  padding: 40px 0;
+}
 
+#vb-preview::-webkit-scrollbar{
+  width: 0;
+  background-color: #ccc;
+}
 
+#vb-modal-preview .modal-title{
+  width: 100%;
+  text-align: center;
+  padding-left: 20px;
+}
 
+.vb-content-subtitle{
+  display: inherit;
+}
 
+input.content-name, #chapter-name{
+  z-index: 2;
+  position: relative;
+}
+
+button.vb-new-content, .bc-wrap button{
+  z-index: 3;
+  position: relative;
+}
 
 
 

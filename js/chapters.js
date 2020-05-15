@@ -105,7 +105,7 @@ jQuery(document).ready(function(){
             data: {chapter:chapter,key:key,name:name,file:file},
             dataType: "text",
             success: function(data){
-                $("#editors-modal-container").html(data);                 
+                $("#vb-modal-container").html(data);                 
             }
         });
     }
@@ -123,8 +123,8 @@ jQuery(document).ready(function(){
     });
 
     //REMOVE LIGHTBOX
-    $(document).on("click","#vb-modal-editor button.close",function(){
-        $("#vb-modal-editor, .modal-backdrop").remove();
+    $(document).on("click","#vb-modal-editor button.close, #vb-modal-preview button.close",function(){
+        $("#vb-modal-editor, .modal-backdrop, #vb-modal-preview").remove();
     });
 
     //ADD CONTENT TO CHAPTER PART
@@ -138,10 +138,10 @@ jQuery(document).ready(function(){
             url: "../model/content.php",
             data: {text:text,key:key,file:file,action:"update"},
             dataType: "text",
-            success: function(){
+            success: function(data){
                 setTimeout(function(){
                     $("#vb-modal-editor, .modal-backdrop").remove();
-                    loadChapterPart(key);
+                    loadChapterPart(data);
                     //$("#btn-content"+key).html('<i class="fa fa-pencil text-muted" data-status="1" aria-hidden="true"></i>');
                 },1500);
             }
@@ -152,11 +152,11 @@ jQuery(document).ready(function(){
     function deleteChContent(chapter,content,title){
         $.ajax({
             method:"POST",
-            url:"/pages/parts/modal.php",
+            url:"../pages/parts/modal.php",
             data: {chapter:chapter,content:content,title:title},
             dataType: "text",
             success: function(data){
-                $("#delete-modal-container").html(data);
+                $("#vb-modal-container").html(data);
             }
         });
     }
@@ -164,10 +164,34 @@ jQuery(document).ready(function(){
     //DELETE CHAPTER PART
     $(document).on("click","span.vb-dlt-content",function(){        
         let content = $(this).data("key");
-        let title = $(this).parents("li.list-item-vbcontent").find("span:first-child").text();
+        let title = $(this).parents("li.list-item-vbcontent").find("span#vb-cnt-title").text();
         let chapter = $(this).data("chapter");
         deleteChContent(chapter,content,title);
+        //alert(chapter + content + title);
     });
 
+    //PREVIEW CHAPTER PART
+    function previewPart(chapter,content,title,lctn){
+        $.ajax({
+            method:"POST",
+            url:"../pages/parts/content-part-preview.php",
+            data: {chapter:chapter,content:content,title:title,file:lctn},
+            dataType: "text",
+            success: function(data){
+                $("#vb-modal-container").html(data);
+            }
+        });
+    }
+
+    //PREVIEW CHAPTER PART
+    $(document).on("click",".vb-view-content",function(){
+        let content = $(this).data("key");
+        let title = $(this).parents("li.list-item-vbcontent").find("span#vb-cnt-title").text();
+        let chapter = $(this).data("chapter");
+        let lctn = $("#vb-ttl-cdidtfyr").data("universal");
+        previewPart(chapter,content,title,lctn);
+        //alert(lctn);
+
+    });
 
 });

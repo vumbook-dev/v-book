@@ -29,7 +29,7 @@ $chapter = $_POST['chapter'];
   </div>
 </div>
 
-<?php if(!empty($title) && !empty($content) && !empty($chapter)) { ?>
+<?php if(!empty($title) && !empty($chapter)) { ?>
 <div class="modal-backdrop show"></div>
 <script type="text/javascript">
 jQuery(document).ready(function($){
@@ -52,7 +52,7 @@ function deleteContent(key,lctn){
           modal.find(".modal-body>p").html(data);            
           setTimeout(function(){           
             loadChapterPart(<?php echo $chapter; ?>);                        
-            $("#delete-modal-container>div").remove();            
+            $("#vb-modal-container>div").remove();          
           },1000);   
         },1500);            
       }
@@ -65,8 +65,8 @@ $("#vb-confirm-delete").click(function(){
     deleteContent(x,lctn);
 });
 
-$(document).on("click","#delete-modal-container .close, #delete-modal-container .btn-secondary",function(){
-  $("#delete-modal-container>div").remove();
+$(document).on("click","#vb-modal-container .close, #vb-modal-container .btn-secondary",function(){
+  $("#vb-modal-container>div").remove();
 });
 
 });
