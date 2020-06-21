@@ -39,4 +39,6 @@ jQuery(document).ready(function($){
         createBook(title,titleInput,subtitle,subInput);
         //$(this).reset();
     });    
+
 });
+

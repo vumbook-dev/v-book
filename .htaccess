@@ -1,5 +1,8 @@
-Options +SymLinksIfOwnerMatch 
-RewriteEngine On 
-RewriteCond %{REQUEST_FILENAME} !-f 
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /pages/session.php [L]
+</IfModule>

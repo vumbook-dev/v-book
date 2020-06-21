@@ -116,10 +116,9 @@ jQuery(document).ready(function(){
         let key = $(this).data("key");
         let name = $(this).parents(".list-item-vbcontent").find("span:first-child").text();
         let file = $(this).data("name");
-        let icon = $(this).find("i").data("status");
-        if(icon < 1){
-            showEditor(chapter,key,name,file);
-        } 
+
+        showEditor(chapter,key,name,file);
+
     });
 
     //REMOVE LIGHTBOX
@@ -155,10 +154,11 @@ jQuery(document).ready(function(){
             url:"../pages/parts/modal.php",
             data: {chapter:chapter,content:content,title:title},
             dataType: "text",
-            success: function(data){
+            success: function(data){                
                 $("#vb-modal-container").html(data);
-            }
+            }            
         });
+        //console.log(chapter + content + title);
     }
 
     //DELETE CHAPTER PART
@@ -167,7 +167,7 @@ jQuery(document).ready(function(){
         let title = $(this).parents("li.list-item-vbcontent").find("span#vb-cnt-title").text();
         let chapter = $(this).data("chapter");
         deleteChContent(chapter,content,title);
-        //alert(chapter + content + title);
+        
     });
 
     //PREVIEW CHAPTER PART
@@ -184,14 +184,12 @@ jQuery(document).ready(function(){
     }
 
     //PREVIEW CHAPTER PART
-    $(document).on("click",".vb-view-content",function(){
+    $(document).on("click",".vb-view-content, .back-to-preview",function(){
         let content = $(this).data("key");
-        let title = $(this).parents("li.list-item-vbcontent").find("span#vb-cnt-title").text();
+        let title = $(this).data("title");
         let chapter = $(this).data("chapter");
         let lctn = $("#vb-ttl-cdidtfyr").data("universal");
         previewPart(chapter,content,title,lctn);
-        //alert(lctn);
-
     });
 
 });

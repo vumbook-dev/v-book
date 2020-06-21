@@ -29,7 +29,7 @@ $chapter = $_POST['chapter'];
   </div>
 </div>
 
-<?php if(!empty($title) && !empty($chapter)) { ?>
+<?php if(!empty($title) && !is_integer($chapter)) { ?>
 <div class="modal-backdrop show"></div>
 <script type="text/javascript">
 jQuery(document).ready(function($){

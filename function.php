@@ -36,3 +36,13 @@ function contentForm($key = "", $vbID,$book){
 
     return $html;
 }
+
+function revertTextToEditor($post){
+    $new = str_replace(", </span><span>",",",$post);
+    $new = str_replace(". </span><span>",".",$new);
+    $new = str_replace(": </span><span>",":",$new);
+    $new = str_replace("; </span><span>",";",$new);
+    $new = str_replace("<span>","<p>",$new);
+    $new = str_replace("</span>","</p>",$new);
+    return $new;
+}

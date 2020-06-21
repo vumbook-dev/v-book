@@ -1,5 +1,5 @@
 <?php
-
+include "../../function.php";
 if(isset($_POST['chapter']) && isset($_POST['key']) && isset($_POST['name']) && isset($_POST['file'])){
 $name = $_POST['name'];
 $chapter = $_POST['chapter'];
@@ -8,6 +8,7 @@ $file = $_POST['file'];
 $list = file_get_contents("../../json/book-content/{$file}.json");
 $contentlist = json_decode($list);
 $text = $contentlist[$key]->content;
+$text = revertTextToEditor($text);
 
 ?>
 <div class="modal" id="vb-modal-editor" tabindex="-1" role="dialog" style="display:block">
@@ -20,10 +21,18 @@ $text = $contentlist[$key]->content;
         </button>
       </div>
       <div class="modal-body" id="vb-editor">
-        <?php require_once "../editor.php"; ?>
+      <div class="p-4">
+        <form action="POST" method="POST">
+            <div class="form-group">
+              <textarea name="vb-text-editor" id="body" col="30" row="10" style="height:auto;" value="">
+                <?php echo $text; ?>
+              </textarea>
+            </div>
+        </form>
+      </div>
       </div>
       <div class="modal-footer">       
-        <input id="vbcc-text" type="hidden" value="<?php echo $text; ?>">
+        <!-- <input id="vbcc-text" type="hidden" value="<?php //echo $text; ?>"> -->
         <button id="vb-submit-content" type="button" class="btn btn-primary" data-file="<?php echo $file; ?>" data-chapter="<?php echo $chapter; ?>" data-key="<?php echo $key; ?>" data-key="<?php echo $file; ?>">Submit</button>       
       </div>
     </div>
@@ -31,14 +40,12 @@ $text = $contentlist[$key]->content;
 </div>
 <div class="modal-backdrop show"></div>
 
-<!-- <script type="text/javascript">
-jQuery(document).ready(function(){
-  setTimeout(function(){
-      let ptext = $("input#vbcc-text").val();
-      $("#vb-editor div.ck-editor__editable p").html(ptext);
-      alert(ptext);
-  },5000); 
-});
-</script> -->
+<script type="text/javascript">
+ClassicEditor
+.create( document.querySelector( '#body' ) )
+.catch( error => {
+    console.error( error );
+} ); 
+</script>
 
 <?php } ?>
