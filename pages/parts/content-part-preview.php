@@ -110,19 +110,7 @@ jQuery(document).ready(function($){
     $("#vb-modal-container div").remove();
   });
 
-  //LOAD EDIT STYLE
-  function loadEditStyle(chapter,content,title,lctn){
-    $.ajax({
-        method:"POST",
-        url:"../pages/parts/edit-style.php",
-        data: {chapter:chapter,content:content,title:title,file:lctn},
-        dataType: "text",
-        success: function(data){
-            $("#vb-modal-container").html(data);
-        }
-    });
-  }
-  $(".edit-vb-style").click(function(){
+  $("#vb-modal-preview .edit-vb-style").click(function(){
     let file = $("#vb-ttl-cdidtfyr").data("universal");
     let chapter = $(this).data("chapter");
     let key = $(this).data("key");

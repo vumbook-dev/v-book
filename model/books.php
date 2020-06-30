@@ -9,19 +9,25 @@ if(isset($_POST['action'])){
         if(isset($_POST['title'])){
             $sub = (isset($_POST['subTitle'])) ? $_POST['subTitle'] : "";
             $title = $_POST['title'];
+            $hshtitle = str_replace(" ","-",$title);
             $hash = "$title".rand(0,1000);
             $id = md5($hash);
-            $storage = "{$title}-".substr($id,-6);
-            $newBook = array("id" => $id, "title" => $title, "subtitle" => $sub, "storage" => $storage, "status" => "unpublished", "chapter" => array());
+            $storage = "{$hshtitle}-".substr($id,-6);
+            $newBook = array("id" => $id, "title" => $title, "subtitle" => $sub, "storage" => $storage, "status" => "unpublished","speed" => "1000", "align" => "center", "chapter" => array());
             $oldData = file_get_contents("../json/books-list-title.json");
             $arrayData = json_decode($oldData,true);
             $arrayData[] = $newBook;
+            $countBook = count($arrayData);
             $json = json_encode($arrayData);
             file_put_contents("../json/books-list-title.json",$json);
             file_put_contents("../json/book-content/{$storage}.json","[]");
-            echo $title;
+            echo $countBook;
             //$_POST = array();
         }
+    }
+    
+    elseif($action == "update"){
+
     }
 
     elseif($action == "delete"){

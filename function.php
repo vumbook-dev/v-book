@@ -5,7 +5,7 @@ function redirectToPages($path = ""){
     if(isset($_SESSION['page'])){
         $path = $_SESSION['page'];
         $state = $_SESSION['state'];        
-        if(isset($_SESSION['book'])){
+        if((isset($_SESSION['book']) && $state === 3) || (isset($_SESSION['book']) && $state === 4)){
             $book = $_SESSION['book'];
             echo "history.pushState($state, `V-Book > $path`, `./$path/book={$book}`);";
             //echo "history.replaceState($state, `V-Book > $path`, `./$path/book={$book}`);";
@@ -26,11 +26,11 @@ function contentForm($key = "", $vbID,$book){
     <div class="col-sm-4 tc-wrap">        
         <div class="form-group">
         <span class="vb-chapter'.$key.'">
-            <label for="Content">New Content</label>
+            <label for="Section">Add New Section</label>
             <input name="name'.$key.'" class="content-name form-control" type="text">
             <input type="hidden" data-title="'.$book.'" value="'.$vbID.'">
         </span>
-        <button class="btn btn-primary px-3 float-right vb-new-content" style="margin-top:-38px;" data-key="'.$key.'" data-chapter="'.$key.'">Add</button>
+        <button class="btn btn-primary px-3 float-right vb-new-content" style="margin-top:-38px;" data-key="'.$key.'" data-chapter="'.$key.'">Submit</button>
         </div>
     </div>';
 

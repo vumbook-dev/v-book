@@ -24,17 +24,19 @@ if(isset($_POST['action'])){
             $id = $_POST['id'];
             $chapter = $_POST['chapter'];
             $title = $_POST['title'];
+            $hshtitle = str_replace(" ","-",$title);
             $name = $_POST['name'];
 
-            $file = "{$title}-".substr($id,-6);
+            $file = "{$hshtitle}-".substr($id,-6);
             $list = file_get_contents("../json/book-content/{$file}.json");
             $contentlist = json_decode($list);
 
-            $newContent = array("chapter" => $chapter, "bg" => "", "cpart" => $name, "sound" => 0, "content" => "");
+            $newContent = array("chapter" => $chapter, "bg" => "", "cpart" => $name, "sound" => 0, "align" => "center", "content" => "");
             $contentlist[] = $newContent;
+            $count = count($contentlist);
             $json = json_encode($contentlist);
             file_put_contents("../json/book-content/{$file}.json",$json);
-            echo "Added Successfully";
+            echo $count;
         }
     }elseif($action == "update"){
         //UPDATE CONTENT CHAPTER
@@ -57,12 +59,14 @@ if(isset($_POST['action'])){
             $sound = $_POST['sound'];
             $bg = $_POST['bg'];
             $key = $_POST['key'];
+            $align = $_POST['align'];
             $list = file_get_contents("../json/book-content/{$file}.json");
             $contentlist = json_decode($list);
             //SAVE DATA
-            if(is_numeric($sound) && is_numeric($bg)){
-                $contentlist[$key]->sound = $sound;
+            if((!empty($sound) && is_numeric($bg) && !empty($align)) || (is_numeric($sound) && is_numeric($bg) && !empty($align))){
+                $contentlist[$key]->sound = "{$sound}";
                 $contentlist[$key]->bg = $bg;
+                $contentlist[$key]->align = $align;
                 $json = json_encode($contentlist);
                 file_put_contents("../json/book-content/{$file}.json",$json);
 

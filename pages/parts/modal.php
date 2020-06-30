@@ -1,11 +1,18 @@
 <?php
-$title = ""; $chapter = ""; $content = "";
+$title = ""; $chapter = ""; $content = ""; $action = "";
 if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter'])){
 
 $title = $_POST['title'];
 $content = $_POST['content'];
 $chapter = $_POST['chapter'];
 
+}elseif(isset($_POST['book']) && isset($_POST['title']) && isset($_POST['chapter']) && isset($_POST['action'])){
+  if($_POST['action'] == "chapter_delete"){
+    $content = $_POST['book'];
+    $title = $_POST['title'];
+    $chapter = $_POST['chapter'];
+    $action = $_POST['action'];
+  }
 }
 ?>
 
@@ -22,14 +29,14 @@ $chapter = $_POST['chapter'];
         <p>Are you sure you want to delete <span id="vb-title-handler"><?php echo "\"{$title}\""; ?></span>?</p>
       </div>
       <div class="modal-footer">       
-        <button id="vb-confirm-delete" type="button" class="btn btn-danger" data-key="<?php echo $content; ?>">Yes</button> 
+        <button id="vb-confirm-delete" type="button" class="btn btn-danger" data-chapter="<?php echo $chapter ?>" data-key="<?php echo $content; ?>">Yes</button> 
         <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>        
       </div>
     </div>
   </div>
 </div>
 
-<?php if(!empty($title) && !is_integer($chapter)) { ?>
+<?php if(!empty($title) && !is_integer($chapter) && empty($action)) { ?>
 <div class="modal-backdrop show"></div>
 <script type="text/javascript">
 jQuery(document).ready(function($){
@@ -72,4 +79,49 @@ $(document).on("click","#vb-modal-container .close, #vb-modal-container .btn-sec
 });
 </script>
 
-<?php } ?>
+<?php }
+
+elseif(!empty($title) && $_POST['action'] == "chapter_delete") { ?>
+
+<div class="modal-backdrop show"></div>
+<script type="text/javascript">
+jQuery(document).ready(function($){
+$("#vb-delete-modal").css("display","block");
+
+  function deleteChapter(book,chapter,title){
+    let modal = $("#vb-delete-modal"); 
+    $.ajax({
+        method: "POST",
+        url: "../model/chapters.php",
+        data: {chapter:chapter,key:book,title:title,action:"delete"},
+        dataType: "text",
+        beforeSend: function(){
+          modal.find(".modal-body>p").html(`Deleting ...`);
+        },
+        success: function(data){
+          setTimeout(function(){
+            modal.find(".modal-body>p").html(data);            
+            setTimeout(function(){           
+              listBookChapters(book);                        
+              $("#vb-modal-container>div").remove();          
+            },1000);   
+          },1500);            
+        }
+    });
+  }
+
+  $("#vb-confirm-delete").click(function(){
+    let chapter = $(this).data("chapter");
+    let book = $(this).data("key");
+    let title = "<?php echo $title; ?>";
+    deleteChapter(book,chapter,title);
+  });
+
+  $(document).on("click","#vb-modal-container .close, #vb-modal-container .btn-secondary",function(){
+    $("#vb-modal-container>div").remove();
+  });
+
+});
+</script>
+
+<?php }
