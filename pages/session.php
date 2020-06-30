@@ -15,12 +15,13 @@ switch($path){
     case "editor"; $state = 1; break;
     case "create-books"; $state = 2; break;
     case "book-chapter"; $state = 3; break;
+    case "read"; $state = 4; break;
     default: $state = 0; break;
 }
 
 session_start();
 
-if($state !== 0 && $state !== 3){
+if($state !== 0 && $state !== 3 && $state !== 4){
     $_SESSION['page'] = $path;
     $_SESSION['state'] = $state;
 }elseif(is_numeric($book)){

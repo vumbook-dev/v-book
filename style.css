@@ -108,7 +108,7 @@ li.list-item-vbcontent > span{
   cursor: pointer;
 }
 
-div.modal-editor-wrap{
+div.modal-editor-wrap, div.modal-section-wrap{
   width: 80%;
   margin: 50px auto;
 }
@@ -224,19 +224,19 @@ button.prev-close, button.editstyle-close {
   border-radius: 0!important;
 }
 
-#personal-sounds button, #default-sounds button{
+#personal-sounds > div.card-header button, #default-sounds > div.card-header button{
   width:100%;
   border-radius: 0!important;
   background-color: #444;
   color:white;
 }
 
-#personal-sounds button.collapsed, #default-sounds button.collapsed{
+#personal-sounds > div.card-header button.collapsed, #default-sounds > div.card-header button.collapsed{
   background-color:rgb(239, 239, 239);
   color: #6c757d!important;
 }
 
-#personal-sounds button:hover, #default-sounds button:hover{
+#personal-sounds > div.card-header button:hover, #default-sounds > div.card-header button:hover{
   color: white!important;
   background-color: #535353;
 }
@@ -267,6 +267,110 @@ button.prev-close, button.editstyle-close {
 #vbSelectSounds ul > li.act-sound{
   background-color: #007bff;
   color: white;
+}
+
+/*** ALIGN TEXT OPTION ***/
+#vb-edit-align{
+  border-bottom: 1px solid #ccc;
+}
+
+#vb-edit-align ul{
+  display: flex;
+  list-style: none;
+  padding-left: 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#vb-edit-align ul > li{
+  padding: 10px 25px;
+  cursor: pointer;
+}
+
+#vb-edit-align ul > li.act-align{
+  background-color: #eee;
+}
+
+/*** UPLOAD SOUNDS CSS ***/
+.input-empty{
+  width:100%;
+}
+
+.input-empty > div > span.fileUpload{
+  display:block;
+}
+
+.it .btn-orange
+{
+    background-color: blue;
+    border-color: #777!important;
+    color: #777;
+    text-align: left;
+  width:100%;
+}
+.it input.form-control
+{
+    
+    border:none;
+  margin-bottom:0px;
+    border-radius: 0px;
+    border-bottom: 1px solid #ddd;
+    box-shadow: none;
+}
+.it .form-control:focus
+{
+    border-color: #ff4d0d;
+    box-shadow: none;
+    outline: none;
+}
+.fileUpload {
+    position: relative;
+    overflow: hidden;
+}
+.fileUpload input.upload {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+/*** BOOK READER ***/
+#book-navigation-container button > small{
+  display:none;
+}
+
+ul.vb-section-list-nav{
+  list-style: none;
+}
+
+ul.vb-section-list-nav > li{
+  padding: 10px 20px 10px 30px;
+  text-align: left;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+ul.vb-section-list-nav > li.act-section{
+  background-color: #007bff;
+  color: white;
+}
+
+div#vbBookNavigationList{
+  width: 300px;
+  margin: 0 auto;
+}
+
+div#style-bookview{
+  /* overflow-y: scroll; */
+  height: 100%;
 }
 
 /*** CSS LOAD EFFECTS ***/

@@ -33,7 +33,7 @@ $text = revertTextToEditor($text);
       </div>
       <div class="modal-footer">       
         <!-- <input id="vbcc-text" type="hidden" value="<?php //echo $text; ?>"> -->
-        <button id="vb-submit-content" type="button" class="btn btn-primary" data-file="<?php echo $file; ?>" data-chapter="<?php echo $chapter; ?>" data-key="<?php echo $key; ?>" data-key="<?php echo $file; ?>">Submit</button>       
+        <button id="vb-submit-content" type="button" class="btn btn-primary" data-file="<?php echo $file; ?>" data-chapter="<?php echo $chapter; ?>" data-key="<?php echo $key; ?>">Submit</button>       
       </div>
     </div>
   </div>

@@ -18,12 +18,12 @@ jQuery(document).ready(function($){
             url: "../model/books.php",
             data: {title:title,subTitle:sub,action:"add"},
             dataType: "text",
-            success: function(){
-                //alert("New Book Added: "+data);
-                listBooks();
-                input.val("");
-                subInput.val("");
-                //loadPage("create-books","");
+            success: function(data){
+                //alert("book-chapter/book="+data);
+                //listBooks();
+                //input.val("");
+                //subInput.val("");
+                window.location.replace("/book-chapter/book="+data);
             }
         });
     }
