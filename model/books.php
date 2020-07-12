@@ -13,7 +13,7 @@ if(isset($_POST['action'])){
             $hash = "$title".rand(0,1000);
             $id = md5($hash);
             $storage = "{$hshtitle}-".substr($id,-6);
-            $newBook = array("id" => $id, "title" => $title, "subtitle" => $sub, "storage" => $storage, "status" => "unpublished","speed" => "1000", "align" => "center", "chapter" => array());
+            $newBook = array("id" => $id, "title" => $title, "subtitle" => $sub, "storage" => $storage, "status" => "unpublished","speed" => "1000", "dsound" => "0", "dAlign" => "center", "chapter" => array());
             $oldData = file_get_contents("../json/books-list-title.json");
             $arrayData = json_decode($oldData,true);
             $arrayData[] = $newBook;

@@ -19,11 +19,11 @@ jQuery(document).ready(function($){
     };
 
     //SEND DATA TO PAGE
-    window.sendToPage = function(link,loader,data){
+    window.sendToPage = function(link,loader,data,action=""){
         $.ajax({
             method: "POST",
             url: "/pages/"+link+".php",
-            data: {data:data},
+            data: {data:data,action:action},
             dataType: "text",
             beforeSend: function(){
                 $("#vb-show-content").html(loader);

@@ -35,6 +35,7 @@ if(isset($_POST['data'])){
 
 <div id="vb-modal-container"></div>
 <script type="text/javascript" src="../js/chapters.js"></script>
+<script type="text/javascript" src="../js/helper.js"></script>
 <?php
 
 }else{

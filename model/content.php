@@ -20,8 +20,12 @@ if(isset($_POST['action'])){
     $action = $_POST['action'];
     if($action == "add"){
         //ADD CONTENT CHAPTER
-        if(isset($_POST['id']) && isset($_POST['chapter']) && isset($_POST['title']) && isset($_POST['name'])){
+        if(isset($_POST['id']) && isset($_POST['chapter']) && isset($_POST['title']) && isset($_POST['name']) && isset($_POST['index'])){
             $id = $_POST['id'];
+            $index = $_POST['index'];
+            $bookData = file_get_contents("../json/books-list-title.json");
+            $bookData = json_decode($bookData);
+            $default = $bookData[$index];
             $chapter = $_POST['chapter'];
             $title = $_POST['title'];
             $hshtitle = str_replace(" ","-",$title);
@@ -31,11 +35,12 @@ if(isset($_POST['action'])){
             $list = file_get_contents("../json/book-content/{$file}.json");
             $contentlist = json_decode($list);
 
-            $newContent = array("chapter" => $chapter, "bg" => "", "cpart" => $name, "sound" => 0, "align" => "center", "content" => "");
+            $newContent = array("chapter" => $chapter, "bg" => "", "cpart" => $name, "sound" => $default->dsound, "align" => $default->dAlign, "content" => "");
             $contentlist[] = $newContent;
             $count = count($contentlist);
             $json = json_encode($contentlist);
             file_put_contents("../json/book-content/{$file}.json",$json);
+            //print_r($bookData);
             echo $count;
         }
     }elseif($action == "update"){
@@ -57,16 +62,39 @@ if(isset($_POST['action'])){
         }elseif(isset($_POST['file']) && isset($_POST['sound']) && isset($_POST['bg']) && isset($_POST['key'])){
             $file = $_POST['file'];
             $sound = $_POST['sound'];
+            $dsound = $_POST['dSound'];
+            $dAlign = $_POST['dAlign'];
             $bg = $_POST['bg'];
             $key = $_POST['key'];
             $align = $_POST['align'];
-            $list = file_get_contents("../json/book-content/{$file}.json");
+            $list = file_get_contents("../json/book-content/{$file}.json");            
             $contentlist = json_decode($list);
+            //$allContent = count($contentlist);
             //SAVE DATA
             if((!empty($sound) && is_numeric($bg) && !empty($align)) || (is_numeric($sound) && is_numeric($bg) && !empty($align))){
-                $contentlist[$key]->sound = "{$sound}";
-                $contentlist[$key]->bg = $bg;
-                $contentlist[$key]->align = $align;
+                if($dsound == 1 || $dAlign == 1){
+                    $bookKey = $_POST['book'];
+                    $books = file_get_contents("../json/books-list-title.json");
+                    $booklist = json_decode($books);
+                    if($dsound == 1){
+                        $booklist[$bookKey]->dsound = "{$sound}";                                        
+                        foreach($contentlist as $k => $value){
+                            $contentlist[$k]->sound = "{$sound}";
+                        }
+                    }                       
+                    if($dAlign == 1){
+                        $booklist[$bookKey]->dAlign = $align;
+                        foreach($contentlist as $k => $value){
+                            $contentlist[$k]->align = $align;
+                        }
+                    }   
+                    $newDefault = json_encode($booklist);
+                    file_put_contents("../json/books-list-title.json",$newDefault);              
+                }else{
+                    $contentlist[$key]->sound = "{$sound}";
+                    $contentlist[$key]->align = $align;
+                }                
+                $contentlist[$key]->bg = $bg;                
                 $json = json_encode($contentlist);
                 file_put_contents("../json/book-content/{$file}.json",$json);
 

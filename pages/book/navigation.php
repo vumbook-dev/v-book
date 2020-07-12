@@ -2,61 +2,75 @@
 if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section']) && isset($_POST['file'])){
     
     $book = $_POST['book'];
-    $chapter = $_POST['chapter'];
+    $ch = $_POST['chapter'];
     $section = $_POST['section'];
     $file = $_POST['file'];
 
     $listChapter = file_get_contents("../../json/books-list-title.json");
     $bookData = json_decode($listChapter);
     $chapterData = $bookData[$book]->chapter;
-    $content = file_get_contents("../../json/book-content/{$file}.json");
+
+    $content = file_get_contents("../../json/book-content/$file.json");
     $content = json_decode($content);
+    $count = count($content);
+    $dsound = file_get_contents("../../json/media/default-sounds.json");
+    $dsound = json_decode($dsound);
+    $msound = file_get_contents("../../json/users/user-media.json");
+    $msound = json_decode($msound);
+?>
 
-    // foreach($content as $i => $value){
-    //     if ($value->chapter !== $chapter) {
-    //         unset($content[$key]);
-    //     }
-    // }
+<div class="card bg-light mx-3 mt-5" id="vbBookNavigationList">
+  <div class="card-header text-center h5">Chapters</div>
 
-    ?>
-
-<div class="card bg-light mx-3 mt-4 p-fixed" id="vbBookNavigationList">
-  <div class="card-header text-center h5">Chapter</div>
-
-    <?php 
+    <?php $i = 0;
     
     foreach($chapterData as $key => $bChapter){ 
-        $x = json_decode($chapterData[$key]);
+            $x = json_decode($chapterData[$key]);
+            $chapterName = $x->name;
+        
         ?>
             
             <div class="card-header p-0" id="heading<?php echo $key; ?>">
                 <h5 class="mb-0">
                     <button style="width:100%" class="btn <?php echo ($key == 0) ? "collapsed" : ""; ?>" type="button" data-toggle="collapse" data-target="#collapse<?php echo $key; ?>" aria-expanded="true" aria-controls="collapse<?php echo $key; ?>">
-                        <?php echo $x->name; ?> <i class="fa fa-angle-right px-3" aria-hidden="true" data-dir="default"></i>
+                        <?php echo $chapterName; ?> <i class="fa fa-angle-right px-3" aria-hidden="true" data-dir="default"></i>
                     </button>
                 </h5>
             </div>
 
             <div id="collapse<?php echo $key; ?>" class="collapse <?php echo ($key == 0) ? "show" : ""; ?>" aria-labelledby="heading<?php echo $key; ?>" data-parent="#vbBookNavigationList">
                 <div class="card-body p-0">
-                    <ul class="mb-0 p-0 vb-section-list-nav">
-                        <?php 
-                            $i = 0;
-                            foreach($content as $k => $value){
-                                if($value->chapter == $key){
-                                    $activeChapter = ($k == $section) ? 'act-section' : '';
-                                    echo '<li class="'.$activeChapter.'" data-chapter="'.$key.'" data-section="'.$k.'">'.$value->cpart.'</li>';
-                                }                        
-                            }
-                        ?>
-                    </ul>
+                    <?php if($i < $count) { 
+                                /*if($content[$i]->chapter != $key){
+                                    echo '<div class="text-center p-5">No Section Available</div>';
+                                } */?>
+                        <ul class="mb-0 p-0 vb-section-list-nav">
+                            <?php                                 
+                                foreach($content as $k => $value){
+                                    if($value->chapter == $key){
+                                        $activeChapter = ($k == $section) ? 'act-section' : '';
+                                        if(!is_numeric($value->sound)){
+                                            $dir = 1;
+                                            $sound = $value->sound;
+                                            $sound = ltrim($sound,"m");
+                                            $sound = $msound[$sound]->filename;
+                                        }else{
+                                            $dir = 0;
+                                            $sound = $value->sound;
+                                            $sound = $dsound[$sound]->filename;
+                                        }
+                                        echo '<li class="'.$activeChapter.'" data-status="0" data-chapter="'.$key.'" data-section="'.$k.'" data-sound="'.$sound.'" data-sdir="'.$dir.'">'.$value->cpart.'</li>';
+                                        $i++;
+                                    }                        
+                                }
+                            ?>
+                        </ul>
+                     <?php } ?>
                 </div>
             </div>
         
 
-<?php 
-    }     
-?>
+<?php } ?>
 
 </div>
 
