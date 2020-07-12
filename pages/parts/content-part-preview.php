@@ -110,12 +110,12 @@ jQuery(document).ready(function($){
     $("#vb-modal-container div").remove();
   });
 
-  $("#vb-modal-preview .edit-vb-style").click(function(){
+  $(document).on("click","#vb-modal-preview .edit-vb-style",function(){
     let file = $("#vb-ttl-cdidtfyr").data("universal");
     let chapter = $(this).data("chapter");
     let key = $(this).data("key");
     let title = $("h5.modal-title").text();
-    loadEditStyle(chapter,key,title,file);
+    window.loadEditStyle(chapter,key,title,file);
   });
 
 });

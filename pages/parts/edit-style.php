@@ -32,9 +32,9 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
       <div class="modal-body p-4">
         <div class="row">
             <div class="col-md-9 px-4 <?php echo "text-{$content[$key]->align}"; ?>">
-                <h3 class="vb-ch-title px-4 mb-3"></h3>
-                <h5 class="px-4 mb-5"><?php echo $title ?></h5>
-                <div id="style-preview" class="editstyle-page py-2 px-4">
+                <h3 class="vb-ch-title mb-3"></h3>
+                <h5 class="mb-5"><?php echo $title ?></h5>
+                <div id="style-preview" class="editstyle-page py-2 px-4 d-inline">
                     <?php echo $content[$key]->content; ?>
                 </div>
             </div>
@@ -44,6 +44,7 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
                     <ul class="my-3 vb-text-alignment">
                         <li data="left" <?php echo ($textAlign == "left") ? 'class="act-align btn"' : '' ; ?> > Left </li>
                         <li data="center" <?php echo ($textAlign == "center") ? 'class="act-align btn"' : '' ; ?> > Center </li>
+                        <li data="justify" <?php echo ($textAlign == "justify") ? 'class="act-align btn"' : '' ; ?> > Justify </li>
                         <li data="right" <?php echo ($textAlign == "right") ? 'class="act-align btn"' : '' ; ?>> Right </li>
                     </ul>
                 </div>
@@ -66,8 +67,12 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
                                 <?php 
                                     foreach($dsounds as $k => $value){
                                         $icon = ($value->id != 0) ? '<i class="fa fa-play px-3" aria-hidden="true" data-dir="default" data-file="'.$value->filename.'"></i></li>' : ' ';
-                                        $activeSound = ($value->id === $content[$key]->sound) ? 'act-sound' : '';
-                                        echo '<li class="'.$activeSound.'" data-id="'.$value->id.'">'.$value->alias.' '.$icon;
+                                        if(is_numeric($content[$key]->sound)){
+                                            $activeSound = ($value->id == $content[$key]->sound) ? 'act-sound' : '';
+                                        }else{
+                                            $activeSound = "";
+                                        }                                        
+                                        echo '<li class="slct-sounds-list '.$activeSound.'" data-id="'.$value->id.'">'.$value->alias.' '.$icon;
                                     }
                                 ?>
                             </ul>
@@ -112,7 +117,7 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
       </div>
       <div class="modal-footer">       
         <!-- <input id="vbcc-text" type="hidden" value=""> -->
-        <button id="vb-new-section" data-key="<?php echo $key; ?>" type="button" class="btn btn-secondary px-3 mr-1">Add New Section</button>
+        <button id="vb-addnew-section" data-key="<?php echo $key; ?>" type="button" class="btn btn-secondary px-3 mr-1">Add New Section</button>
         <button id="vb-save-styles" data-key="<?php echo $key; ?>" type="button" class="btn btn-primary px-3 mr-4">Update</button>
       </div>
     </div>
@@ -122,6 +127,7 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
 jQuery(document).ready(function($){
     const chapterTitle = $(".ttl-<?php echo $chapter; ?>ch").text();
     const bookk = $("input#vb-ttl-cdidtfyr").data("bookid");
+    const bookIndex = $("h1#vb-full-title").data("book");
     $(".vb-ch-title").html(chapterTitle);
     $("#style-preview>span>ol, #style-preview>span>ul").parent("span").addClass("d-block");
 
@@ -137,59 +143,19 @@ jQuery(document).ready(function($){
         $(this).removeClass("scrollMouseIn");
     });
 
-    $(document).on("click",".slct-sounds > li", function(e){
-        SoundStatus = $(this).hasClass("act-sound");
-
-        if(!SoundStatus){
-            $(".slct-sounds > li").removeClass("act-sound");            
-            $(this).addClass("act-sound");
-        }    
-        
-        $(this).removeEventListener('click', e);           
-    });
-
-    const PlayStop = function(Sound,drtn){
-        Sound.play();           
-        setTimeout(function(){
-            $(".slct-sounds > li > i").removeClass("fa-pause");
-            $(".slct-sounds > li > i").addClass("fa-play");
-            Sound.pause();                
-        },drtn);
-        console.log(drtn);
-    }
-
-    $(document).on("click",".slct-sounds > li > i", function(e){
-        let File = $(this).data("file");
-        let dir = $(this).data("dir");
-        let path = (dir == 1) ? "user/" : "";
-        let Sound = null;        
-        if(!$(this).hasClass("fa-play")){
-            $(this).find("i").removeClass("fa-pause");
-            $(this).find("i").addClass("fa-play");
-            Sound.pause();
-        }else{
-            Sound = new Audio('../../media/sounds/'+path+File);
-            let drtn = 2500;
-            $(".slct-sounds > li i").removeClass("fa-pause");
-            $(".slct-sounds > li i").addClass("fa-play");
-            $(this).toggleClass("fa-pause");
-            PlayStop(Sound,drtn);            
-        }
-        //$(this).removeEventListener('click', e);
-    });
-
     //UPDATE STYLE
-    const UpdateStyle = function(sound,key,file,bg,align){
+    const UpdateStyle = function(sound,dSound,key,file,bg,align,dAlign,index = bookIndex){
         $.ajax({
             method: "POST",
             url: "../model/content.php",
-            data: {sound:sound,key:key,file:file,bg:bg,align:align,action:"update"},
+            data: {sound:sound,dSound:dSound,key:key,file:file,bg:bg,align:align,dAlign:dAlign,book:index,action:"update"},
             dataType: "text",
             success: function(data){
                 let json = JSON.parse(data);
                 let state = (json.status == "success") ? "alert-success" : "alert-danger";
                 $("div.style-widgets-corner").prepend('<div class="message-status alert '+state+'" role="alert">'+json.message+'</div>');
                 //$("#vb-new-section").removeClass("d-none");
+                $("li.apllySoundsToAll").remove();
                 setTimeout(function(){
                     $("div.message-status").remove();                    
                 },3000);
@@ -197,42 +163,24 @@ jQuery(document).ready(function($){
         })
     }
 
-    $(document).on("click",".vb-text-alignment > li",function(){
-        let act = $(".vb-text-alignment > li.act-align").attr("data");
-        let alignTxt = $(this).attr("data");        
-        let element = $(".modal-body > .row > div.text-"+act);
-        element.removeClass("text-"+act);
-        element.addClass("text-"+alignTxt);        
-        $(".vb-text-alignment > li").removeClass("act-align btn");
-        $(this).addClass("act-align btn");
-    });
-
-    //SHOW ADD NEW SECTION BUTTON
-    $(document).on("click","#vb-new-section",function(){
-        //console.log(bookk);
-        addSectionLightbox(chapterTitle,"<?php echo $file; ?>",<?php echo $chapter + 1; ?>,bookk);
-    });
-
-    // const UpdateAlignSpeed = function(align){
-    //     $.ajax({
-    //         method: "POST",
-    //         url: "../../model/books.php",
-    //         data: {align:align,action:"update"},
-    //         dataType: "text",
-    //         success: function(){
-
-    //         }
-    //     })
-    // }
-
     $("#vb-save-styles").click(function(){
         let key = $(this).data("key");
         let actSound = $("li.act-sound").data("id");
         let file = $("#vb-ttl-cdidtfyr").data("universal");
         let align = $(".vb-text-alignment > li.act-align").attr("data");
+        let ApplyAllSounds = $("input.allSounds");
+        let dsounds = (ApplyAllSounds.prop("checked") == true) ? 1 : 0;        
+        let ApplyAllAlignment = $("input.allAlignment");
+        let dAlign = (ApplyAllAlignment.prop("checked") == true) ? 1 : 0;
         let bg = 0;
+        UpdateStyle(actSound,dsounds,key,file,bg,align,dAlign);
+        $("div.setDefaultAlignment").remove();
+    });
 
-        UpdateStyle(actSound,key,file,bg,align);
+    //SHOW ADD NEW SECTION BUTTON
+    $(document).on("click","#vb-addnew-section",function(){
+        //console.log(bookk);
+        addSectionLightbox(chapterTitle,"<?php echo $file; ?>",<?php echo $chapter + 1; ?>,bookIndex);
     });
 
     //MULTIPLE SOUND UPLOADS
@@ -270,8 +218,8 @@ jQuery(document).ready(function($){
             
     });
 
-    //LOAD MY AUDIO
-    const loadMyAudio = function(){
+   //LOAD MY AUDIO
+   loadMyAudio = function(){
         $.ajax({
             url: "../../model/media.php",  
             type: "POST",
@@ -282,31 +230,6 @@ jQuery(document).ready(function($){
             }
         });
     }
-
-    //SUBMIT MULTI SOUND
-    $(document).on("submit","#submit-audio",function(e){
-        e.preventDefault();
-        window.selfsubmit = $.ajax({  
-            url: "../../model/media.php",  
-            type: "POST",  
-            data: new FormData(this),  
-            contentType: false,  
-            processData:false,  
-            success: function(){                
-                $("div.style-widgets-corner").prepend('<div class="message-status alert alert-success" role="alert">Audio Successfully Uploaded</div>');
-                setTimeout(function(){
-                    $("div.message-status").remove();
-                },4000);
-                $("form#submit-audio").addClass("input-empty");
-                $("input.rdnly-plchldr").addClass("d-none");
-                $("form#submit-audio button.btn-primary").addClass("d-none");
-                $("span.fileUpload").removeClass("d-none");
-                //$(this).removeEventListener();
-                loadMyAudio();
-                selfsubmit.clear();                      
-            }  
-        }); 
-    });
 
     loadMyAudio();
 });

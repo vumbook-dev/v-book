@@ -184,7 +184,7 @@ button.vb-new-content, .bc-wrap button{
 
 #vb-preview span, #style-preview span{
   margin-bottom:1rem;
-  display: inline-block;
+  /* display: inline-block; */
   white-space: break-spaces;
 }
 
@@ -246,7 +246,6 @@ button.prev-close, button.editstyle-close {
 }
 
 #personal-sounds div.card-body, #default-sounds div.card-body{
-  height: 225px;
   overflow-y: scroll;
 }
 
@@ -283,7 +282,7 @@ button.prev-close, button.editstyle-close {
 }
 
 #vb-edit-align ul > li{
-  padding: 10px 25px;
+  padding: 5px 15px;
   cursor: pointer;
 }
 

@@ -16,7 +16,7 @@ if(isset($_POST['key'])){
         $html .= '<button type="button" class="btn btn-primary btn-chapter mx-2" data-chapter="'.$key.'" data-toggle="collapse" data-target="#'.$key.'chapter" aria-expanded="false" aria-controls="'.$key.'chapter">Show</button></span></li>';
         $html .= '<div class="collapse" id="'.$key.'chapter" data-parent="#chapter-accordion"><div class="card card-body">';
         $html .= '<div class="row"><div class="col-sm-8" id="vbcontent-list'.$key.'"></div>';
-        $html .= contentForm($key,$book[$k]->id,$book[$k]->title);
+        $html .= contentForm($key,$book[$k]->id,$book[$k]->title,$k);
         $html .= '</div>';
         $html .= '</div></div>';
     }

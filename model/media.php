@@ -38,13 +38,13 @@ if(isset($_FILES['audio']) && $_FILES['audio']['name'] != ''){
     $mysounds = file_get_contents("../json/users/user-media.json");
     $mysounds = json_decode($mysounds);
                                     
-    if(count($mysounds) > 1){
+    if(count($mysounds) > 0){
         echo '<ul class="mb-0 p-0 slct-sounds">';
         foreach($mysounds as $k => $value){
             $aliesname = (strlen($value->alias) > 25) ? substr($value->alias, 25) : $value->alias;
             $icon = '<i class="fa fa-play px-3" aria-hidden="true" data-dir="1" data-file="'.$value->filename.'"></i></li>';
             $activeSound = ($value->id === $content[$key]->sound) ? 'act-sound' : '';
-            echo '<li class="'.$activeSound.'" data-id="'.$value->id.'">'.$value->alias.' '.$icon;
+            echo '<li class="slct-sounds-list '.$activeSound.'" data-id="'.$value->id.'">'.$value->alias.' '.$icon;
         }
         echo '</ul>';
     }else{

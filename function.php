@@ -9,11 +9,15 @@ function redirectToPages($path = ""){
             $book = $_SESSION['book'];
             echo "history.pushState($state, `V-Book > $path`, `./$path/book={$book}`);";
             //echo "history.replaceState($state, `V-Book > $path`, `./$path/book={$book}`);";
-            echo "sendToPage('$path',vbloader,$book);";
+            if($path == "download"){
+                echo "sendToPage('$path',vbloader,$book,'download');";
+            }else{
+                echo "sendToPage('$path',vbloader,$book);";
+            }
         }else{
             echo "history.pushState($state, `V-Book > $path`, `./$path/`);";
-            //echo "history.replaceState($state, `V-Book > $path`, `./$path/`);";
-            echo "loadPage('$path',vbloader);";
+            //echo "history.replaceState($state, `V-Book > $path`, `./$path/`);";            
+            echo "loadPage('$path',vbloader);";             
         }        
         echo "$('title').text(`V-Book > $path`);";
     }
@@ -21,16 +25,18 @@ function redirectToPages($path = ""){
     session_destroy();
 }
 
-function contentForm($key = "", $vbID,$book){
+function contentForm($key = "", $vbID,$book,$bookIndex = ""){
     $html = '
     <div class="col-sm-4 tc-wrap">        
         <div class="form-group">
+        <form method="post" class="vb-new-section">
         <span class="vb-chapter'.$key.'">
             <label for="Section">Add New Section</label>
             <input name="name'.$key.'" class="content-name form-control" type="text">
-            <input type="hidden" data-title="'.$book.'" value="'.$vbID.'">
+            <input type="hidden" data-bookIndex="'.$bookIndex.'" data-title="'.$book.'" value="'.$vbID.'">
         </span>
         <button class="btn btn-primary px-3 float-right vb-new-content" style="margin-top:-38px;" data-key="'.$key.'" data-chapter="'.$key.'">Submit</button>
+        </form>
         </div>
     </div>';
 

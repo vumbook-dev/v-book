@@ -27,7 +27,7 @@ if(isset($_POST['action'])){
             $file = $book->storage;
             $bookkey = $book->id;
             $newCH = count($chapterArray);
-            $json = array("title" => $title, "file" => $file, "chapter" => $newCH, "bookkey" => $bookkey );
+            $json = array("title" => $title, "file" => $file, "chapter" => $newCH, "bookkey" => $bookkey, "index" => $key );
             $json = json_encode($json);
 
             echo $json;
