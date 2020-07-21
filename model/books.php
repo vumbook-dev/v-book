@@ -13,7 +13,7 @@ if(isset($_POST['action'])){
             $hash = "$title".rand(0,1000);
             $id = md5($hash);
             $storage = "{$hshtitle}-".substr($id,-6);
-            $newBook = array("id" => $id, "title" => $title, "subtitle" => $sub, "storage" => $storage, "status" => "unpublished","speed" => "1000", "dsound" => "0", "dAlign" => "center", "chapter" => array());
+            $newBook = array("id" => $id, "title" => $title, "subtitle" => $sub, "storage" => $storage, "status" => "unpublished", "cover" => null, "speed" => "1000", "dsound" => "0", "dAlign" => "center", "chapter" => array());
             $oldData = file_get_contents("../json/books-list-title.json");
             $arrayData = json_decode($oldData,true);
             $arrayData[] = $newBook;
@@ -25,10 +25,6 @@ if(isset($_POST['action'])){
             //$_POST = array();
         }
     }
-    
-    elseif($action == "update"){
-
-    }
 
     elseif($action == "delete"){
         //Delete Book Data Inside json
@@ -38,7 +34,7 @@ if(isset($_POST['action'])){
             $archivedData = file_get_contents("../json/archive-book-title.json");
             $active = json_decode($allData,true);
             $inactive = json_decode($archivedData,true);
-            $archive = array("id" => $active[$k]['id'], "title" => $active[$k]['title'], "subtitle" => $active[$k]['subtitle'], "storage" => $active[$k]['storage'], "status" => $active[$k]['status'], "unpublished", "chapter" => $active[$k]['chapter']);
+            $archive = array("id" => $active[$k]['id'], "title" => $active[$k]['title'], "subtitle" => $active[$k]['subtitle'], "storage" => $active[$k]['storage'], "status" => $active[$k]['status'], "cover" => $active[$k]['cover'], "speed" => $active[$k]['speed'], "dsound" => $active[$k]['dsound'], "dAlign" => $active[$k]['dAlign'], "chapter" => $active[$k]['chapter']);
             unset($active[$k]);
             $active = array_values($active);
 
@@ -55,4 +51,38 @@ if(isset($_POST['action'])){
         }
     }
 
+}elseif(isset($_FILES['book-cover']) && $_FILES['book-cover']['name'] != ''){
+    $media = file_get_contents("../json/users/user-bookcover.json");
+    $media = json_decode($media);
+    $og_count = count($media);
+    $book = $_POST['book'];
+    $oldData = file_get_contents("../json/books-list-title.json");
+    $arrayData = json_decode($oldData);    
+    //$new_count = null;
+
+    //foreach ($_FILES['book-cover']['name'] as $key => $value){
+        $og_name = $_FILES['book-cover']['name'][0];
+        $file_name = explode(".", $_FILES['book-cover']['name'][0]);
+        $new_name = md5(rand()) . '.' . $file_name[1];  
+        $new_name = "{$og_name}-".substr($new_name,-11);
+        $new_name = str_replace(" ","-",$new_name);
+        $sourcePath = $_FILES['book-cover']['tmp_name'][0];  
+        $targetPath = "../media/bookcover/user/".$new_name;  
+
+        if(move_uploaded_file($sourcePath, $targetPath)){
+            $new_count = $og_count;
+            $fileData = array("id" => $new_count, "alias" => $file_name[0], "filename" => $new_name, "book" => $book);
+            $media[] = $fileData;
+            $arrayData[$book]->cover = $new_count;                        
+        }
+    //}
+
+    if(is_numeric($new_count)){
+        $json = json_encode($media);        
+        $newcover = json_encode($arrayData);        
+        file_put_contents("../json/books-list-title.json",$newcover);
+        file_put_contents("../json/users/user-bookcover.json",$json);
+        //print_r($arrayData);
+        echo $new_count;
+    }
 }

@@ -12,7 +12,7 @@ if(isset($_POST['book']) && isset($_POST['chapters']) && isset($_POST['title']) 
     $file = $_POST['file'];
     $dsound = file_get_contents("../../json/media/default-sounds.json");
     $dsound = json_decode($dsound);
-    $msound = file_get_contents("../../json/users/user-media.json");
+    $msound = file_get_contents("../../json/users/user-sound.json");
     $msound = json_decode($msound);
     unlink("../../pages/downloads/$title.zip");
     $content = file_get_contents("../../json/book-content/{$file}.json");

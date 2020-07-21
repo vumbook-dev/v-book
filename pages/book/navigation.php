@@ -15,12 +15,12 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
     $count = count($content);
     $dsound = file_get_contents("../../json/media/default-sounds.json");
     $dsound = json_decode($dsound);
-    $msound = file_get_contents("../../json/users/user-media.json");
+    $msound = file_get_contents("../../json/users/user-sound.json");
     $msound = json_decode($msound);
 ?>
 
-<div class="card bg-light mx-3 mt-5" id="vbBookNavigationList">
-  <div class="card-header text-center h5">Chapters</div>
+<div class="card bg-light" id="vbBookNavigationList">
+  <div class="card-header text-right h5">Table of Contents <span class="x-close btn btn-secondary">Close</span></div>
 
     <?php $i = 0;
     
@@ -32,8 +32,8 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
             
             <div class="card-header p-0" id="heading<?php echo $key; ?>">
                 <h5 class="mb-0">
-                    <button style="width:100%" class="btn <?php echo ($key == 0) ? "collapsed" : ""; ?>" type="button" data-toggle="collapse" data-target="#collapse<?php echo $key; ?>" aria-expanded="true" aria-controls="collapse<?php echo $key; ?>">
-                        <?php echo $chapterName; ?> <i class="fa fa-angle-right px-3" aria-hidden="true" data-dir="default"></i>
+                    <button style="width:100%" class="btn <?php echo ($key != 0) ? "collapsed" : ""; ?> text-right" type="button" data-toggle="collapse" data-target="#collapse<?php echo $key; ?>" aria-expanded="true" aria-controls="collapse<?php echo $key; ?>">
+                        <?php echo $chapterName; ?><span class="marker"></span>
                     </button>
                 </h5>
             </div>
@@ -59,7 +59,7 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
                                             $sound = $value->sound;
                                             $sound = $dsound[$sound]->filename;
                                         }
-                                        echo '<li class="'.$activeChapter.'" data-status="0" data-chapter="'.$key.'" data-section="'.$k.'" data-sound="'.$sound.'" data-sdir="'.$dir.'">'.$value->cpart.'</li>';
+                                        echo '<li class="'.$activeChapter.'" data-status="0" data-chapter="'.$key.'" data-section="'.$k.'" data-sound="'.$sound.'" data-sdir="'.$dir.'"><span class="marker"></span>'.$value->cpart.'</li>';
                                         $i++;
                                     }                        
                                 }

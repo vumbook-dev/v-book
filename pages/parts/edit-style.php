@@ -1,13 +1,21 @@
 <?php
-if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']) && isset($_POST['file'])){
+if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']) && isset($_POST['file']) && isset($_POST['cover'])){
 
     $title = $_POST['title'];
     $key = $_POST['content'];
     $chapter = $_POST['chapter'];
-    $file = $_POST['file'];
+    $file = $_POST['file'];    
+    $bookcover = "";
 
-    $list = file_get_contents("../../json/book-content/{$file}.json");
+    $list = file_get_contents("../../json/book-content/{$file}.json");    
     $content = json_decode($list);
+    if(isset($_POST['cover'])){
+        $coverkey = $_POST['cover'];
+        $cover = file_get_contents("../../json/users/user-bookcover.json");
+        $cover = json_decode($cover);
+        $bookcover = "../../media/bookcover/user/{$cover[$coverkey]->filename}";
+    }
+    
     $dsounds = file_get_contents("../../json/media/default-sounds.json");
     $dsounds = json_decode($dsounds);  
 
@@ -34,11 +42,12 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
             <div class="col-md-9 px-4 <?php echo "text-{$content[$key]->align}"; ?>">
                 <h3 class="vb-ch-title mb-3"></h3>
                 <h5 class="mb-5"><?php echo $title ?></h5>
-                <div id="style-preview" class="editstyle-page py-2 px-4 d-inline">
+                <div id="style-preview" class="editstyle-page py-2 px-4">
                     <?php echo $content[$key]->content; ?>
                 </div>
             </div>
             <div class="col-md-3 style-widgets-corner">
+                <!-- CONTENT ALIGNMENT -->
                 <div id="vb-edit-align" class="form-group text-center mb-3 pb-2">
                     <span class="h6"><i class="fa fa-align-justify" aria-hidden="true"></i> Text Align</span>    
                     <ul class="my-3 vb-text-alignment">
@@ -48,9 +57,10 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
                         <li data="right" <?php echo ($textAlign == "right") ? 'class="act-align btn"' : '' ; ?>> Right </li>
                     </ul>
                 </div>
+                <!-- CONTENT ALIGNMENT END -->
+                <!-- SOUNDS SECTION -->
                 <div class="form-group text-center">
-                    <span class="h6"><i class="fa fa-music" aria-hidden="true"></i> Page Sounds</span>
-                    <!-- SOUNDS SECTION -->
+                    <span class="h6"><i class="fa fa-music" aria-hidden="true"></i> Page Sounds</span>                    
                     <div class="accordion mt-3" id="vbSelectSounds">
                     <div id="default-sounds" class="card">
                         <div class="card-header p-0" id="headingOne">
@@ -109,9 +119,28 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
                         </div>
                         </div>
                     </div>
-                    </div>
-                    <!-- SOUNDS SECTION END -->
                 </div>
+                </div>
+                <!-- SOUNDS SECTION END -->
+                <!-- BOOK COVER UPLOAD -->
+                <div class="form-group edit-book-cover py-3 mt-5">
+                    <span class="h6"><i class="fa fa-picture-o" aria-hidden="true"></i> Book Cover</span>
+                    <div class="accordion mt-3" id="vbUploadBookCover">                        
+                        <input type="text" src="" placeholder="" class="d-none form-control rdnly-plchldr" readonly>
+                        <form method="POST" action="" id="submit-book-cover">
+                            <div class="input-group-btn" style="margin-left:-2px;">
+                                <span class="fileUpload btn btn-warning d-block">
+                                    <span class="upl text-light" id="upload"><?php echo (is_integer($bookcover)) ? "Upload" : "Update" ; ?></span>
+                                    <input type="hidden" name="book" value="">
+                                    <input type="file" accept="image/*" class="upload up" id="upcover" name="book-cover[]"/>
+                                </span><!-- btn-orange -->
+                            </div><!-- btn -->
+                            <button class="btn btn-primary d-none">Submit</button>
+                        </form>
+                        <img id="prev-img-bookcover" class="<?php echo (is_integer($bookcover)) ? "d-none" : "" ; ?> clearfix py-3" src="<?php echo $bookcover; ?>" alt="" />
+                    </div>
+                </div>
+                <!-- BOOK COVER UPLOAD END -->
             </div>
         </div>
       </div>
@@ -126,96 +155,14 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
 <script type="text/javascript">
 jQuery(document).ready(function($){
     const chapterTitle = $(".ttl-<?php echo $chapter; ?>ch").text();
-    const bookk = $("input#vb-ttl-cdidtfyr").data("bookid");
-    const bookIndex = $("h1#vb-full-title").data("book");
+    //const bookk = $("input#vb-ttl-cdidtfyr").data("bookid");    
     $(".vb-ch-title").html(chapterTitle);
     $("#style-preview>span>ol, #style-preview>span>ul").parent("span").addClass("d-block");
-
-    $(document).on("click",".editstyle-close",function(){
-        $("#vb-modal-container div").remove();
-    });
-
-    //SCROLLBAR
-    $("#style-preview, #default-sounds div.card-body, #personal-sounds div.card-body").mouseenter(function() {
-        $(this).addClass("scrollMouseIn");
-    })
-    .mouseleave(function() {
-        $(this).removeClass("scrollMouseIn");
-    });
-
-    //UPDATE STYLE
-    const UpdateStyle = function(sound,dSound,key,file,bg,align,dAlign,index = bookIndex){
-        $.ajax({
-            method: "POST",
-            url: "../model/content.php",
-            data: {sound:sound,dSound:dSound,key:key,file:file,bg:bg,align:align,dAlign:dAlign,book:index,action:"update"},
-            dataType: "text",
-            success: function(data){
-                let json = JSON.parse(data);
-                let state = (json.status == "success") ? "alert-success" : "alert-danger";
-                $("div.style-widgets-corner").prepend('<div class="message-status alert '+state+'" role="alert">'+json.message+'</div>');
-                //$("#vb-new-section").removeClass("d-none");
-                $("li.apllySoundsToAll").remove();
-                setTimeout(function(){
-                    $("div.message-status").remove();                    
-                },3000);
-            }
-        })
-    }
-
-    $("#vb-save-styles").click(function(){
-        let key = $(this).data("key");
-        let actSound = $("li.act-sound").data("id");
-        let file = $("#vb-ttl-cdidtfyr").data("universal");
-        let align = $(".vb-text-alignment > li.act-align").attr("data");
-        let ApplyAllSounds = $("input.allSounds");
-        let dsounds = (ApplyAllSounds.prop("checked") == true) ? 1 : 0;        
-        let ApplyAllAlignment = $("input.allAlignment");
-        let dAlign = (ApplyAllAlignment.prop("checked") == true) ? 1 : 0;
-        let bg = 0;
-        UpdateStyle(actSound,dsounds,key,file,bg,align,dAlign);
-        $("div.setDefaultAlignment").remove();
-    });
 
     //SHOW ADD NEW SECTION BUTTON
     $(document).on("click","#vb-addnew-section",function(){
         //console.log(bookk);
         addSectionLightbox(chapterTitle,"<?php echo $file; ?>",<?php echo $chapter + 1; ?>,bookIndex);
-    });
-
-    //MULTIPLE SOUND UPLOADS
-    $(document).on('change','#vb-sound-upload .up', function(){
-        let names = [];
-        let length = $(this).get(0).files.length;
-        let uploader = $(this).parents("span.fileUpload");
-        let submit = $("#vb-sound-upload button.btn-primary");
-        let fileExtension = ['mp3', 'wav'];
-        if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
-            $("div.style-widgets-corner").prepend('<div class="message-status alert alert-danger" role="alert">Please Upload mp3 or wav format only</div>');
-            setTimeout(function(){
-                $("div.message-status").remove();
-            },4000);
-        }else{
-            for (var i = 0; i < $(this).get(0).files.length; ++i) {
-                names.push($(this).get(0).files[i].name);
-            }
-            // $("input[name=file]").val(names);
-            if(length>1){
-                var fileName = names.join(', ');
-                $(this).closest('.form-group').find('.form-control').attr("value",length+" files selected");
-            }
-            else{
-                $(this).closest('.form-group').find('.form-control').attr("value",names);
-            }
-
-            uploader.addClass("d-none");
-            submit.removeClass("d-none");
-            $("form.input-empty").removeClass("input-empty");
-            $("input.rdnly-plchldr").removeClass("d-none");
-
-            $(this).unbind();
-        }
-            
     });
 
    //LOAD MY AUDIO

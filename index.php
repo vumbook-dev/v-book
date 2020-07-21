@@ -1,7 +1,7 @@
 <?php require_once "function.php"; ?>
 <?php require_once "header.php"; ?>
 
-    <header>
+    <header id="vb-header">
       <!-- Fixed navbar -->
       <nav class="navbar navbar-expand-md navbar-dark bg-dark px-4">
         <a class="navbar-brand" href="/home" data-nav="home"><i class="fa fa-book" aria-hidden="true"></i> V-Book</a>
