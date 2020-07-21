@@ -6,8 +6,6 @@ if(isset($_POST['data'])){
     $allBooks = file_get_contents("../json/books-list-title.json");
     $books = json_decode($allBooks);
     $thisChapters = $books[$key]->chapter;
-    //$thisChapters = json_decode($thisChapters);
-    //print_r($thisChapters);
 ?>
 <div class="p-fixed d-none" id="book-navigation-container">
     <div id="vbBookCover" style="background: url(/media/bookcover/user/Thyroid-book-.jpg-142dfbf.jpg);"></div>
@@ -52,9 +50,6 @@ const bookDownloadData = function(){
     let subtitle = '<?php echo $books[$key]->subtitle; ?>';
     let chapter = `<?php $html = ""; foreach($thisChapters as $k => $value){ 
         $json = json_decode($value); 
-        //$chapter = str_replace('"','\"',$json->name);
-        //$chapter = str_replace("'","\'",$chapter);
-        //$html .= '{"chapter'.$k.'":"'.$chapter.'"},'; 
         $html .= "$json->name |,";
         } echo rtrim($html,"|,"); ?>`;
 
