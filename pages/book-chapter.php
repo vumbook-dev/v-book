@@ -8,7 +8,7 @@ if(isset($_POST['data'])){
 ?>
 
 <div class="col-sm-12">
-    <h1 id="vb-full-title" data-book="<?php echo $key; ?>" data-title="<?php echo $book[$key]->title; ?>" class="text-monospace text-center p-5 mb-0 mt-5"><?php echo $book[$key]->title ?> <small class="d-block h6"><?php echo $book[$key]->subtitle ?></small></h1>
+    <h1 id="vb-full-title" data-cover="<?php echo $book[$key]->cover; ?>" data-book="<?php echo $key; ?>" data-title="<?php echo $book[$key]->title; ?>" class="text-monospace text-center p-5 mb-0 mt-5"><?php echo $book[$key]->title ?> <small class="d-block h6"><?php echo $book[$key]->subtitle ?></small></h1>
 </div>
 
 <div class="col-sm-12 bc-wrap">

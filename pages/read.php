@@ -6,26 +6,22 @@ if(isset($_POST['data'])){
     $allBooks = file_get_contents("../json/books-list-title.json");
     $books = json_decode($allBooks);
     $thisChapters = $books[$key]->chapter;
-    //$thisChapters = json_decode($thisChapters);
-    //print_r($thisChapters);
 ?>
+<div class="p-fixed d-none" id="book-navigation-container">
+    <div id="vbBookCover" style="background: url(/media/bookcover/user/Thyroid-book-.jpg-142dfbf.jpg);"></div>
+</div>
 <div class="col-md-12">
     <div class="bg-light mt-4 mb-3 px-5 py-2 d-flex justify-content-between">
         <p class="m-0 p-2">Download as HTML5! </p>
         <button id="vb-download" class="btn btn-primary">Download</button>
-    </div>
-    
+    </div>    
 </div>
-<div class="col-md-8">
+<div class="col-md-12 mt-4">
+    <button id="vb-showMenu" class="btn btn-secondary float-right mr-3">Menu</button>
+</div>
+<div class="col-md-12">
     <div id="book-container"></div>
 </div>
-
-<div class="col-md-4">
-    <div id="book-navigation-container">
-
-    </div>
-</div>
-
 
 <script type="text/javascript">
 const book = <?php echo $key; ?>;
@@ -40,7 +36,7 @@ const loadBook = function(book = <?php echo $key; ?>, chapter = 0, section = 0, 
 
         },success: function(data){
             if(parts === 0){
-                $("div#book-navigation-container").html(data);
+                $("div#book-navigation-container").append(data);
             }else{
                 $("div#book-container").html(data);
             }
@@ -54,9 +50,6 @@ const bookDownloadData = function(){
     let subtitle = '<?php echo $books[$key]->subtitle; ?>';
     let chapter = `<?php $html = ""; foreach($thisChapters as $k => $value){ 
         $json = json_decode($value); 
-        //$chapter = str_replace('"','\"',$json->name);
-        //$chapter = str_replace("'","\'",$chapter);
-        //$html .= '{"chapter'.$k.'":"'.$chapter.'"},'; 
         $html .= "$json->name |,";
         } echo rtrim($html,"|,"); ?>`;
 
@@ -108,11 +101,23 @@ $(document).on("click","ul.vb-section-list-nav > li",function(){
         $(this).addClass("act-section");
         let chapter = $(this).data("chapter");
         let section = $(this).data("section");
-        loadBook(book,chapter,section,1);
+        $("#book-navigation-container").addClass("d-none");
+        $("div#book-container").html(vbloader);
+        setTimeout(function(){
+            loadBook(book,chapter,section,1);
+        },700);
     }else{
         let Sound = null;
         let status = null;
     }
+});
+
+$(document).on("click","span.x-close",function(){
+    $("#book-navigation-container").addClass("d-none");
+});
+
+$(document).on("click","#vb-showMenu",function(){
+    $("#book-navigation-container").removeClass("d-none");
 });
 
 $(document).on("click","button#vb-download",function(){

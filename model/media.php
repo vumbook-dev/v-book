@@ -1,7 +1,7 @@
 <?php
 if(isset($_FILES['audio']) && $_FILES['audio']['name'] != ''){
 
-    $media = file_get_contents("../json/users/user-media.json");
+    $media = file_get_contents("../json/users/user-sound.json");
     $media = json_decode($media);
     $og_count = count($media);
     $new_count = null;
@@ -25,8 +25,8 @@ if(isset($_FILES['audio']) && $_FILES['audio']['name'] != ''){
 
     if(is_numeric($new_count)){
         $json = json_encode($media);
-        file_put_contents("../json/users/user-media.json",$json);
-        echo "Successfully Uploaded Audio";
+        file_put_contents("../json/users/user-sound.json",$json);
+        echo "Audio Successfully Uploaded";
     }
 
 }elseif(isset($_POST['action']) && isset($_POST['file']) && isset($_POST['key'])){
@@ -35,7 +35,7 @@ if(isset($_FILES['audio']) && $_FILES['audio']['name'] != ''){
     $list = file_get_contents("../json/book-content/{$file}.json");
     $content = json_decode($list);
 
-    $mysounds = file_get_contents("../json/users/user-media.json");
+    $mysounds = file_get_contents("../json/users/user-sound.json");
     $mysounds = json_decode($mysounds);
                                     
     if(count($mysounds) > 0){
@@ -50,5 +50,4 @@ if(isset($_FILES['audio']) && $_FILES['audio']['name'] != ''){
     }else{
         echo '<span class="my-4 d-block">No Media Available!</span>';
     }
-
 }
