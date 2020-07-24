@@ -59,7 +59,7 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
                                             $sound = $value->sound;
                                             $sound = $dsound[$sound]->filename;
                                         }
-                                        echo '<li class="'.$activeChapter.'" data-status="0" data-chapter="'.$key.'" data-section="'.$k.'" data-sound="'.$sound.'" data-sdir="'.$dir.'"><span class="marker"></span>'.$value->cpart.'</li>';
+                                        echo '<li class="'.$activeChapter.'" data-nav="'.$i.'" data-status="0" data-chapter="'.$key.'" data-section="'.$k.'" data-sound="'.$sound.'" data-sdir="'.$dir.'"><span class="marker"></span>'.$value->cpart.'</li>';
                                         $i++;
                                     }                        
                                 }

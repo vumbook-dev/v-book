@@ -151,6 +151,7 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
       </div>
     </div>
   </div>
+  <audio src="" id="vb-prevAudio" class="d-none"></audio>
 
 <script type="text/javascript">
 jQuery(document).ready(function($){
