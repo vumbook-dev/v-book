@@ -49,7 +49,7 @@ if(isset($_POST['action'])){
             $file = $_POST['file'];
             $text = $_POST['text'];
             //$args = "/Dr.<\/span><span>/";
-            $text = convertToVBPlayer($text);
+            //$text = convertToVBPlayer($text);
             $key = $_POST['key'];
             $list = file_get_contents("../json/book-content/{$file}.json");
             $contentlist = json_decode($list);
