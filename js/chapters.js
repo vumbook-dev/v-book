@@ -1,4 +1,4 @@
-jQuery(document).ready(function(){
+jQuery(document).ready(function($){
     const bookKey = $("h1#vb-full-title").data("book");   
 
     /*** START BOOK CHAPTER ***/
@@ -26,15 +26,18 @@ jQuery(document).ready(function(){
             success: function(data){                
                 listBookChapters(bookKey);
                 let chptr = JSON.parse(data);
-                addSectionLightbox(chptr['title'],chptr['file'],chptr['chapter'],chptr['index']);
-                //console.log(chptr['title']);
+                //addSectionLightbox(chptr['title'],chptr['file'],chptr['chapter'],chptr['index']);
                 input.val("");
+                $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-success" role="alert"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Chapter '+chptr['title']+' Successfully Added</div>');
+                setTimeout(function(){
+                    $("div.message-status").remove();
+                },4000);
             }
         });
     }
 
     //SUBMIT BOOK CHAPTER
-    $(document).on('submit','.bc-wrap form',function(e){
+    $(document).on('submit','.bc-wrap form#submit-chapter',function(e){
         e.preventDefault();
         let input = $("#chapter-name");
         let chapter = input.val();
@@ -93,147 +96,7 @@ jQuery(document).ready(function(){
         //console.log(content.length);
     });
 
-    /*** END BOOK CHAPTER ***/
-
-    /*** START BOOK SECTION ***/
-
-    
-    //SUBMIT SECTION TITLE
-    $(document).on('submit','.vb-new-section',function(e){
-        e.preventDefault();
-        let parent = $(this).parents(".tc-wrap");
-        let input = parent.find("input.content-name");
-        let content = input.val();
-        let id = parent.find("input[type=hidden]").val();
-        let key = parent.find("button.vb-new-content").data("key");
-        let title = parent.find("input[type=hidden]").data("title");
-        let bookIndex = parent.find("input[type=hidden]").data("bookindex");
-
-        if(content.length != 0){
-            addContent(id,content,key,title,"",bookIndex);
-        }        
-
-        input.val("");
-    });
-
-    //LOAD LIGHTBOX FOR ADDING NEW SECTION
-    window.addSectionLightbox = function(title,file,chapter,index){        
-        $.ajax({
-            method: "POST",
-            url: "../pages/parts/section-lightbox.php",
-            data: {title:title,file:file,chapter:chapter,bookIndex:index},
-            dataType: "text",
-            success: function(data){
-                $("#vb-modal-container").html(data);              
-                //console.log("title: "+title, "file: "+file, "chapter: "+chapter, "bookkey: "+bookkey);
-            }
-        });
-    }
-
-    //SUBMIT LIGHTBOX SECTION
-    $(document).on("submit","#vb-modal-section form",function(e){
-        e.preventDefault();
-        let input = $("#vb-section input[type=hidden]");
-        let section = $(this).find("input.content-name").val();
-        let file = input.val();
-        let bookkey = $("input#vb-ttl-cdidtfyr").data("bookid");
-        let chapter = input.data("chapter") - 1;
-        let book = $("h1#vb-full-title").data("title");
-        let bookIndex = input.data("bookindex");
-
-        addContent(bookkey,section,chapter,book,file,bookIndex);
-        $(this).unbind();
-    });
-
-    /*** END BOOK SECTION ***/
-
-    //SHOW LIGHTBOX EDITOR
-    window.showEditor = function(chapter,key,name,file){
-        $.ajax({
-            method: "POST",
-            url: "../pages/parts/lightbox-editor.php",
-            data: {chapter:chapter,key:key,name:name,file:file},
-            dataType: "text",
-            success: function(data){
-                $("#vb-modal-container").html(data);                 
-            }
-        });
-    }
-
-    //ADD CONTENT IN DATABASE
-    window.addContent = function(id,name,chapter,book,file = "",bookIndex){
-        $.ajax({
-            method: "POST",
-            url: "../model/content.php",
-            data: {id:id,index:bookIndex,name:name,chapter:chapter,title:book,action:"add"},
-            dataType: "text",
-            success: function(data){
-                let key = data - 1;
-                loadChapterPart(chapter);
-                if(file.length > 0){
-                    showEditor(chapter,key,name,file);                    
-                }
-                //$("body").prepend(data);
-            }
-        })
-    }
-
-    //GET LIGHTBOX EDITOR
-    $(document).on("click",".list-item-vbcontent span.showing-lightbox",function(){
-        let chapter = $(this).data("chapter");
-        let key = $(this).data("key");
-        let name = $(this).parents(".list-item-vbcontent").find("span:first-child").text();
-        let file = $(this).data("name");
-
-        showEditor(chapter,key,name,file);
-
-    });
-
-    //REMOVE LIGHTBOX
-    $(document).on("click","#vb-modal-editor button.close, #vb-modal-preview button.close, #vb-modal-section button.close",function(){
-        $("#vb-modal-editor, .modal-backdrop, #vb-modal-preview, #vb-modal-section").remove();
-    });
-
-    //ADD CONTENT TO CHAPTER PART
-    $(document).on("click","#vb-submit-content",function(){
-        let text = $(".ck-editor__main div.ck-editor__editable").html();
-        let key = $(this).data("key");
-        let chapter = $(this).data("chapter");
-        let file = $(this).data("file");
-        let title = $(this).parents("#vb-modal-editor").find("h5.modal-title").text();
-        let bookCover = $("h1#vb-full-title").data("cover");
-        let cover = (bookCover.length != 0) ? bookCover : null;
-
-        $.ajax({
-            method: "POST",
-            url: "../model/content.php",
-            data: {text:text,key:key,file:file,action:"update"},
-            dataType: "text",
-            success: function(data){
-                setTimeout(function(){
-                    loadEditStyle(chapter,key,title,file,cover);
-                    //$("#vb-modal-editor, .modal-backdrop").remove();
-                    loadChapterPart(data);
-                    //$("#btn-content"+key).html('<i class="fa fa-pencil text-muted" data-status="1" aria-hidden="true"></i>');
-                },1500);
-            }
-        })
-    });
-    
-    //LOAD EDIT STYLE
-    window.loadEditStyle = function(chapter,content,title,lctn,cover){        
-        $.ajax({
-            method:"POST",
-            url:"../pages/parts/edit-style.php",
-            data: {chapter:chapter,content:content,title:title,file:lctn,cover:cover},
-            dataType: "text",
-            success: function(data){
-                $("#vb-modal-container").html(data);
-            }
-        });
-    }
-
-    //GET MODAL DELETE
+    //GET MODAL CHAPTER DELETE
     function deleteChContent(chapter,content,title){
         $.ajax({
             method:"POST",
@@ -252,41 +115,114 @@ jQuery(document).ready(function(){
         let content = $(this).data("key");
         let title = $(this).parents("li.list-item-vbcontent").find("span.vb-cnt-title").text();
         let chapter = $(this).data("chapter");
-        deleteChContent(chapter,content,title);
-        
+        deleteChContent(chapter,content,title);        
     });
 
     //PREVIEW CHAPTER PART
-    function previewPart(chapter,content,title,lctn){
-        $.ajax({
-            method:"POST",
-            url:"../pages/parts/content-part-preview.php",
-            data: {chapter:chapter,content:content,title:title,file:lctn},
-            dataType: "text",
-            success: function(data){
-                $("#vb-modal-container").html(data);
+    // function previewPart(chapter,content,title,lctn){
+    //     $.ajax({
+    //         method:"POST",
+    //         url:"../pages/parts/content-part-preview.php",
+    //         data: {chapter:chapter,content:content,title:title,file:lctn},
+    //         dataType: "text",
+    //         success: function(data){
+    //             $("#vb-modal-container").html(data);
+    //         }
+    //     });
+    // }
+
+    //PREVIEW CHAPTER PART
+    // $(document).on("click",".vb-view-content, .back-to-preview",function(){
+    //     let content = $(this).data("key");
+    //     let title = $(this).data("title");
+    //     let chapter = $(this).data("chapter");
+    //     let lctn = $("#vb-ttl-cdidtfyr").data("universal");
+    //     previewPart(chapter,content,title,lctn);
+    // });
+
+    /*** END BOOK CHAPTER ***/
+
+    /*** BOOK COVER SCRIPT ***/
+    //PREVIEW BOOK COVER
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            let reader = new FileReader();
+            
+            reader.onload = function(e) {
+                $('#prev-img-bookcover').attr('src', e.target.result);                
+                $('#prev-img-bookcover').removeClass('d-none');
+                $("div#book-cover-preview-wrap > i").addClass("d-none");
+                $("#upload").text("Update");
+                //$('#submit-book-cover input[type=hidden]').val(bookIndex);            
             }
-        });
+            
+            reader.readAsDataURL(input.files[0]); // convert to base64 string
+        }
     }
+    
+    //BOOK COVER UPLOADS
+    $(document).on('change','#vbUploadBookCover .up', function(){
+        let names = [];
+        let length = $(this).get(0).files.length;
+        let uploader = $(this).parents("span.fileUpload");
+        let submit = $("#vbUploadBookCover button.btn-primary");        
+        let fileExtension = ['jpg', 'png', 'gif'];
+        if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
+            $("div#vbUploadBookCover").prepend('<div class="message-status alert alert-danger" role="alert">Please Upload jpg, png or gif format only</div>');
+            setTimeout(function(){
+                $("div.message-status").remove();
+            },4000);
+        }else{
+            for (var i = 0; i < $(this).get(0).files.length; ++i) {
+                names.push($(this).get(0).files[i].name);
+            }
+            if(length == 1){                
+                $(this).closest('.form-group').find('.form-control').attr("value",names);
+                readURL(this);                
+            }
 
-    //PREVIEW CHAPTER PART
-    $(document).on("click",".vb-view-content, .back-to-preview",function(){
-        let content = $(this).data("key");
-        let title = $(this).data("title");
-        let chapter = $(this).data("chapter");
-        let lctn = $("#vb-ttl-cdidtfyr").data("universal");
-        previewPart(chapter,content,title,lctn);
-    });
+            uploader.addClass("d-none");
+            uploader.removeClass("d-block");
+            submit.removeClass("d-none");            
+            //$("form.input-empty").removeClass("input-empty");
+            $("#vbUploadBookCover input.rdnly-plchldr").removeClass("d-none");
 
-    //EDIT BOOK STYLE
-    $(document).on("click","li.list-item-vbcontent button.edit-vb-style",function(){
-        let bookCover = $("h1#vb-full-title").data("cover");
-        let cover = (bookCover.length != 0) ? bookCover : null;
-        let file = $("#vb-ttl-cdidtfyr").data("universal");
-        let chapter = $(this).data("chapter");
-        let key = $(this).data("key");
-        let title = $(this).parents("li.list-item-vbcontent").find("span.vb-cnt-title").text();
-        window.loadEditStyle(chapter,key,title,file,cover);
+            $(this).unbind();
+        }
+            
     });
+    
+    //SUBMIT BOOK COVER
+    $(document).on("submit","#submit-book-cover",function(e){
+        e.preventDefault();
+        let img = $("#prev-img-bookcover");
+        let formData = new FormData(this);
+        //formData.append( 'file', $( '#upcover' )[0].files[0] );
+        //formData.append("book",bookIndex);
+        window.selfsubmit = $.ajax({  
+            url: "../model/books.php",  
+            type: "POST",  
+            data: formData,  
+            contentType: false,  
+            processData:false,  
+            success: function(data){                
+                $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-success" role="alert"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Book Cover Successfully Uploaded</div>');
+                setTimeout(function(){
+                    $("div.message-status").remove();
+                },4000);
+                $("form#submit-book-cover").addClass("input-empty");
+                $("#vbUploadBookCover input.rdnly-plchldr").addClass("d-none");
+                $("form#submit-book-cover button.btn-primary").addClass("d-none");
+                $("#vbUploadBookCover span.fileUpload").removeClass("d-none");                
+                //img.attr("src",data);
+                //img.removeClass("d-none");
+                //$(this).removeEventListener();
+                //selfsubmit.clear();       
+                //$(".modal-body").prepend(data);               
+            }  
+        }); 
+    });
+    
+        /*** BOOK COVER SCRIPT END ***/
 
 });

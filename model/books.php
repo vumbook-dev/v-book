@@ -13,7 +13,7 @@ if(isset($_POST['action'])){
             $hash = "$title".rand(0,1000);
             $id = md5($hash);
             $storage = "{$hshtitle}-".substr($id,-6);
-            $newBook = array("id" => $id, "title" => $title, "subtitle" => $sub, "storage" => $storage, "status" => "unpublished", "cover" => null, "speed" => "1000", "dsound" => "0", "dAlign" => "center", "chapter" => array());
+            $newBook = array("id" => $id, "title" => $title, "subtitle" => $sub, "storage" => $storage, "status" => "unpublished", "cover" => null, "speed" => "1000", "bgType" => "color", "bgValue" => "#fff", "dsound" => "0", "dAlign" => "center", "chapter" => array());
             $oldData = file_get_contents("../json/books-list-title.json");
             $arrayData = json_decode($oldData,true);
             $arrayData[] = $newBook;
@@ -51,6 +51,21 @@ if(isset($_POST['action'])){
         }
     }
 
+    elseif($action == 'update'){
+        if(isset($_POST['key']) && isset($_POST['bgType']) && isset($_POST['bgValue'])){
+            $k = $_POST['key'];
+            $allData = file_get_contents("../json/books-list-title.json");
+            $book = json_decode($allData,true);
+            $book[$k]["bgType"] = $_POST['bgType'];
+            $book[$k]["bgValue"] = $_POST['bgValue'];
+
+            $newUpdate = json_encode($book);
+            file_put_contents("../json/books-list-title.json",$newUpdate);
+            //print_r($book);
+            //echo $_POST['bgValue']." ".$k." ".$_POST['bgType']." ".$book[$k]["bgValue"];
+        }
+    }
+
 }elseif(isset($_FILES['book-cover']) && $_FILES['book-cover']['name'] != ''){
     $media = file_get_contents("../json/users/user-bookcover.json");
     $media = json_decode($media);
@@ -83,6 +98,6 @@ if(isset($_POST['action'])){
         file_put_contents("../json/books-list-title.json",$newcover);
         file_put_contents("../json/users/user-bookcover.json",$json);
         //print_r($arrayData);
-        echo $new_count;
+        echo $targetPath;
     }
 }
