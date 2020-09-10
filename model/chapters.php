@@ -13,7 +13,7 @@ if(isset($_POST['action'])){
 
             $xchapter = $_POST['chapter'];
             $chapter = explode("{", $xchapter);
-            (count($chapter) == 1) ? $ichapter = $chapter[0] : $ichapter = "$chapter[0] <small class='vb-content-subtitle'>". rtrim($chapter[1],"}") ."</small>";
+            (count($chapter) == 1) ? $ichapter = $chapter[0] : $ichapter = "$chapter[0] <small class='vb-content-subtitle h6'>". rtrim($chapter[1],"}") ."</small>";
             $newChapter = array("name" => $ichapter, "type" => 1);
             $newChapter = json_encode($newChapter);
             $chapterArray[] = $newChapter;

@@ -17,7 +17,6 @@ main.container{
 
 main.main-editor{
   height: 100vh;
-  overflow-y:scroll;
 }
 main::-webkit-scrollbar{
   width:0;
@@ -81,6 +80,10 @@ main::-webkit-scrollbar{
   flex:1;
 }
 
+.list-item-vbtitle > h6{
+  width:80%;
+}
+
 span.vbook-title{
   flex: 100%;
 }
@@ -121,8 +124,8 @@ li.list-item-vbcontent > span{
 }
 
 div.modal-editor-wrap, div.modal-section-wrap{
-  width: 80%;
-  margin: 50px auto;
+  width: 98%;
+  margin: 25px auto;
 }
 
 div#vb-modal-preview .modal-header, div#vb-modal-editstyle .modal-header{
@@ -237,6 +240,11 @@ button.prev-close, button.editstyle-close {
   height: 60vh;
 }
 
+div.sound-option-wrap{
+  margin: 0 auto;
+  width: 90%;
+}
+
 #personal-sounds, #default-sounds{
   border-radius: 0!important;
 }
@@ -290,6 +298,32 @@ button.prev-close, button.editstyle-close {
   height: 700px;
 }
 
+/*** BOOK EDITOR ***/
+div#imgBackground-preview-wrap > i{
+  font-size: 10rem;
+  color: #ccc;
+}
+
+img#prev-img-background{
+  width:85%;
+}
+
+div.ql-editor p{
+  font-size: 16px;
+  line-height: 2rem;
+}
+
+div.ql-editor h1, div.ql-editor h2, div.ql-editor h3, div.ql-editor h4, div.ql-editor h5, div.ql-editor h6, div.ql-editor ul{
+  line-height: 2rem;
+}
+
+div#style-preview{
+  background-repeat: no-repeat!important;
+  background-origin: border-box!important;
+  background-size: cover!important;
+  background-position: bottom!important;
+}
+
 /*** ALIGN TEXT OPTION ***/
 #vb-edit-align{
   border-bottom: 1px solid #ccc;
@@ -333,7 +367,7 @@ button.prev-close, button.editstyle-close {
 {
     
     border:none;
-  margin-bottom:0px;
+    margin-bottom:0px;
     border-radius: 0px;
     border-bottom: 1px solid #ddd;
     box-shadow: none;
@@ -361,9 +395,9 @@ button.prev-close, button.editstyle-close {
 }
 
 /*** BOOK COVER ***/
-div.edit-book-cover{
-    text-align: center;
-    border-top: 1px solid #ccc;
+#book-cover-preview-wrap > i{
+  font-size:7rem;
+  color:#ccc;
 }
 
 div.edit-book-cover .form-control[readonly]{
@@ -513,13 +547,124 @@ div#style-bookview{
 }
 
 h1.vb-book-main-title{
-  margin: 150px 0;
+  margin: 250px 0;
 }
 
 h1.vb-book-main-title > small{
   margin-top: 10px;
   font-style: italic;
   font-weight: 400;
+}
+
+div#book-container{
+  height: 48rem;
+  overflow-y: scroll;
+}
+
+div#book-container > div{
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: bottom;
+}
+
+div.vbBookCover-wrap{
+  text-align:center;
+}
+
+div.vbBookCover-wrap > img{
+  height: 48rem;
+}
+
+/*** BOOK PAGINATION ***/
+a.bookprev, .bookprev .label, .bookprev .arrow{
+  float: left;
+  color: #000;
+  font-size: 1.25em;
+}
+
+a.booknext, .booknext .label, .booknext .arrow{
+  float: right;
+  color: #000;
+  font-size: 1.25em;
+}
+
+a.booknext, a.bookprev, #pagination-container .arrow{
+  display: inline-block;
+  height: 1em;
+  line-height: 1em;
+}
+
+.bookprev .arrow, .booknext .arrow {
+  padding: 0.33em 0.67em;
+}
+
+.bookprev:after {
+  content: 'Previous';
+  font-weight: 600;
+}
+
+.bookprev .tip {
+  float: left;
+  border-right: 0.33em solid #000;
+}
+
+.booknext .tip {
+  float: right;
+  border-left: 0.33em solid #000;
+}
+
+.bookprev .tip, .booknext .tip{
+  display: inline-block;
+  border-bottom: 0.17em solid transparent;
+  border-top: 0.17em solid transparent;
+}
+
+#pagination-container .arrow .tip {
+  display: inline-block;
+  border-bottom: 0.17em solid transparent;
+  border-top: 0.17em solid transparent;
+}
+
+.bookprev .arrow .shaft, .booknext .arrow .shaft {
+  background-color: #000;
+  border-bottom: 3px solid #fff;
+  border-top: 3px solid #fff;
+  display: inline-block;
+  float: left;
+  height: 0.33em;
+  width: 0.66em;
+}
+
+.booknext:before {
+  content: 'Next';
+  font-weight: 600;
+}
+
+.tbcLink{
+  cursor: pointer;
+  list-style-type: circle;
+}
+
+/*** COLOR PICKER ***/
+div.pickr{
+  display:none!important;
+}
+
+div.pcr-app{
+  margin: 20px auto;
+  width:90%!important;
+}
+
+div.colorPick-wrap div.pcr-selection{
+  height: 17.5em!important;
+}
+
+/*** UPDATE MESSAGE ***/
+div#vbUpdateMessage{
+  position: fixed;
+  right: 0;
+  margin: -25px 70px 0 25px;
+  z-index: 10000;
 }
 
 /*** CSS LOAD EFFECTS ***/

@@ -6,6 +6,9 @@ if(isset($_POST['data'])){
     $allBooks = file_get_contents("../json/books-list-title.json");
     $books = json_decode($allBooks);
     $thisChapters = $books[$key]->chapter;
+    $filename = $books[$key]->storage;
+    $bookContents = file_get_contents("../json/book-content/$filename.json");
+    $bookContents = json_decode($bookContents);
 ?>
 <div class="p-fixed d-none" id="book-navigation-container">
     <div id="vbBookCover"></div>
@@ -16,7 +19,7 @@ if(isset($_POST['data'])){
         <button id="vb-download" class="btn btn-primary">Download</button>
     </div>    
 </div>
-<div class="col-md-12 mt-4">
+<div class="col-md-12 my-4 d-none">
     <button id="vb-showMenu" class="btn btn-secondary float-right mr-3">Menu</button>
 </div>
 <div class="col-md-12">
@@ -25,8 +28,22 @@ if(isset($_POST['data'])){
 <div class="col-md-12">
 <nav class="p-5" aria-label="Book page navigation">
   <ul class="pagination" id="vbPageNav" data-prev="-1" data-next="0">
-    <li class="page-item"><a data-nav="prev" class="page-link" href="#">< Previous</a></li>
-    <li class="page-item"><a data-nav="next" class="page-link" href="#">Next ></a></li>
+    <li class="page-item">
+        <a data-nav="prev" class="bookprev" href="#" style="display:none;">
+            <span class="arrow">
+                <span class="tip"></span>
+                <span class="shaft"></span>
+            </span>
+        </a>
+    </li>
+    <li class="page-item">
+        <a data-nav="next" class="booknext" href="#">
+            <span class="arrow">
+                <span class="tip"></span>
+                <span class="shaft"></span>
+            </span>
+        </a>
+    </li>
   </ul>
 </nav>
 </div>
@@ -86,12 +103,29 @@ const PlaySound = function(File,Dir,Status){
         let Sound = $("#vb-audioplayer")[0];
         Sound.src='../../media/sounds/'+path+File;
         Sound.loop = true;
-        $("ul.vb-section-list-nav > li").attr("data-status",1);
+        $("div.vbPages").attr("data-status",0);
         return Sound; 
     }else{
         return null;
     }
     
+}
+
+const ProcessSound = function(){
+    let active = $("div.activePage");
+    let File = active.data("sound");
+    let dir = active.data("sdir");
+    let status = active.data("status");    
+    if(status !== undefined){        
+        let Sound = PlaySound(File,dir,status);
+        if(status < 1){
+            Sound.play();
+            let = status = null;
+        }else{
+            Sound.pause();
+            let = status = null;
+        }
+    }
 }
 
 $(document).on("click","ul.vb-section-list-nav li",function(){
@@ -141,36 +175,124 @@ $(document).on("click","button#vb-download",function(){
 
 $("main.main-editor").removeClass("main-editor");
 
-const pageNav = function(i,nav,arg){       
+// const pageNav = function(i,nav,arg){       
 
-    if(arg){
-        let x = (nav == "next") ? i+1 : i;
-        let y = (nav == "prev") ? i-1 : i;
-        let page = (nav == "next") ? $("li[data-nav="+x+"]") : $("li[data-nav="+y+"]");
-        if(nav == "next"){
-            $("#vbPageNav").data("next",x); 
-        }else{
-            $("#vbPageNav").data("next",y); 
-        }
-        return page;
-    }else{
-        $("#vbPageNav").data("next",i);
-    }
+//     if(arg){
+//         let x = (nav == "next") ? i+1 : i;
+//         let y = (nav == "prev") ? i-1 : i;
+//         let page = (nav == "next") ? $("li[data-nav="+x+"]") : $("li[data-nav="+y+"]");
+//         if(nav == "next"){
+//             $("#vbPageNav").data("next",x); 
+//         }else{
+//             $("#vbPageNav").data("next",y); 
+//         }
+//         return page;
+//     }else{
+//         $("#vbPageNav").data("next",i);
+//     }
     
-}
+// }
 
+
+// $(document).on("click","#vbPageNav > li > a",function(e){
+//     e.preventDefault();    
+//     let nav = $(this).data("nav");
+//     let i = $("#vbPageNav").data("next"); 
+    
+//     if(i !== -1 && !(i == 0 && nav == "prev")){
+//         pageNav(i,nav,true).click();
+//         $('html, body, div#book-container').animate({scrollTop:0}, 250);
+//     }    
+// });
+
+//PAGINATION
+setTimeout(function(){
+    const options = {
+        debug: false,
+        placeholder: false,
+        modules: {
+            toolbar: false
+        },
+        readOnly: true,
+        theme: 'snow',
+        scrollingContainer: false
+    };
+
+    const viewContent = function(container,opt = options){
+        let quill = new Quill(container,opt);
+        return quill;
+    } 
+
+    $.ajax({
+        url: "../json/book-content/<?php echo $filename; ?>.json",
+        method: "GET",
+        dataType: "JSON",
+        success: function(json){
+            
+            for(let i = 0; i < json.length; i++) {                  
+                let obj = json[i];
+                let view;
+                let container = ".vbPage"+obj.id;
+                let text = obj.content;
+                text = JSON.parse(text);
+                view = viewContent(container);
+                view.setContents(text);
+                //console.log(text);
+           
+            }
+        }
+    });
+},1000);
+
+$(document).on('click','div.vbChapter-wrap .tbcLink',function(){
+    let n = $(this).data("page");
+    let pages = $("#bookWrapQuill > div.vbPages");
+    $("#vbPageNav").data("next",n);
+    $("div.vbPages").addClass("d-none");
+    $("div.vbPages").removeClass("activePage");
+    $(pages[n]).removeClass("d-none");
+    $(pages[n]).addClass("activePage");
+    $('html, body, div#book-container').animate({scrollTop:0}, 250);
+    ProcessSound();
+});
 
 $(document).on("click","#vbPageNav > li > a",function(e){
     e.preventDefault();    
     let nav = $(this).data("nav");
     let i = $("#vbPageNav").data("next"); 
+    let pages = $("#bookWrapQuill > div.vbPages");
+    let allPages = pages.length - 1;
+    //console.log(pages);
+    if(nav == "next"){
+        $(pages[i]).addClass("d-none");
+        $(pages[i]).removeClass("activePage");
+        i++;
+        $("#vbPageNav").data("next",i);
+        $(pages[i]).removeClass("d-none");
+        $(pages[i]).addClass("activePage");
+    }else{
+        $(pages[i]).addClass("d-none");
+        $(pages[i]).removeClass("activePage");
+        i--;
+        $("#vbPageNav").data("next",i);
+        $(pages[i]).removeClass("d-none");        
+        $(pages[i]).addClass("activePage");
+    }
     
-    if(i !== -1 && !(i == 0 && nav == "prev")){
-        pageNav(i,nav,true).click();
-        $('html, body').animate({scrollTop:0}, 250);
-    }    
-})
-
+    if(i > 0){
+        $("a.bookprev").css("display","block");
+    }else{
+        $("a.bookprev").css("display","none");
+    }
+    $('html, body, div#book-container').animate({scrollTop:0}, 250);
+    if(allPages === i){
+        $("a.booknext").addClass("d-none");
+    }else if(allPages === i+1){
+        $("a.booknext").removeClass("d-none");
+    }
+    //console.log("Total: "+ allPages, "Current: "+ i);
+    ProcessSound();
+});
 </script>
 
 <?php
