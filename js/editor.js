@@ -332,4 +332,5 @@ jQuery(document).ready(function($){
             saveBG(book,"image",image);            
         }                     
     });
+
 });

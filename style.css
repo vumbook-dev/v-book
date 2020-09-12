@@ -619,6 +619,12 @@ a.booknext, a.bookprev, #pagination-container .arrow{
   border-top: 0.17em solid transparent;
 }
 
+#vbPageNav > li:last-child > span{
+  color: #000;
+  font-size: 1.25em;
+  font-weight: 600;
+}
+
 #pagination-container .arrow .tip {
   display: inline-block;
   border-bottom: 0.17em solid transparent;
@@ -629,7 +635,6 @@ a.booknext, a.bookprev, #pagination-container .arrow{
   background-color: #000;
   border-bottom: 3px solid #fff;
   border-top: 3px solid #fff;
-  display: inline-block;
   float: left;
   height: 0.33em;
   width: 0.66em;
