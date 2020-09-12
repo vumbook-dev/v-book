@@ -10,10 +10,13 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="/includes/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css"/>
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-    <script src="https://cdn.quilljs.com/1.3.6/quilljs.min.js"></script>
-    <!-- <script src="/js/quilljs.min.js"></script> -->
+    <!-- <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet"> -->
+    <!-- <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script> -->
+    <!-- <script src="https://cdn.quilljs.com/1.3.6/quilljs.min.js"></script> -->
+    <link href="/includes/css/quill.snow.css" rel="stylesheet">
+    <link href="/includes/css/quill.table.css" rel="stylesheet">
+    <script src="/js/quilljs.min.js"></script>
+    <script src="/js/quill-editor.js"></script>
     <title>V-Book</title>
   </head>
   <body>

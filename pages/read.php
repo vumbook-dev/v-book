@@ -207,20 +207,20 @@ $("main.main-editor").removeClass("main-editor");
 
 //PAGINATION
 setTimeout(function(){
-    const options = {
-        debug: false,
-        placeholder: false,
-        modules: {
-            toolbar: false
-        },
-        readOnly: true,
-        theme: 'snow',
-        scrollingContainer: false
-    };
+    // const options = {
+    //     debug: false,
+    //     placeholder: false,
+    //     modules: {
+    //         toolbar: false
+    //     },
+    //     readOnly: true,
+    //     theme: 'snow',
+    //     scrollingContainer: false
+    // };
 
-    const viewContent = function(container,opt = options){
-        let quill = new Quill(container,opt);
-        return quill;
+    const viewContent = function(container){
+        let editor = QuillEditor(container,true,false);
+        return editor;
     } 
 
     $.ajax({
@@ -247,11 +247,16 @@ setTimeout(function(){
 $(document).on('click','div.vbChapter-wrap .tbcLink',function(){
     let n = $(this).data("page");
     let pages = $("#bookWrapQuill > div.vbPages");
+    let allPages = pages.length - 1;
     $("#vbPageNav").data("next",n);
     $("div.vbPages").addClass("d-none");
     $("div.vbPages").removeClass("activePage");
     $(pages[n]).removeClass("d-none");
     $(pages[n]).addClass("activePage");
+    if(allPages === n){
+        $("a.booknext").addClass("d-none");
+        $("#vbPageNav > li:last-child").prepend("<span>End</span>");
+    }
     $('html, body, div#book-container').animate({scrollTop:0}, 250);
     ProcessSound();
 });
@@ -262,7 +267,7 @@ $(document).on("click","#vbPageNav > li > a",function(e){
     let i = $("#vbPageNav").data("next"); 
     let pages = $("#bookWrapQuill > div.vbPages");
     let allPages = pages.length - 1;
-    //console.log(pages);
+    console.log(allPages);
     if(nav == "next"){
         $(pages[i]).addClass("d-none");
         $(pages[i]).removeClass("activePage");
@@ -284,12 +289,15 @@ $(document).on("click","#vbPageNav > li > a",function(e){
     }else{
         $("a.bookprev").css("display","none");
     }
-    $('html, body, div#book-container').animate({scrollTop:0}, 250);
     if(allPages === i){
         $("a.booknext").addClass("d-none");
+        $("#vbPageNav > li:last-child").prepend("<span>End</span>");
     }else if(allPages === i+1){
         $("a.booknext").removeClass("d-none");
+        $("#vbPageNav > li:last-child > span").remove();
     }
+    $('html, body, div#book-container').animate({scrollTop:0}, 250);
+
     //console.log("Total: "+ allPages, "Current: "+ i);
     ProcessSound();
 });

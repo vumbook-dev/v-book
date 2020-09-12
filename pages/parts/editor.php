@@ -163,37 +163,13 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
 
 <script type="text/javascript">
 jQuery(document).ready(function($){
-    const chapterTitle = $(".ttl-<?php echo $chapter; ?>ch").text();
-    const title = "<?php echo $title ?>";     
-    const contentKey = <?php echo $key; ?>;
+    let chapterTitle = $(".ttl-<?php echo $chapter; ?>ch").text();
+    let title = "<?php echo $title ?>";     
+    let contentKey = <?php echo $key; ?>;
 
     // QUILL EDITOR
     let container = document.getElementById('style-preview');
-    let toolbarOptions = [
-        [{ 'font': [] }],
-        [{ 'align': [] }],
-        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-        ['blockquote'],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-        [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-        [{ 'direction': 'rtl' }],                         // text direction
-        [{ 'color': [] }, { 'background': [] }],         // dropdown with defaults from theme
-        ['link','image','video']
-        //['clean']                                         // remove formatting button
-        ];
-    let options = {
-        debug: false,
-        modules: {
-            toolbar: toolbarOptions
-        },
-        placeholder: false,
-        readOnly: false,
-        theme: 'snow',
-        scrollingContainer: false,
-    };
-    let editor = new Quill(container,options);  
+    let editor = QuillEditor(container);
 
     const getContent = function(key){
         $.ajax({
