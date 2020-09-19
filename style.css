@@ -22,6 +22,10 @@ main::-webkit-scrollbar{
   width:0;
 }
 
+div{
+  scrollbar-width: none;
+}
+
 /*** GENERAL POSITION ***/
 .p-fixed{
   position: fixed;
@@ -298,19 +302,50 @@ div.sound-option-wrap{
   height: 700px;
 }
 
-/*** BOOK EDITOR ***/
+/*** BOOK Quill EDITOR ***/
 div#imgBackground-preview-wrap > i{
   font-size: 10rem;
   color: #ccc;
 }
 
 img#prev-img-background{
-  width:85%;
+  width:100%;
+}
+
+span#rm-image-background{  
+  position: absolute;
+  right: 20px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #000;
+  text-shadow: 0 1px 0 #fff;
+  opacity: .5;
+  cursor: pointer;
+}
+
+span#rm-image-background:hover{
+  opacity: .2;
 }
 
 div.ql-editor p{
-  font-size: 16px;
-  line-height: 2rem;
+  font-size: 1em;
+  line-height: 1.2rem;
+}
+
+div.ql-editor{
+  padding:0px;
+}
+
+div#style-preview div.ql-editor{
+  width: 380px;
+  margin: 0 auto;
+  zoom: 240%;
+  -webkit-zoom: 240%;
+  -moz-transform: scale(2);
+  -moz-transform-origin: top;
+  -ms-transform: scale(2);
+  -ms-transform-origin: top;
 }
 
 div.ql-editor h1, div.ql-editor h2, div.ql-editor h3, div.ql-editor h4, div.ql-editor h5, div.ql-editor h6, div.ql-editor ul{
@@ -392,6 +427,46 @@ div#style-preview{
     cursor: pointer;
     opacity: 0;
     filter: alpha(opacity=0);
+}
+
+div#vbIMGbackground > input.rdnly-plchldr{
+  position: relative;
+  z-index: 1;
+}
+
+div#vbIMGbackground button.float-right{
+  position: relative;
+  z-index: 2;
+}
+
+div.vbSoundDemo{
+  box-shadow: 0 0.15em 1.5em 0 rgba(0,0,0,.1), 0 0 1em 0 rgba(0,0,0,.03);
+  margin-top: 1rem;
+}
+
+div#vbMediaPlayerWrap{
+  display: flex;
+  justify-content: space-evenly;
+}
+
+#vbMyAudioWrap>span{
+  font-weight: 200;
+  margin: 0;
+  float: left;
+} 
+
+div.vb-volume-wrap>i, div.vb-volume-wrap>input{
+  vertical-align: middle;
+}
+
+div.vb-volume-wrap>input{
+  width: 80%;
+}
+
+@media only screen and (max-width : 1840px) {
+  #vbMyAudioWrap{
+    flex: 70%;
+  }
 }
 
 /*** BOOK COVER ***/
@@ -547,7 +622,10 @@ div#style-bookview{
 }
 
 h1.vb-book-main-title{
-  margin: 250px 0;
+  vertical-align: middle;
+  display: table-cell;
+  height: 580px;
+  width: 380px;
 }
 
 h1.vb-book-main-title > small{
@@ -572,7 +650,7 @@ div.vbBookCover-wrap{
 }
 
 div.vbBookCover-wrap > img{
-  height: 48rem;
+  width:380px;
 }
 
 /*** BOOK PAGINATION ***/
