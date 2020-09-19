@@ -3,6 +3,19 @@ jQuery(document).ready(function($){
     const bookIndex = $("h1#vb-full-title").data("book");    
 
     /*** AUDIO SOUND SCRIPT ***/
+    //PROCESS AUDIO
+    const newAudio = function(data){
+        let json = JSON.parse(data);
+        let placeHolder = $("#vbSelectSounds>h4");
+        let mediaPlayer = $("#vbMediaPlayerWrap");
+        let id = json.id;
+        let alias = (json.alias.length < 11) ? json.alias : json.alias.substr(0,11);
+        let filename = json.filename;
+        let sound = '<span id="vb-my-audio" class="slct-sounds-list act-sound h5" data-id="'+id+'">'+alias+' <i class="fa fa-play" aria-hidden="true" data-dir="1" data-file="'+filename+'"></i></span>';
+        $("#vbMyAudioWrap").html(sound);
+        mediaPlayer.removeClass("d-none");
+        placeHolder.addClass("d-none");
+    }
     //SUBMIT MULTI SOUND
     $(document).on("submit","#submit-audio",function(e){
         e.preventDefault();
@@ -12,7 +25,7 @@ jQuery(document).ready(function($){
             data: new FormData(this),  
             contentType: false,  
             processData:false,  
-            success: function(){                
+            success: function(data){                
                 $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-success" role="alert"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Audio Successfully Uploaded</div>');
                 setTimeout(function(){
                     $("div.message-status").remove();
@@ -22,28 +35,29 @@ jQuery(document).ready(function($){
                 $("form#submit-audio button.btn-primary").addClass("d-none");
                 $("#vbSelectSounds span.fileUpload").removeClass("d-none");
                 //$(this).removeEventListener();
-                loadMyAudio();
-                //selfsubmit.clear();                      
+                //loadMyAudio();
+                //selfsubmit.clear();               
+                newAudio(data);       
             }  
         }); 
     });
 
     //SELECT AUDIO
-    $(document).on("click",".slct-sounds > li.slct-sounds-list", function(){
-        SoundStatus = $(this).hasClass("act-sound");
-        id = $(this).data("id");
-        $("li.apllySoundsToAll").remove();
-        if(!SoundStatus){
-            $(".slct-sounds > li").removeClass("act-sound");            
-            $(this).addClass("act-sound");
-            $(this).after("<li class='apllySoundsToAll bg-light'><input type='checkbox' data='"+id+"' class='allSounds' name='allSounds'><label class='m-0 px-2'>Set as default sound to all pages?</label></li>");
-        }    
+    // $(document).on("click",".slct-sounds > li.slct-sounds-list", function(){
+    //     SoundStatus = $(this).hasClass("act-sound");
+    //     id = $(this).data("id");
+    //     $("li.apllySoundsToAll").remove();
+    //     if(!SoundStatus){
+    //         $(".slct-sounds > li").removeClass("act-sound");            
+    //         $(this).addClass("act-sound");
+    //         $(this).after("<li class='apllySoundsToAll bg-light'><input type='checkbox' data='"+id+"' class='allSounds' name='allSounds'><label class='m-0 px-2'>Set as default sound to all pages?</label></li>");
+    //     }    
         
-        //$(this).removeEventListener('click', e);           
-    });
+    //     //$(this).removeEventListener('click', e);           
+    // });
 
     //PLAY SOUND
-    $(document).on("click",".slct-sounds > li > i", function(e){
+    $(document).on("click",".slct-sounds-list > i", function(e){
 
         let File = $(this).data("file");
         let dir = $(this).data("dir");
@@ -55,8 +69,8 @@ jQuery(document).ready(function($){
             $(this).addClass("fa-play");
             Sound.pause();
         }else{            
-            $(".slct-sounds > li i").removeClass("fa-pause");
-            $(".slct-sounds > li i").addClass("fa-play");
+            $(".slct-sounds-list i").removeClass("fa-pause");
+            $(".slct-sounds-list i").addClass("fa-play");
             $(this).removeClass("fa-play");
             $(this).addClass("fa-pause");
             Sound.play();           
@@ -65,11 +79,12 @@ jQuery(document).ready(function($){
     });
 
     //MULTIPLE SOUND UPLOADS
-    $(document).on('change','#vb-sound-upload .up', function(){
+    $(document).on('change','#vbSelectSounds .up', function(){
         let names = [];
-        let length = $(this).get(0).files.length;
         let uploader = $(this).parents("span.fileUpload");
-        let submit = $("#vb-sound-upload button.btn-primary");
+        let submit = $("#vbSelectSounds button.btn-primary");
+        let readOnly = $("#vbSelectSounds input.rdnly-plchldr");
+        let fileName = $(this).get(0).files[0].name;
         let fileExtension = ['mp3', 'wav', 'm4a'];
         if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
             $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-danger" role="alert"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Please Upload mp3, m4a or wav format only</div>');
@@ -77,26 +92,13 @@ jQuery(document).ready(function($){
                 $("div.message-status").remove();
             },4000);
         }else{
-            for (var i = 0; i < $(this).get(0).files.length; ++i) {
-                names.push($(this).get(0).files[i].name);
-            }
-            // $("input[name=file]").val(names);
-            if(length>1){
-                var fileName = names.join(', ');
-                $(this).closest('.form-group').find('.form-control').attr("value",length+" files selected");
-            }
-            else{
-                $(this).closest('.form-group').find('.form-control').attr("value",names);
-            }
-
+            readOnly.attr("value",fileName);
             uploader.addClass("d-none");
             submit.removeClass("d-none");
-            $("#vb-sound-upload form.input-empty").removeClass("input-empty");
-            $("#vb-sound-upload input.rdnly-plchldr").removeClass("d-none");
-
+            $("#vbSelectSounds form.input-empty").removeClass("input-empty");
+            readOnly.removeClass("d-none");
             $(this).unbind();
-        }
-            
+        }            
     });
 
     
@@ -114,25 +116,12 @@ jQuery(document).ready(function($){
         $("#vb-modal-container div").remove();
     });
 
-    // //CHANGE ALIGNMENT
-    // $(document).on("click",".vb-text-alignment > li",function(){
-    //     $("div.setDefaultAlignment").remove();
-    //     let act = $(".vb-text-alignment > li.act-align").attr("data");
-    //     let alignTxt = $(this).attr("data");        
-    //     let element = $(".modal-body > .row > div.text-"+act);
-    //     $("ul.vb-text-alignment").after("<div class='setDefaultAlignment py-2'><input type='checkbox' data='"+alignTxt+"' class='allAlignment' name='allAlignment'><label class='m-0 px-2'>Set this as default alignment to all pages?</label></div>");
-    //     element.removeClass("text-"+act);
-    //     element.addClass("text-"+alignTxt);        
-    //     $(".vb-text-alignment > li").removeClass("act-align btn");
-    //     $(this).addClass("act-align btn");
-    // });
-
     //UPDATE STYLE
-    const UpdateStyle = function(sound,dSound,key,file,content,index = bookIndex){
+    const UpdateContent = function(sound,key,file,content,chapter,color,index = bookIndex){
         $.ajax({
             method: "POST",
             url: "../model/content.php",
-            data: {sound:sound,dSound:dSound,key:key,file:file,book:index,content:content,action:"update"},
+            data: {sound:sound,key:key,file:file,book:index,content:content,chapter:chapter,color:color,action:"update"},
             dataType: "text",
             success: function(data){
                 let json = JSON.parse(data);
@@ -191,6 +180,7 @@ jQuery(document).ready(function($){
     $(document).on('change','#upbackground.up', function(){
         let names = [];
         let length = $(this).get(0).files.length;
+        let parent = $(this).parents("div.imgPick-wrap");
         let uploader = $(this).parents("span.fileUpload");
         let submit = $("#vbIMGbackground button.btn-primary");        
         let fileExtension = ['jpg', 'png', 'gif'];
@@ -210,7 +200,9 @@ jQuery(document).ready(function($){
 
             uploader.addClass("d-none");
             uploader.removeClass("d-block");
-            submit.removeClass("d-none");        
+            submit.removeClass("d-none"); 
+            $("img#prev-img-background").removeClass("d-none");
+            parent.find("span#rm-image-background").css("display","block");       
                
             //$("form.input-empty").removeClass("input-empty");
             $("#vbIMGbackground input.rdnly-plchldr").removeClass("d-none");
@@ -218,6 +210,21 @@ jQuery(document).ready(function($){
             $(this).unbind();
         }
             
+    });
+
+    //REMOVE IMAGE BACKGROUND
+    $(document).on('click','span#rm-image-background',function(){
+        let uploader = $("span.fileUpload");
+        let submit = $("#vbIMGbackground button.btn-primary"); 
+        let parent = $(this).parents("#imgBackground-preview-wrap");
+        $(this).css("display","none");
+        uploader.addClass("d-block");
+        uploader.removeClass("d-none");
+        submit.addClass("d-none");
+        $("input.rdnly-plchldr").addClass("d-none");
+        $(parent).find("img").addClass("d-none");
+        $(parent).find("i.fa-picture-o").removeClass("d-none");
+        $("#upbackground.up").val("");
     });
 
     //SAVE IMAGE BACKGROUND
@@ -237,8 +244,11 @@ jQuery(document).ready(function($){
                 uploader.removeClass("d-none");
                 uploader.addClass("d-block");
                 readOnly.addClass("d-none");
+                $("span#rm-image-background").css("display","none");
                 submit.addClass("d-none");
-                setTimeout(function(){
+                setTimeout(function(data){
+                    $("input#upbackground").attr("data-image",data);
+                    console.log(data);
                     $("div.message-status").remove();
                 },3000);
             }  
@@ -246,17 +256,18 @@ jQuery(document).ready(function($){
     });
 
     //SAVE COLOR PICK
-    window.saveBG = function(key,type,value){
-        $.ajax({
-            url: "../model/books.php",
-            type: "POST",
-            data: {action: "update",key: key, bgType: type, bgValue: value},
-            dataType: "text",
-            success: function(data){
-                //console.log("Background Saved "+ data);
-            }
-        });
-    }
+    // window.saveBG = function(key,type,value){
+    //     let file = $("input#vb-ttl-cdidtfyr").data("universal");
+    //     $.ajax({
+    //         url: "../model/books.php",
+    //         type: "POST",
+    //         data: {action: "update",key: key, file: file, bgType: type, bgValue: value},
+    //         dataType: "text",
+    //         success: function(data){
+    //             //console.log("Background Saved "+ data);
+    //         }
+    //     });
+    // }
 
     //CONVERT BASED64 SOURCE TO FILE
     const DataURIToBlob = function(dataURI) {
@@ -312,25 +323,19 @@ jQuery(document).ready(function($){
         let content = JSON.stringify(Quillcontents, null, 2);
         //console.log(content);
         let key = $(this).data("key");
-        let actSound = $("li.act-sound").data("id");
+        let actSound = $("span.act-sound").data("id");
         let file = $("#vb-ttl-cdidtfyr").data("universal");
-        let ApplyAllSounds = $("input.allSounds");
-        let dsounds = (ApplyAllSounds.prop("checked") == true) ? 1 : 0;  
-        if(uploadQuillImage(file)){
-            UpdateStyle(actSound,dsounds,key,file,content);
-        }
-        let book = $("#vb-full-title").data("book");
-        let color = $("div.colorPick-wrap input.pcr-result").val();
-        let image = $("input#upbackground").val();
-
+        //let ApplyAllSounds = $("input.allSounds");
+        //let dsounds = (ApplyAllSounds.prop("checked") == true) ? 1 : 0;
+        let color;
+        let chapter = $("input[name=chapter]").val();
         let inputColor = $("div.bgContainer>div.custom-radio input#bgColor:checked");
-        //let image = $("div.bgContainer>div.custom-radio input#bgIMG");
-        //console.log(inputColor);
         if(inputColor.length > 0){
-            saveBG(book,"color",color); 
-        }else{
-            saveBG(book,"image",image);            
-        }                     
+            color = $("div.colorPick-wrap input.pcr-result").val();
+        }             
+        if(uploadQuillImage(file)){
+            UpdateContent(actSound,key,file,content,chapter,color);
+        }       
     });
 
 });

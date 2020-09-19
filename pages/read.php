@@ -10,10 +10,7 @@ if(isset($_POST['data'])){
     $bookContents = file_get_contents("../json/book-content/$filename.json");
     $bookContents = json_decode($bookContents);
 ?>
-<div class="p-fixed d-none" id="book-navigation-container">
-    <div id="vbBookCover"></div>
-</div>
-<div class="col-md-12">
+<div class="col-md-12" style="margin-top:60px;">
     <div class="bg-light mt-4 mb-3 px-5 py-2 d-flex justify-content-between">
         <p class="m-0 p-2">Download as HTML5! </p>
         <button id="vb-download" class="btn btn-primary">Download</button>
@@ -23,7 +20,10 @@ if(isset($_POST['data'])){
     <button id="vb-showMenu" class="btn btn-secondary float-right mr-3">Menu</button>
 </div>
 <div class="col-md-12">
-    <div id="book-container"></div>
+<div id="vb-control-wrap" class="pb-4 pt-2 px-5">
+    <span id="vb-zoomvalue">100%</span> <input type="range" id="vb-sliderzoomer" value="2" min="1" max="6" step="1" id="vb-zoomer">
+</div>
+<div id="book-container" data-actBG="0"></div>
 </div>
 <div class="col-md-12">
 <nav class="p-5" aria-label="Book page navigation">
@@ -52,7 +52,7 @@ if(isset($_POST['data'])){
 <script type="text/javascript">
 const book = <?php echo $key; ?>;
 const loadBook = function(book = <?php echo $key; ?>, chapter = 0, section = 0, parts = 0){
-    let url = (parts === 0) ? "navigation.php" : "book.php";
+    let url = "book.php";
     $.ajax({
         url: "/pages/book/"+url,
         method: "POST",
@@ -92,8 +92,7 @@ const bookDownloadData = function(){
 }
 
 $(document).ready(function(){    
-    loadBook(book);
-    loadBook(book,0,0,1);
+    loadBook(book,0,0,1);    
 });
 
 const PlaySound = function(File,Dir,Status){    
@@ -175,48 +174,8 @@ $(document).on("click","button#vb-download",function(){
 
 $("main.main-editor").removeClass("main-editor");
 
-// const pageNav = function(i,nav,arg){       
-
-//     if(arg){
-//         let x = (nav == "next") ? i+1 : i;
-//         let y = (nav == "prev") ? i-1 : i;
-//         let page = (nav == "next") ? $("li[data-nav="+x+"]") : $("li[data-nav="+y+"]");
-//         if(nav == "next"){
-//             $("#vbPageNav").data("next",x); 
-//         }else{
-//             $("#vbPageNav").data("next",y); 
-//         }
-//         return page;
-//     }else{
-//         $("#vbPageNav").data("next",i);
-//     }
-    
-// }
-
-
-// $(document).on("click","#vbPageNav > li > a",function(e){
-//     e.preventDefault();    
-//     let nav = $(this).data("nav");
-//     let i = $("#vbPageNav").data("next"); 
-    
-//     if(i !== -1 && !(i == 0 && nav == "prev")){
-//         pageNav(i,nav,true).click();
-//         $('html, body, div#book-container').animate({scrollTop:0}, 250);
-//     }    
-// });
-
 //PAGINATION
 setTimeout(function(){
-    // const options = {
-    //     debug: false,
-    //     placeholder: false,
-    //     modules: {
-    //         toolbar: false
-    //     },
-    //     readOnly: true,
-    //     theme: 'snow',
-    //     scrollingContainer: false
-    // };
 
     const viewContent = function(container){
         let editor = QuillEditor(container,true,false);
@@ -242,6 +201,8 @@ setTimeout(function(){
             }
         }
     });
+
+    changeBG(0);
 },1000);
 
 $(document).on('click','div.vbChapter-wrap .tbcLink',function(){
@@ -261,13 +222,25 @@ $(document).on('click','div.vbChapter-wrap .tbcLink',function(){
     ProcessSound();
 });
 
+//CHANGE BG
+const changeBG = function(x){
+    let bgData = $("#bookWrapQuill > div.vbPagesTitle");
+    let bgType = $(bgData[x]).data("bgtype");
+    let bgValue = $(bgData[x]).data("background");
+    let bgStyle = (bgType == "color") ? bgValue : "url(../../media/background/"+bgValue+")";
+    $("div#book-container").css("background",bgStyle);
+    $("div#book-container").data("actbg",x);
+    //console.log(bgType,bgStyle,x);
+}
+
 $(document).on("click","#vbPageNav > li > a",function(e){
     e.preventDefault();    
     let nav = $(this).data("nav");
     let i = $("#vbPageNav").data("next"); 
     let pages = $("#bookWrapQuill > div.vbPages");
+    let actBG = $("div#book-container").data("actbg");
+    let crrntPg;
     let allPages = pages.length - 1;
-    console.log(allPages);
     if(nav == "next"){
         $(pages[i]).addClass("d-none");
         $(pages[i]).removeClass("activePage");
@@ -275,6 +248,11 @@ $(document).on("click","#vbPageNav > li > a",function(e){
         $("#vbPageNav").data("next",i);
         $(pages[i]).removeClass("d-none");
         $(pages[i]).addClass("activePage");
+        crrntPg = $(pages[i]).data("chapter");
+        if(crrntPg !== actBG){
+            changeBG(crrntPg);
+            console.log(crrntPg);
+        }
     }else{
         $(pages[i]).addClass("d-none");
         $(pages[i]).removeClass("activePage");
@@ -282,6 +260,10 @@ $(document).on("click","#vbPageNav > li > a",function(e){
         $("#vbPageNav").data("next",i);
         $(pages[i]).removeClass("d-none");        
         $(pages[i]).addClass("activePage");
+        crrntPg = $(pages[i]).data("chapter");
+        if(crrntPg !== actBG){
+            changeBG(crrntPg);
+        }
     }
     
     if(i > 0){
@@ -298,8 +280,35 @@ $(document).on("click","#vbPageNav > li > a",function(e){
     }
     $('html, body, div#book-container').animate({scrollTop:0}, 250);
 
-    //console.log("Total: "+ allPages, "Current: "+ i);
     ProcessSound();
+});
+
+//ZOOMER
+$(document).on('input', '#vb-sliderzoomer', function(){
+    let value = $(this).val();
+    let zoom;
+    switch(parseInt(value)){
+        case 1: zoom = 80; break;
+        case 2: zoom = 100; break;
+        case 3: zoom = 120; break;
+        case 4: zoom = 160; break;
+        case 5: zoom = 200; break;
+        case 6: zoom = 240; break;
+    }
+    $("#book-container").css("zoom",zoom+"%");
+    $("#book-container").css({"-moz-transform":"scale("+zoom+"%,"+zoom+"%)","-moz-transform-origin":"top"});
+    $("#book-container").css({"-ms-transform":"scale("+zoom+"%,"+zoom+"%)","-ms-transform-origin":"top"});
+    $("#book-container").css("-webkit-zoom",zoom+"%");
+    $("span#vb-zoomvalue").text(zoom+"%");
+});
+
+$(document).ready(function(){
+    let main = $("main");
+    let bookwrap = $("div#book-container");
+    main.removeClass("container");
+    main.addClass("container-fluid");
+    main.addClass("p-fixed");
+    bookwrap.css({"-moz-transform":"scale(1)","zoom":"100%","-webkit-zoom":"100%","-ms-transform":"scale(1)"});
 });
 </script>
 

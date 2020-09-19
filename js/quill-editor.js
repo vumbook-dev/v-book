@@ -387,7 +387,7 @@ window.QuillEditor = function(container,readOpt = false,toolbarOpt = true){
 
     let toolbarOptions = [        
         [{ 'font': [] }],
-        [{ 'align': [] }],
+        [{ 'align': ["justify","center","","right"] }],
         ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
         [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
         ['blockquote'],
