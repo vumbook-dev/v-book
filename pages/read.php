@@ -224,12 +224,13 @@ $(document).on('click','div.vbChapter-wrap .tbcLink',function(){
 
 //CHANGE BG
 const changeBG = function(x){
-    let bgData = $("#bookWrapQuill > div.vbPagesTitle");
+    let bgData = $("#bookWrapQuill > div.vbPages");
     let bgType = $(bgData[x]).data("bgtype");
     let bgValue = $(bgData[x]).data("background");
     let bgStyle = (bgType == "color") ? bgValue : "url(../../media/background/"+bgValue+")";
-    $("div#book-container").css("background",bgStyle);
-    $("div#book-container").data("actbg",x);
+    let bgResult = (bgValue != "") ? bgStyle : "#fff";
+    $("div#book-container").css("background",bgResult);
+    //$("div#book-container").data("actbg",x);
     //console.log(bgType,bgStyle,x);
 }
 
@@ -248,11 +249,8 @@ $(document).on("click","#vbPageNav > li > a",function(e){
         $("#vbPageNav").data("next",i);
         $(pages[i]).removeClass("d-none");
         $(pages[i]).addClass("activePage");
-        crrntPg = $(pages[i]).data("chapter");
-        if(crrntPg !== actBG){
-            changeBG(crrntPg);
-            console.log(crrntPg);
-        }
+        changeBG(i);
+
     }else{
         $(pages[i]).addClass("d-none");
         $(pages[i]).removeClass("activePage");
@@ -260,10 +258,7 @@ $(document).on("click","#vbPageNav > li > a",function(e){
         $("#vbPageNav").data("next",i);
         $(pages[i]).removeClass("d-none");        
         $(pages[i]).addClass("activePage");
-        crrntPg = $(pages[i]).data("chapter");
-        if(crrntPg !== actBG){
-            changeBG(crrntPg);
-        }
+        changeBG(i);
     }
     
     if(i > 0){

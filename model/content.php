@@ -41,7 +41,7 @@ if(isset($_POST['action'])){
                 $ACC = ($value->chapter == $chapter) ? $ACC+1 : $ACC;
             }
             $id = "$chapter".$ACC;
-            $newContent = array("id" => $id,"chapter" => $chapter, "cpart" => $name, "sound" => $default->dsound, "content" => "");
+            $newContent = array("id" => $id,"chapter" => $chapter, "cpart" => $name, "sound" => $default->dsound, "content" => "", "bgType" => "color", "background" => "#fff");
             $contentlist[] = $newContent;
             $ARR = array_column($contentlist, 'id');
             array_multisort($ARR, SORT_ASC, $contentlist);
@@ -58,47 +58,46 @@ if(isset($_POST['action'])){
         if(isset($_POST['file']) && isset($_POST['sound']) && isset($_POST['content']) && isset($_POST['key'])){
             $file = $_POST['file'];
             $sound = $_POST['sound'];
-            $color = $_POST['color'];
+            $color = (isset($_POST['color'])) ? $_POST['color'] : "";
             $key = $_POST['key'];
-            $ch = $_POST['chapter'];
+            //$ch = $_POST['chapter'];
             $content = $_POST['content'];
-            $list = file_get_contents("../json/book-content/{$file}.json");            
-            $contentlist = json_decode($list);
+            $allData = file_get_contents("../json/book-content/{$file}.json");        
+            $section = json_decode($allData);
 
             //SAVE DATA
             if(!empty($sound) || is_numeric($sound)){
-                $bookKey = $_POST['book'];
-                $books = file_get_contents("../json/books-list-title.json");
-                $booklist = json_decode($books);
-                $contentlist[$key]->sound = "{$sound}";                     
-
-                if(!empty($color)){
-                    $book = $booklist[$bookKey];             
-                    $chapters = $book->chapter;
-                    $chInfo = json_decode($chapters[$ch]);
-                    $newChapter = array("name" => $chInfo->name, "bgType" => "color", "background" => $color);
-                    $newChapter = json_encode($newChapter);
-                    $chapters[$ch] = $newChapter;
-                    $chapters = array_values($chapters);
-                    $booklist[$bookKey]->chapter = $chapters;                    
-                }
-
-                $newUpdate = json_encode($booklist);
-                file_put_contents("../json/books-list-title.json",$newUpdate);
-
+                // $bookKey = $_POST['book'];
+                // $books = file_get_contents("../json/books-list-title.json");
+                // $booklist = json_decode($books);
+                if($section[$key]->sound != $sound){
+                    $section[$key]->sound = "{$sound}"; 
+                }                                    
 
                 // if(!empty($color)){
-                //     if(empty($contentlist[$key]->background)){
-                //         $contentlist[$key]["background"] = $new_name;
-                //         $contentlist[$key]["bgType"] = "image";
-                //     }else{
-                //         $contentlist[$key]->background = $color;
-                //         $contentlist[$key]->bgType = "color";
-                //     }                    
+                //     $book = $booklist[$bookKey];             
+                //     $chapters = $book->chapter;
+                //     $chInfo = json_decode($chapters[$ch]);
+                //     $newChapter = array("name" => $chInfo->name, "bgType" => "color", "background" => $color);
+                //     $newChapter = json_encode($newChapter);
+                //     $chapters[$ch] = $newChapter;
+                //     $chapters = array_values($chapters);
+                //     $booklist[$bookKey]->chapter = $chapters;                    
                 // }
 
-                $contentlist[$key]->content = $content;                        
-                $json = json_encode($contentlist);
+                // $newUpdate = json_encode($booklist);
+                // file_put_contents("../json/books-list-title.json",$newUpdate);
+
+
+                if(!empty($color)){
+                    if(empty($section[$key]->background)){
+                        $section[$key]->background = $color;
+                        $section[$key]->bgType = "color";
+                    }                   
+                }
+
+                $section[$key]->content = $content;                        
+                $json = json_encode($section);
                 file_put_contents("../json/book-content/{$file}.json",$json);
 
                 $message = '<i class="fa fa-check-circle-o" aria-hidden="true"></i> Content is Successfully Updated';

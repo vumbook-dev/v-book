@@ -12,10 +12,9 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
     $content = json_decode($list);
     $bookInfo =  file_get_contents("../../json/books-list-title.json");
     $booklist = json_decode($bookInfo);  
-    $chapters = $booklist[$bookKey]->chapter;
-    $chInfo = json_decode($chapters[$chapter]);
-    $bgType = $chInfo->bgType;
-    $background = $chInfo->background;
+    $chInfo = $content[$key];
+    $bgType = (!empty($chInfo->bgType)) ? $chInfo->bgType : "color";
+    $background = (!empty($chInfo->background)) ? $chInfo->background : "#fff";
     //print_r($chInfo);
     
     $dsounds = file_get_contents("../../json/media/default-sounds.json");
@@ -28,8 +27,10 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
         $a = str_replace("m","",$defaultSound);
         $actSound = $mySounds[$a];
         $alias = (strlen($actSound->alias) > 11) ? substr($actSound->alias,strlen($actSound->alias)-11) : $actSound->alias;
+        $SoundID = $actSound->id;
     }else{
         $actSound = null;
+        $SoundID = 0;
     }
     
 ?>
@@ -86,8 +87,9 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
                                 <div class="input-group-btn" style="margin-left:-2px;">
                                     <span class="fileUpload btn btn-warning d-block mx-2">
                                         <span class="upl text-light" id="upload"><?php echo (!is_integer($bgIMG)) ? "Upload" : "Update" ; ?></span>
-                                        <input type="hidden" name="chapter" value="<?php echo $chapter; ?>">
+                                        <input type="hidden" name="section" value="<?php echo $key; ?>">
                                         <input type="hidden" name="book" value="<?php echo $bookKey; ?>">
+                                        <input type="hidden" name="file" value="<?php echo $file; ?>">
                                         <input type="file" accept="image/*" class="upload up" id="upbackground" name="background[]"/>
                                     </span><!-- btn-orange -->
                                 </div><!-- btn -->
@@ -163,7 +165,7 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
                               else{ $noSound = "d-none"; $aSound = ""; }?>
                         <h4 class="text-center p-3 <?php echo $noSound; ?>" style="font-weight:200;">No Media Sound!</h4>
                         <div id="vbMediaPlayerWrap" class="<?php echo $aSound; ?> py-3 px-2">
-                            <div id="vbMyAudioWrap"><span id="vb-my-audio" class="slct-sounds-list act-sound h5" data-id="<?php echo $actSound->id; ?>"><?php echo $alias; ?> <i class="fa fa-play" aria-hidden="true" data-dir="1" data-file="<?php echo $actSound->filename; ?>"></i></span></div>  
+                            <div id="vbMyAudioWrap"><span id="vb-my-audio" class="slct-sounds-list act-sound h5" data-id="<?php echo $SoundID; ?>"><?php echo $alias; ?> <i class="fa fa-play" aria-hidden="true" data-dir="1" data-file="<?php echo $actSound->filename; ?>"></i></span></div>  
                             <div class="vb-volume-wrap"><i class="fa fa-volume-up" aria-hidden="true"></i> <input type="range" name="vb-volume-control" value="50" min="0" max="100" step="1"></div>  
                         </div>
                         <div class="input-group">

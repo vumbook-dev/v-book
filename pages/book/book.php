@@ -60,12 +60,12 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
         $xpage = 3;
     }
     $show1stpage = ($xpage === 4) ? "d-none" : "";
-    $tb = json_decode($chapterData[0]);
+    $tb = $contents[0];
 
      ?>
-    <?php echo '<div id="page1" class="'.$show1stpage.' vbPages vbPagesTitle" data-chapter="0" data-bgtype="'.$tb->bgType.'" data-background="'.$tb->background.'" data-status="0" data-sound="'.$sound.'" data-sdir="'.$dir.'"><h1 class="vb-book-main-title text-center p-5">'.$mainTitle.'</h1></div>'; ?>
-    <div class="vbPage00 d-none vbPages vbPageContent" data-chapter="0" id="page2" data-status="0" data-sound="<?php echo $sound; ?>" data-sdir="<?php echo $dir; ?>"></div>
-    <div class="vbTBL-contents d-none vbPages vbPageContent" id="page3" data-chapter="0">
+    <?php echo '<div id="page1" class="'.$show1stpage.' vbPages vbPagesTitle" data-bgtype="color" data-background="#fff" data-status="0" data-sound="'.$sound.'" data-sdir="'.$dir.'"><h1 class="vb-book-main-title text-center p-5">'.$mainTitle.'</h1></div>'; ?>
+    <div class="vbPage00 d-none vbPages vbPageContent" data-bgtype="<?php echo $tb->bgType; ?>" data-background="<?php echo $tb->background; ?>" data-chapter="0" id="page2" data-status="0" data-sound="<?php echo $sound; ?>" data-sdir="<?php echo $dir; ?>"></div>
+    <div class="vbTBL-contents d-none vbPages vbPageContent" id="page3" data-bgtype="color" data-background="#fff">
     <h2 class="text-center">Contents</h2>
     <?php  
         
@@ -98,7 +98,7 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
     foreach($chapterData as $key => $bChapter){             
         $i = json_decode($chapterData[$key]);
         if($key != 0){                
-            echo "<div class='d-none vbPages vbPagesTitle' id='page{$page}' data-chapter='{$key}' data-bgtype='{$i->bgType}' data-background='{$i->background}'><h1 class='vb-book-main-title text-center px-2 py-5'>$i->name</h1></div>";
+            echo "<div class='d-none vbPages vbPagesTitle' id='page{$page}' data-bgtype='color' data-background='#fff'><h1 class='vb-book-main-title text-center px-2 py-5'>$i->name</h1></div>";
             $page = $page+1;
         }
         foreach($contents as $k => $value){        
@@ -115,7 +115,7 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
                     $sound = $dsound[$sound]->filename;
                 }
                 if($value->chapter == $key && $value->id != 00){
-                    echo "<div class='vbPage{$value->id} d-none vbPages vbPageContent' id='page{$page}' data-chapter='{$key}' data-status='0' data-sound='$sound' data-sdir='$dir'></div>";
+                    echo "<div class='vbPage{$value->id} d-none vbPages vbPageContent' id='page{$page}'  data-bgtype='{$i->bgType}' data-background='{$i->background}' data-status='0' data-sound='$sound' data-sdir='$dir'></div>";
                 }
                 
             }

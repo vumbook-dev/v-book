@@ -324,7 +324,7 @@ jQuery(document).ready(function($){
         //console.log(content);
         let key = $(this).data("key");
         let actSound = $("span.act-sound").data("id");
-        let file = $("#vb-ttl-cdidtfyr").data("universal");
+        let file = $("input#vb-ttl-cdidtfyr").data("universal");
         //let ApplyAllSounds = $("input.allSounds");
         //let dsounds = (ApplyAllSounds.prop("checked") == true) ? 1 : 0;
         let color;
