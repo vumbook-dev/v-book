@@ -18,7 +18,6 @@ if(isset($_POST['action'])){
             $newChapter = json_encode($newChapter);
             $chapterArray[] = $newChapter;
             $booklist[$key]->chapter = $chapterArray;
-            //$_POST = array();
             $newlist = json_encode($booklist);
             file_put_contents("../json/books-list-title.json",$newlist);        
             
@@ -54,6 +53,46 @@ if(isset($_POST['action'])){
             echo $title." is Successfully Deleted.";
         }
 
+    }elseif($action == "update"){
+        $list = file_get_contents("../json/books-list-title.json");
+        $booklist = json_decode($list);
+        $bk = $_POST['book'];
+        $ch = $_POST['chapter'];
+        $title = $_POST['title'];
+        $subtitle = $_POST['subtitle'];
+        $fullTitle = "{$title} <small class='vb-content-subtitle h6'>{$subtitle}</small>";
+        $sound = $_POST['sound'];
+        $volume = $_POST['volume'];    
+        $color = $_POST['color'];  
+
+        $book = $booklist[$bk];             
+        $chapters = $book->chapter;
+        $chInfo = json_decode($chapters[$ch]);
+        $newChapter = array();
+        ($fullTitle != $chInfo->name) ? $newChapter['name'] = $fullTitle : $newChapter['name'] = $chInfo->name;
+        if(!empty($color)){
+            $newChapter['bgType'] = "color";
+            $newChapter['background'] = $color;
+        }else{
+            $newChapter['bgType'] = $chInfo->bgType;
+            $newChapter['background'] = $chInfo->background;
+        }    
+        if(!empty($sound) && !empty($volume)){
+            $newChapter['sound'] = $sound;
+            $newChapter['volume'] = $volume;
+        }
+        $newChapter = json_encode($newChapter);
+        $chapters[$ch] = $newChapter;
+        $chapters = array_values($chapters);
+        $booklist[$bk]->chapter = $chapters;
+        $newUpdate = json_encode($booklist);
+        file_put_contents("../json/books-list-title.json",$newUpdate); 
+
+        $message = '<i class="fa fa-check-circle-o" aria-hidden="true"></i> Chapter Successfully Updated';
+        $status = "success";
+        $arry = array("message" => $message, "status" => $status);
+        $arry = json_encode($arry);
+        echo $arry;
     }
 }
 ?>

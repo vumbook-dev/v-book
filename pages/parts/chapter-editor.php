@@ -1,30 +1,35 @@
 <?php
-if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']) && isset($_POST['file']) && isset($_POST['bookKey'])){
+if(isset($_POST['chapter']) && isset($_POST['book'])){
 
-    $title = $_POST['title'];
-    $key = $_POST['content'];
-    $chapter = $_POST['chapter'];
-    $file = $_POST['file'];   
-    $bookKey = $_POST['bookKey']; 
+    $chapter = $_POST['chapter']; 
+    $bookKey = $_POST['book']; 
     $bgIMG = "";
 
-    $list = file_get_contents("../../json/book-content/{$file}.json");    
-    $content = json_decode($list);
     $bookInfo =  file_get_contents("../../json/books-list-title.json");
     $booklist = json_decode($bookInfo);  
-    $chInfo = $content[$key];
+    $booklist = $booklist[$bookKey];
+    $chInfo = $booklist->chapter;
+    $chInfo = json_decode($chInfo[$chapter]);
     $bgType = (!empty($chInfo->bgType)) ? $chInfo->bgType : "color";
     $background = (!empty($chInfo->background)) ? $chInfo->background : "#fff";
-    //print_r($chInfo);
+    if($chInfo->name === "Book Info"){
+        $title = "<h1 class='text-center ch-main-title pt-5'>{$booklist->title}</h1> <p class='ch-subtitle text-center'>{$booklist->subtitle}</p>";
+    }else{
+        $title = $chInfo->name;
+        $title = str_replace("<small class='vb-content-subtitle h6'>","</h1><p class='ch-subtitle text-center'>",$title);
+        $title = str_replace("</small>","</p>",$title);
+        $title = "<h1 class='text-center ch-main-title pt-5'>".$title;
+    }   
     
+    $pageTitle = ($chInfo->name !== "Book Info") ? $chInfo->name : $title;
     $dsounds = file_get_contents("../../json/media/default-sounds.json");
     $dsounds = json_decode($dsounds);  
     $mySounds = file_get_contents("../../json/users/user-sound.json");
     $mySounds = json_decode($mySounds);
 
-    $defaultSound = $content[$key]->sound;
-    $defaultVolume = (!empty($content[$key]->volume)) ? $content[$key]->volume : 0.5;
-    if($defaultSound){
+    $defaultSound = (!empty($chInfo->sound)) ? $chInfo->sound : 0;
+    $defaultVolume = (!empty($chInfo->volume)) ? $chInfo->volume : 0.5;
+    if(!empty($defaultSound)){
         $a = str_replace("m","",$defaultSound);
         $actSound = $mySounds[$a];
         $alias = (strlen($actSound->alias) > 11) ? substr($actSound->alias,strlen($actSound->alias)-11) : $actSound->alias;
@@ -32,6 +37,7 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
     }else{
         $actSound = null;
         $SoundID = 0;
+        $alias = "";
     }
     
 ?>
@@ -52,9 +58,7 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
       </div>
       <div class="modal-body p-4">
         <div class="row">
-            <div class="col-md-9 px-4 <?php //echo "text-{$content[$key]->align}"; ?>">
-                <!-- <h3 class="vb-ch-title mb-3"></h3>
-                <h5 class="mb-5"></h5> -->
+            <div class="col-md-9 px-4">
                 <div id="toolbar"></div>
                 <div id="style-preview" class="editstyle-page py-2 px-4">
                     
@@ -88,9 +92,8 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
                                 <div class="input-group-btn" style="margin-left:-2px;">
                                     <span class="fileUpload btn btn-warning d-block mx-2">
                                         <span class="upl text-light" id="upload"><?php echo (!is_integer($bgIMG)) ? "Upload" : "Update" ; ?></span>
-                                        <input type="hidden" name="section" value="<?php echo $key; ?>">
+                                        <input type="hidden" name="chapter" value="<?php echo $chapter; ?>">
                                         <input type="hidden" name="book" value="<?php echo $bookKey; ?>">
-                                        <input type="hidden" name="file" value="<?php echo $file; ?>">
                                         <input type="file" accept="image/*" class="upload up" id="upbackground" name="background[]"/>
                                     </span><!-- btn-orange -->
                                 </div><!-- btn -->
@@ -102,65 +105,6 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
                 <!-- SOUNDS SECTION -->
                 <div class="form-group text-center sound-option-wrap">
                     <span class="h6"><i class="fa fa-music" aria-hidden="true"></i> Page Sounds</span>                    
-                    <!-- <div class="accordion mt-3 d-none" id="vbSelectSounds">
-                        <div id="default-sounds" class="card">
-                            <div class="card-header p-0" id="headingOne">
-                            <h5 class="mb-0">
-                                <button class="btn collapsed" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                    Default Sounds
-                                </button>
-                            </h5>
-                            </div>
-
-                            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#vbSelectSounds">
-                            <div class="card-body p-0">
-                                <ul class="mb-0 p-0 slct-sounds">
-                                    <?php 
-                                        // foreach($dsounds as $k => $value){
-                                        //     $icon = ($value->id != 0) ? '<i class="fa fa-play px-3" aria-hidden="true" data-dir="default" data-file="'.$value->filename.'"></i></li>' : ' ';
-                                        //     if(is_numeric($content[$key]->sound)){
-                                        //         $activeSound = ($value->id == $content[$key]->sound) ? 'act-sound' : '';
-                                        //     }else{
-                                        //         $activeSound = "";
-                                        //     }                                        
-                                        //     echo '<li class="slct-sounds-list '.$activeSound.'" data-id="'.$value->id.'">'.$value->alias.' '.$icon;
-                                        // }
-                                    ?>
-                                </ul>
-                            </div>
-                            </div>
-                        </div>
-
-                        <div id="personal-sounds" class="card">
-                            <div class="card-header p-0" id="headingTwo">
-                            <h5 class="mb-0">
-                                <button class="btn" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                    My Media Sounds
-                                </button>
-                            </h5>
-                            </div>
-
-                            <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#vbSelectSounds">
-                            <div class="card-body p-0 pb-2" style="height:auto;">
-                                <div id="vb-my-audio"></div>                                                                               
-                                <div id="vb-sound-upload" class="form-group px-2 mb-0 pt-2">
-                                <div class="input-group">
-                                <input type="text" class="form-control d-none rdnly-plchldr" readonly>
-                                <form class="input-empty" id="submit-audio" method="post" action="">
-                                <div class="input-group-btn" style="margin-left:-2px;">
-                                    <span class="fileUpload btn btn-info">
-                                        <span class="upl" id="upload">Upload</span>
-                                        <input type="file" accept="audio/*" class="upload up" id="up" name="audio[]" multiple/>
-                                    </span>
-                                </div>
-                                <button class="btn btn-primary d-none">Submit</button>
-                                </form>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-                    </div> -->
                     <div class="vbSoundDemo form-group" id="vbSelectSounds">
                         <?php if($actSound === null){ $noSound = ""; $aSound = "d-none"; }
                               else{ $noSound = "d-none"; $aSound = ""; }?>
@@ -188,9 +132,7 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
         </div>
       </div>
       <div class="modal-footer">       
-        <!-- <input id="vbcc-text" type="hidden" value=""> -->
-        <!-- <button id="vb-addnew-section" data-key="<?php echo $key; ?>" type="button" class="btn btn-secondary px-3 mr-1">Add New Section</button> -->
-        <button id="vb-save-styles" data-key="<?php echo $key; ?>" type="button" class="btn btn-primary px-3 mr-4">Update</button>
+        <button id="vb-save-chPage" data-key="<?php echo $chapter; ?>" type="button" class="btn btn-primary px-3 mr-4">Update</button>
       </div>
     </div>
   </div>
@@ -199,41 +141,16 @@ if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']
 <script type="text/javascript">
 jQuery(document).ready(function($){
     let chapterTitle = $(".ttl-<?php echo $chapter; ?>ch").text();
-    let title = "<?php echo $title ?>";     
-    let contentKey = <?php echo $key; ?>;
+    let title = `<?php echo $title ?>`;     
+    //let contentKey = <?php //echo $key; ?>;
 
-    // QUILL EDITOR
+    //QUILL EDITOR
     let container = document.getElementById('style-preview');
-    let editor = QuillEditor(container);
-
-    const getContent = function(key){
-        $.ajax({
-            url: "../../json/book-content/<?php echo $file; ?>.json",
-            method: "GET",
-            dataType: "json",
-            success: function(data){
-                let dataContent = data[key]['content'];
-                dataContent = JSON.parse(dataContent);
-                editor.setContents(dataContent);
-                //console.log(dataContent);
-                //console.log(key);
-            }
-        });
-    }
+    let editor = QuillEditor(container,false,false);
 
     setTimeout(function(){
-        window.Quillcontents = editor.getContents();
+        $("div.ql-editor").html(title);
     },1000);
-    
-    editor.on('text-change', function(delta, oldDelta, source) {
-    if (source == 'api') {
-        console.log("An API call triggered this change.");
-        //console.log(delta);
-    } else if (source == 'user') {
-        console.log("A user action triggered this change."); 
-        window.Quillcontents = editor.getContents();             
-    }
-    });
 
     //COLOR PICKER
     <?php
@@ -283,27 +200,21 @@ jQuery(document).ready(function($){
     });
 
     //LOAD MY AUDIO
-    const loadMyAudio = function(){
-        $.ajax({
-            url: "../../model/media.php",  
-            type: "POST",
-            data: {action: "load", file: "<?php echo $file; ?>",key: "<?php echo $key; ?>"},
-            dataType: "text",
-            success: function(data){
-                $("div#vb-my-audio").html(data);
-            }
-        });
-    }
+    // const loadMyAudio = function(){
+    //     $.ajax({
+    //         url: "../../model/media.php",  
+    //         type: "POST",
+    //         data: {action: "load", file: "<?php //echo $file; ?>",key: "<?php //echo $key; ?>"},
+    //         dataType: "text",
+    //         success: function(data){
+    //             $("div#vb-my-audio").html(data);
+    //         }
+    //     });
+    // }
 
-    loadMyAudio();
+    // loadMyAudio();
 
-    setTimeout(function(){
-        <?php if(!empty($content[$key]->content)){ ?>
-            getContent(contentKey);
-        <?php }else{ ?>
-            $("div#style-preview div.ql-editor").prepend("<h1><strong>"+title+"</strong></h1>");
-        <?php } ?>
-        
+    setTimeout(function(){        
         <?php if($bgType == "color"){ ?>
             let bgColor = $("div.colorPick-wrap input.pcr-result").val();
             $("div#style-preview").css("background",bgColor);

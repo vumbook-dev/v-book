@@ -58,6 +58,7 @@ if(isset($_POST['action'])){
         if(isset($_POST['file']) && isset($_POST['sound']) && isset($_POST['content']) && isset($_POST['key'])){
             $file = $_POST['file'];
             $sound = $_POST['sound'];
+            $volume = $_POST['volume'];
             $color = (isset($_POST['color'])) ? $_POST['color'] : "";
             $key = $_POST['key'];
             //$ch = $_POST['chapter'];
@@ -70,9 +71,15 @@ if(isset($_POST['action'])){
                 // $bookKey = $_POST['book'];
                 // $books = file_get_contents("../json/books-list-title.json");
                 // $booklist = json_decode($books);
+
+                //SAVE SOUND
                 if($section[$key]->sound != $sound){
                     $section[$key]->sound = "{$sound}"; 
-                }                                    
+                }                  
+                //SAVE SOUND VOLUME
+                if($section[$key]->volume != $volume){
+                    $section[$key]->volume = $volume;
+                }
 
                 // if(!empty($color)){
                 //     $book = $booklist[$bookKey];             
@@ -90,7 +97,7 @@ if(isset($_POST['action'])){
 
 
                 if(!empty($color)){
-                    if(empty($section[$key]->background)){
+                    if($section[$key]->background != $color){
                         $section[$key]->background = $color;
                         $section[$key]->bgType = "color";
                     }                   
@@ -100,7 +107,7 @@ if(isset($_POST['action'])){
                 $json = json_encode($section);
                 file_put_contents("../json/book-content/{$file}.json",$json);
 
-                $message = '<i class="fa fa-check-circle-o" aria-hidden="true"></i> Content is Successfully Updated';
+                $message = '<i class="fa fa-check-circle-o" aria-hidden="true"></i> Content Successfully Updated';
                 $status = "success";
             }else{
                 $message = '<i class="fa fa-exclamation-circle" aria-hidden="true"></i> Something Went Wrong</i>';

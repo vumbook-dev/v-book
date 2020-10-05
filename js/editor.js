@@ -62,8 +62,11 @@ jQuery(document).ready(function($){
         let File = $(this).data("file");
         let dir = $(this).data("dir");
         let path = (dir == 1) ? "user/" : "";
+        let vol = $("input[name=vb-volume-control]").val();
         let Sound = $("#vb-prevAudio")[0];
-            Sound.src = '../../media/sounds/'+path+File;        
+            Sound.src = '../../media/sounds/'+path+File;   
+            Sound.volume = vol;
+            Sound.loop = true;
         if($(this).hasClass("fa-pause")){
             $(this).removeClass("fa-pause");
             $(this).addClass("fa-play");
@@ -76,6 +79,13 @@ jQuery(document).ready(function($){
             Sound.play();           
         }
         
+    });
+
+    $(document).on('change','input[name=vb-volume-control]',function(){
+        let Sound = $("#vb-prevAudio")[0];
+        let vol = $(this).val();
+        Sound.volume = vol;
+        //console.log(vol);
     });
 
     //MULTIPLE SOUND UPLOADS
@@ -117,23 +127,27 @@ jQuery(document).ready(function($){
     });
 
     //UPDATE STYLE
-    const UpdateContent = function(sound,key,file,content,chapter,color,index = bookIndex){
-        $.ajax({
-            method: "POST",
-            url: "../model/content.php",
-            data: {sound:sound,key:key,file:file,book:index,content:content,chapter:chapter,color:color,action:"update"},
-            dataType: "text",
-            success: function(data){
-                let json = JSON.parse(data);
-                let state = (json.status == "success") ? "alert-success" : "alert-danger";
-                $("div#vbUpdateMessage").prepend('<div class="message-status alert '+state+'" role="alert">'+json.message+'</div>');
-                //$("#vb-new-section").removeClass("d-none");
-                $("li.apllySoundsToAll").remove();
-                setTimeout(function(){
-                    $("div.message-status").remove();                    
-                },3000);
-            }
-        })
+    const UpdateContent = function(sound,volume,key,file,chapter,color,index = bookIndex){
+        $("div.ql-editor").append(" ");
+        setTimeout(function(){            
+            let content = JSON.stringify(Quillcontents, null, 2);
+            $.ajax({
+                method: "POST",
+                url: "../model/content.php",
+                data: {sound:sound,volume:volume,key:key,file:file,book:index,content:content,chapter:chapter,color:color,action:"update"},
+                dataType: "text",
+                success: function(data){
+                    let json = JSON.parse(data);
+                    let state = (json.status == "success") ? "alert-success" : "alert-danger";
+                    $("div#vbUpdateMessage").prepend('<div class="message-status alert '+state+'" role="alert">'+json.message+'</div>');
+                    //$("#vb-new-section").removeClass("d-none");
+                    $("li.apllySoundsToAll").remove();
+                    setTimeout(function(){
+                        $("div.message-status").remove();                    
+                    },3000);
+                }
+            });        
+        },500);
     }
 
     /*** BACKGROUND  SCRIPT ***/
@@ -307,12 +321,11 @@ jQuery(document).ready(function($){
                         success: function(data){
                             let rs = JSON.parse(data);
                             $(image[i]).attr("src",rs.url);
-                            //console.log(rs);                            
+                            console.log(rs);                            
                         }
                     });                                          
                 }                                 
-            }  
-            $("div.ql-editor").append(" ");                    
+            }                                
             return true; 
         }else{
             return true;
@@ -320,11 +333,11 @@ jQuery(document).ready(function($){
     }
 
     $(document).on("click","#vb-save-styles",function(){
-        let content = JSON.stringify(Quillcontents, null, 2);
         //console.log(content);
         let key = $(this).data("key");
         let actSound = $("span.act-sound").data("id");
         let file = $("input#vb-ttl-cdidtfyr").data("universal");
+        let vol = $("input[name=vb-volume-control]").val();
         //let ApplyAllSounds = $("input.allSounds");
         //let dsounds = (ApplyAllSounds.prop("checked") == true) ? 1 : 0;
         let color;
@@ -334,8 +347,10 @@ jQuery(document).ready(function($){
             color = $("div.colorPick-wrap input.pcr-result").val();
         }             
         if(uploadQuillImage(file)){
-            UpdateContent(actSound,key,file,content,chapter,color);
-        }       
+            UpdateContent(actSound,vol,key,file,chapter,color);
+        }else{
+            //alert("No Image");
+        } 
     });
 
 });

@@ -2,7 +2,7 @@
 if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section']) && isset($_POST['file'])){
     
     $book = $_POST['book'];
-    $ch = $_POST['chapter'];
+    $ch = 0;
     $section = $_POST['section'];
     $file = $_POST['file'];
 
@@ -49,6 +49,8 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
         $sound = $titleSound;
         $sound = $dsound[$sound]->filename;
     }
+
+    $volume = (!empty($contents[0]->volume)) ? $contents[0]->volume : 0.5;
     ?>
     
 <div id="bookWrapQuill">
@@ -61,10 +63,12 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
     }
     $show1stpage = ($xpage === 4) ? "d-none" : "";
     $tb = $contents[0];
+    $chBgType = (!empty($chapter->bgType)) ? $chapter->bgType : "color";
+    $chBackground = (!empty($chapter->background)) ? $chapter->background : "#fff";
 
      ?>
-    <?php echo '<div id="page1" class="'.$show1stpage.' vbPages vbPagesTitle" data-bgtype="color" data-background="#fff" data-status="0" data-sound="'.$sound.'" data-sdir="'.$dir.'"><h1 class="vb-book-main-title text-center p-5">'.$mainTitle.'</h1></div>'; ?>
-    <div class="vbPage00 d-none vbPages vbPageContent" data-bgtype="<?php echo $tb->bgType; ?>" data-background="<?php echo $tb->background; ?>" data-chapter="0" id="page2" data-status="0" data-sound="<?php echo $sound; ?>" data-sdir="<?php echo $dir; ?>"></div>
+    <?php echo '<div id="page1" class="'.$show1stpage.' vbPages vbPagesTitle" data-bgtype="'.$chBgType.'" data-background="'.$chBackground.'" data-status="0" data-sound="'.$sound.'" data-sdir="'.$dir.'"><h1 class="vb-book-main-title text-center p-5">'.$mainTitle.'</h1></div>'; ?>
+    <div class="vbPage00 d-none vbPages vbPageContent" data-bgtype="<?php echo $tb->bgType; ?>" data-background="<?php echo $tb->background; ?>" data-chapter="0" id="page2" data-status="0" data-volume="<?php echo $volume; ?>" data-sound="<?php echo $sound; ?>" data-sdir="<?php echo $dir; ?>"></div>
     <div class="vbTBL-contents d-none vbPages vbPageContent" id="page3" data-bgtype="color" data-background="#fff">
     <h2 class="text-center">Contents</h2>
     <?php  
@@ -97,12 +101,15 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
     $chx = "x";
     foreach($chapterData as $key => $bChapter){             
         $i = json_decode($chapterData[$key]);
-        if($key != 0){                
-            echo "<div class='d-none vbPages vbPagesTitle' id='page{$page}' data-bgtype='color' data-background='#fff'><h1 class='vb-book-main-title text-center px-2 py-5'>$i->name</h1></div>";
+        if($key != 0){               
+            $chBgType = (!empty($i->bgType)) ? $i->bgType : "color";
+            $chBackground = (!empty($i->background)) ? $i->background : "#fff"; 
+            echo "<div class='d-none vbPages vbPagesTitle' id='page{$page}' data-bgtype='{$chBgType}' data-background='{$chBackground}'><h1 class='vb-book-main-title text-center px-2 py-5'>$i->name</h1></div>";
             $page = $page+1;
         }
         foreach($contents as $k => $value){        
             $chPtitle = $value->chapter;
+            $volume = (!empty($contents[$k]->volume)) ? $contents[$k]->volume : 0.5;
             if($value->id != "00"){
                 if(!is_numeric($value->sound)){
                     $dir = 1;
@@ -115,7 +122,9 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
                     $sound = $dsound[$sound]->filename;
                 }
                 if($value->chapter == $key && $value->id != 00){
-                    echo "<div class='vbPage{$value->id} d-none vbPages vbPageContent' id='page{$page}'  data-bgtype='{$i->bgType}' data-background='{$i->background}' data-status='0' data-sound='$sound' data-sdir='$dir'></div>";
+                    $bgType = (!empty($value->bgType)) ? $value->bgType : "color";
+                    $bgVal = (!empty($value->background))  ? $value->background : "#fff";
+                    echo "<div class='vbPage{$value->id} d-none vbPages vbPageContent' id='page{$page}'  data-bgtype='{$bgType}' data-background='{$bgVal}' data-status='0' data-volume='$volume' data-sound='$sound' data-sdir='$dir'></div>";
                 }
                 
             }
@@ -146,10 +155,13 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
         margin: auto;
         height:580px;
         background-size: cover;
-        background-repeat: no-repeat;
+        background-repeat: no-repeat!important;
+        background-origin: border-box!important;
+        background-size: cover!important;
+        background-position: bottom!important;
     }
     div#book-container{
-        scrollbar-width: none;
+        scrollbar-width: none;        
     }
     body{
         background-color: #e7e7e7;

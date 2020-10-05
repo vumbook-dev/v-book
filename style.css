@@ -85,7 +85,7 @@ div{
 }
 
 .list-item-vbtitle > h6{
-  width:80%;
+  width:70%;
 }
 
 span.vbook-title{
@@ -123,7 +123,7 @@ li.list-item-vbcontent > span i:hover{
   opacity: .5;
 }
 
-li.list-item-vbcontent > span{
+li.list-item-vbcontent > span, a.ch-editor{
   cursor: pointer;
 }
 
@@ -162,7 +162,7 @@ span.vb-btn-wrap > span{
 }
 
 .scrollMouseIn::-webkit-scrollbar{
-  width: 5px;
+  width: 0px;
   background-color: #eee;
   opacity: .3;
 }
@@ -335,6 +335,8 @@ div.ql-editor p{
 
 div.ql-editor{
   padding:0px;
+  white-space: pre-line;
+  overflow-x: hidden;
 }
 
 div#style-preview div.ql-editor{

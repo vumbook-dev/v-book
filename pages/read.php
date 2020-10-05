@@ -95,12 +95,13 @@ $(document).ready(function(){
     loadBook(book,0,0,1);    
 });
 
-const PlaySound = function(File,Dir,Status){    
+const PlaySound = function(File,Dir,vol,Status){    
     
     if(Status === 0){
         let path = (Dir == 1) ? "user/" : "";
         let Sound = $("#vb-audioplayer")[0];
         Sound.src='../../media/sounds/'+path+File;
+        Sound.volume = vol;
         Sound.loop = true;
         $("div.vbPages").attr("data-status",0);
         return Sound; 
@@ -113,10 +114,11 @@ const PlaySound = function(File,Dir,Status){
 const ProcessSound = function(){
     let active = $("div.activePage");
     let File = active.data("sound");
+    let volume = active.data("volume");
     let dir = active.data("sdir");
     let status = active.data("status");    
     if(status !== undefined){        
-        let Sound = PlaySound(File,dir,status);
+        let Sound = PlaySound(File,dir,volume,status);
         if(status < 1){
             Sound.play();
             let = status = null;
@@ -195,9 +197,7 @@ setTimeout(function(){
                 let text = obj.content;
                 text = JSON.parse(text);
                 view = viewContent(container);
-                view.setContents(text);
-                //console.log(text);
-           
+                view.setContents(text);           
             }
         }
     });
