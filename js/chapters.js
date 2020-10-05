@@ -223,6 +223,61 @@ jQuery(document).ready(function($){
         }); 
     });
     
-        /*** BOOK COVER SCRIPT END ***/
+    /*** BOOK COVER SCRIPT END ***/
+
+    //LOAD CHAPTER EDITOR
+    const loadChEditor = function(chapter){
+        $.ajax({
+            method:"POST",
+            url:"../pages/parts/chapter-editor.php",
+            data: {book:bookKey,chapter:chapter},
+            dataType: "text",
+            success: function(data){
+                $("#vb-modal-container").html(data);
+            }
+        });
+    }
+
+    //EDIT CHAPTER
+    $(document).on('click','.ch-editor',function(e){
+        e.preventDefault();
+        let chapter = $(this).data("ch");
+        loadChEditor(chapter);
+    });
+
+    //UPDATE CHAPTER STYLE
+    const updateChPage = function(chapter,sound,volume,color,title,subtitle) {
+        $.ajax({
+            method: "POST",
+            url: "/model/chapters.php",
+            data: {book:bookKey,chapter:chapter,sound:sound,volume:volume,color:color,title:title,subtitle:subtitle,action:"update"},
+            dataType: "text",
+            success: function(data){
+                let json = JSON.parse(data);
+                let state = (json.status == "success") ? "alert-success" : "alert-danger";
+                $("div#vbUpdateMessage").prepend('<div class="message-status alert '+state+'" role="alert">'+json.message+'</div>');
+                //$("#vb-new-section").removeClass("d-none");
+                $("li.apllySoundsToAll").remove();
+                setTimeout(function(){
+                    $("div.message-status").remove();                    
+                },3000);
+            }
+        })
+    }
+
+    $(document).on("click","#vb-save-chPage",function(){
+        let key = $(this).data("key");
+        let title = $("h1.ch-main-title").text();
+        let subtitle = $("p.ch-subtitle").text();
+        let actSound = $("span.act-sound").data("id");
+        let vol = $("input[name=vb-volume-control]").val();
+        let color;
+        let inputColor = $("div.bgContainer>div.custom-radio input#bgColor:checked");
+        if(inputColor.length > 0){
+            color = $("div.colorPick-wrap input.pcr-result").val();
+        }
+
+        updateChPage(key,actSound,vol,color,title,subtitle);
+    });
 
 });

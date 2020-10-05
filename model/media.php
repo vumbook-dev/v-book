@@ -51,16 +51,18 @@ if(isset($_FILES['audio']) && $_FILES['audio']['name'] != ''){
     }else{
         echo '<span class="my-4 d-block">No Media Available!</span>';
     }
-}elseif(isset($_POST['chapter']) && $_FILES['background']['name'] != "" && isset($_POST['book'])){
+}elseif(isset($_POST['section']) && $_FILES['background']['name'] != "" && isset($_POST['book']) && isset($_POST['file'])){
+    //SAVE SECTION BACKGROUND IMAGE
     $media = file_get_contents("../json/users/user-background.json");
     $media = json_decode($media);
     $og_count = count($media);
     $new_count = null;
 
-    $k = $_POST['chapter'];
+    $k = $_POST['section'];
     $bkey = $_POST['book'];
-    // $allData = file_get_contents("../json/book-content/{$file}.json");
-    // $section = json_decode($allData,true);        
+    $file = $_POST['file'];
+    $allData = file_get_contents("../json/book-content/{$file}.json");
+    $section = json_decode($allData);        
 
     foreach ($_FILES['background']['name'] as $key => $value){
         $og_name = $_FILES['background']['name'][$key];
@@ -68,6 +70,8 @@ if(isset($_FILES['audio']) && $_FILES['audio']['name'] != ''){
         $new_name = md5(rand()) . '.' . $file_name[1];  
         $new_name = "{$file_name[0]}-".substr($new_name,-11);
         $new_name = str_replace(" ","-",$new_name);
+        $new_name = str_replace("(","",$new_name);
+        $new_name = str_replace(")","",$new_name);
         $sourcePath = $_FILES['background']['tmp_name'][$key];  
         $targetPath = "../media/background/".$new_name;  
 
@@ -81,13 +85,60 @@ if(isset($_FILES['audio']) && $_FILES['audio']['name'] != ''){
     if(is_numeric($new_count)){
         $json = json_encode($media);
         file_put_contents("../json/users/user-background.json",$json);
-        // if(empty($section[$k]->background)){
-        //     $section[$k]["background"] = $new_name;
-        //     $section[$k]["bgType"] = "image";
-        // }else{
-        //     $section[$k]->background = $new_name;
-        //     $section[$k]->bgType = "image";
-        // }       
+        $section[$k]->background = $new_name;
+        $section[$k]->bgType = "image";
+              
+        // $bookData = file_get_contents("../json/books-list-title.json");
+        // $booklist = json_decode($bookData); 
+        // $book = $booklist[$bkey];             
+        // $chapters = $book->chapter;
+        // $chInfo = json_decode($chapters[$k]);
+        // $newChapter = array("name" => $chInfo->name, "bgType" => "image", "background" => $new_name);
+        // $newChapter = json_encode($newChapter);
+        // $chapters[$k] = $newChapter;
+        // $chapters = array_values($chapters);
+        // $booklist[$bkey]->chapter = $chapters;
+        // $newUpdate = json_encode($booklist);
+        // file_put_contents("../json/books-list-title.json",$newUpdate); 
+        $newUpdate = json_encode($section);     
+        file_put_contents("../json/book-content/{$file}.json",$newUpdate);  
+        echo $new_name;
+
+    }
+}elseif(isset($_POST['chapter']) && $_FILES['background']['name'] != "" && isset($_POST['book'])){
+    //SAVE CHAPTER BACKGROUND IMAGE
+    $media = file_get_contents("../json/users/user-background.json");
+    $media = json_decode($media);
+    $og_count = count($media);
+    $new_count = null;
+
+    $k = $_POST['chapter'];
+    $bkey = $_POST['book'];       
+
+    foreach ($_FILES['background']['name'] as $key => $value){
+        $og_name = $_FILES['background']['name'][$key];
+        $file_name = explode(".", $_FILES['background']['name'][$key]);
+        $new_name = md5(rand()) . '.' . $file_name[1];  
+        $new_name = "{$file_name[0]}-".substr($new_name,-11);
+        $new_name = str_replace(" ","-",$new_name);
+        $new_name = str_replace("(","",$new_name);
+        $new_name = str_replace(")","",$new_name);
+        $sourcePath = $_FILES['background']['tmp_name'][$key];  
+        $targetPath = "../media/background/".$new_name;  
+
+        if(move_uploaded_file($sourcePath, $targetPath)){
+            $new_count = $og_count + $key;
+            $fileData = array("id" => "m{$new_count}", "alias" => $file_name[0], "filename" => $new_name);
+            $media[] = $fileData;            
+        }
+    }
+
+    if(is_numeric($new_count)){
+        $json = json_encode($media);
+        file_put_contents("../json/users/user-background.json",$json);
+        $section[$k]->background = $new_name;
+        $section[$k]->bgType = "image";
+            
         $bookData = file_get_contents("../json/books-list-title.json");
         $booklist = json_decode($bookData); 
         $book = $booklist[$bkey];             
@@ -99,8 +150,8 @@ if(isset($_FILES['audio']) && $_FILES['audio']['name'] != ''){
         $chapters = array_values($chapters);
         $booklist[$bkey]->chapter = $chapters;
         $newUpdate = json_encode($booklist);
-        file_put_contents("../json/books-list-title.json",$newUpdate);        
-        //echo $new_name;
+        file_put_contents("../json/books-list-title.json",$newUpdate);  
+        echo $new_name;
     }
 }elseif(isset($_FILES['image']) && isset($_POST['dir'])){
     $dir = $_POST['dir'];

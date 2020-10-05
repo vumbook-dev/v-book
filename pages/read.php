@@ -95,12 +95,13 @@ $(document).ready(function(){
     loadBook(book,0,0,1);    
 });
 
-const PlaySound = function(File,Dir,Status){    
+const PlaySound = function(File,Dir,vol,Status){    
     
     if(Status === 0){
         let path = (Dir == 1) ? "user/" : "";
         let Sound = $("#vb-audioplayer")[0];
         Sound.src='../../media/sounds/'+path+File;
+        Sound.volume = vol;
         Sound.loop = true;
         $("div.vbPages").attr("data-status",0);
         return Sound; 
@@ -113,10 +114,11 @@ const PlaySound = function(File,Dir,Status){
 const ProcessSound = function(){
     let active = $("div.activePage");
     let File = active.data("sound");
+    let volume = active.data("volume");
     let dir = active.data("sdir");
     let status = active.data("status");    
     if(status !== undefined){        
-        let Sound = PlaySound(File,dir,status);
+        let Sound = PlaySound(File,dir,volume,status);
         if(status < 1){
             Sound.play();
             let = status = null;
@@ -195,9 +197,7 @@ setTimeout(function(){
                 let text = obj.content;
                 text = JSON.parse(text);
                 view = viewContent(container);
-                view.setContents(text);
-                //console.log(text);
-           
+                view.setContents(text);           
             }
         }
     });
@@ -224,12 +224,13 @@ $(document).on('click','div.vbChapter-wrap .tbcLink',function(){
 
 //CHANGE BG
 const changeBG = function(x){
-    let bgData = $("#bookWrapQuill > div.vbPagesTitle");
+    let bgData = $("#bookWrapQuill > div.vbPages");
     let bgType = $(bgData[x]).data("bgtype");
     let bgValue = $(bgData[x]).data("background");
     let bgStyle = (bgType == "color") ? bgValue : "url(../../media/background/"+bgValue+")";
-    $("div#book-container").css("background",bgStyle);
-    $("div#book-container").data("actbg",x);
+    let bgResult = (bgValue != "") ? bgStyle : "#fff";
+    $("div#book-container").css("background",bgResult);
+    //$("div#book-container").data("actbg",x);
     //console.log(bgType,bgStyle,x);
 }
 
@@ -248,11 +249,8 @@ $(document).on("click","#vbPageNav > li > a",function(e){
         $("#vbPageNav").data("next",i);
         $(pages[i]).removeClass("d-none");
         $(pages[i]).addClass("activePage");
-        crrntPg = $(pages[i]).data("chapter");
-        if(crrntPg !== actBG){
-            changeBG(crrntPg);
-            console.log(crrntPg);
-        }
+        changeBG(i);
+
     }else{
         $(pages[i]).addClass("d-none");
         $(pages[i]).removeClass("activePage");
@@ -260,10 +258,7 @@ $(document).on("click","#vbPageNav > li > a",function(e){
         $("#vbPageNav").data("next",i);
         $(pages[i]).removeClass("d-none");        
         $(pages[i]).addClass("activePage");
-        crrntPg = $(pages[i]).data("chapter");
-        if(crrntPg !== actBG){
-            changeBG(crrntPg);
-        }
+        changeBG(i);
     }
     
     if(i > 0){

@@ -75,11 +75,11 @@ jQuery(document).ready(function($){
     });
     
     //LOAD EDITOR
-    window.loadEditor = function(bookKey,chapter,content,title,lctn,cover){        
+    const loadEditor = function(bookKey,chapter,content,title,lctn){        
         $.ajax({
             method:"POST",
             url:"../pages/parts/editor.php",
-            data: {bookKey:bookKey,chapter:chapter,content:content,title:title,file:lctn,cover:cover},
+            data: {bookKey:bookKey,chapter:chapter,content:content,title:title,file:lctn},
             dataType: "text",
             success: function(data){
                 $("#vb-modal-container").html(data);
@@ -87,15 +87,16 @@ jQuery(document).ready(function($){
         });
     }
 
-    //EDIT BOOK STYLE
+    //EDIT BOOK SECTION
     $(document).on("click",".list-item-vbcontent span.showing-lightbox",function(){
-        let bookCover = $("h1#vb-full-title").data("cover");
+        //let bookCover = $("h1#vb-full-title").data("cover");
         let bookKey = $("h1#vb-full-title").data("book");
-        let cover = (bookCover.length != 0) ? bookCover : null;
+        //let cover = (bookCover.length != 0) ? bookCover : null;
         let file = $("#vb-ttl-cdidtfyr").data("universal");
         let chapter = $(this).data("chapter");
         let key = $(this).data("key");
         let title = $(this).parents("li.list-item-vbcontent").find("span.vb-cnt-title").text();
-        window.loadEditor(bookKey,chapter,key,title,file,cover);
+        loadEditor(bookKey,chapter,key,title,file);
     });
+
 });
