@@ -1,4 +1,9 @@
 <?php
+if(isset($_COOKIE['userdata'])){
+    $UID = $_COOKIE['userdata']['id'];
+    $UName = $_COOKIE['userdata']['name'];
+}
+$UFolder = "{$UName}{$UID}";
 
 function crud_btn($listKey,$action,$pages = 0){
     $na = ($pages == 0)? "vb-btn-disable" : "";
@@ -14,7 +19,7 @@ function crud_btn($listKey,$action,$pages = 0){
     return $btn;
 }
 
-$list = file_get_contents("../../json/books-list-title.json");
+$list = file_get_contents("../../json/users/bookdata/{$UFolder}/books-list-title.json");
 $titles = json_decode($list);
 
 $html = '<ul class="title-list-group">';

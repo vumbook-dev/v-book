@@ -1,34 +1,43 @@
 <?php
 if(isset($_POST['chapter']) && isset($_POST['book'])){
-
-    $chapter = $_POST['chapter']; 
+    if(isset($_COOKIE['userdata'])){
+        $UID = $_COOKIE['userdata']['id'];
+        $UName = $_COOKIE['userdata']['name'];
+    }
+    $UFolder = "{$UName}{$UID}";
+    $ch = $_POST['chapter']; 
     $bookKey = $_POST['book']; 
+    $file = $_POST['file'];
     $bgIMG = "";
 
-    $bookInfo =  file_get_contents("../../json/books-list-title.json");
-    $booklist = json_decode($bookInfo);  
+    $bookInfo =  file_get_contents("../../json/users/bookdata/{$UFolder}/books-list-title.json");
+    $chapterInfo =  file_get_contents("../../json/users/bookdata/{$UFolder}/book-chapter/{$file}.json");
+    $booklist = json_decode($bookInfo);
     $booklist = $booklist[$bookKey];
-    $chInfo = $booklist->chapter;
-    $chInfo = json_decode($chInfo[$chapter]);
-    $bgType = (!empty($chInfo->bgType)) ? $chInfo->bgType : "color";
-    $background = (!empty($chInfo->background)) ? $chInfo->background : "#fff";
-    if($chInfo->name === "Book Info"){
+    $chInfo = json_decode($chapterInfo);  
+    $bgType = (!empty($chInfo[$ch]->bgType)) ? $chInfo[$ch]->bgType : "color";
+    $background = (!empty($chInfo[$ch]->background)) ? $chInfo[$ch]->background : "#fff";
+    if($chInfo[$ch]->name === "Book Info"){
         $title = "<h1 class='text-center ch-main-title pt-5'>{$booklist->title}</h1> <p class='ch-subtitle text-center'>{$booklist->subtitle}</p>";
     }else{
-        $title = $chInfo->name;
-        $title = str_replace("<small class='vb-content-subtitle h6'>","</h1><p class='ch-subtitle text-center'>",$title);
-        $title = str_replace("</small>","</p>",$title);
-        $title = "<h1 class='text-center ch-main-title pt-5'>".$title;
+        if(strstr( $chInfo[$ch]->name, "<small class='vb-content-subtitle h6'>") && !strstr($chInfo[$ch]->name,"<h1 class='text-center ch-main-title pt-5'>")){
+            $title = $chInfo[$ch]->name;
+            $title = str_replace("<small class='vb-content-subtitle h6'>","</h1><p class='ch-subtitle text-center'>",$title);
+            $title = str_replace("</small>","</p>",$title);
+            $title = "<h1 class='text-center ch-main-title pt-5'>".$title;
+        }else{
+            $title = $chInfo[$ch]->name;
+        }
     }   
     
-    $pageTitle = ($chInfo->name !== "Book Info") ? $chInfo->name : $title;
+    $pageTitle = ($chInfo[$ch]->name !== "Book Info") ? $chInfo[$ch]->name : $title;
     $dsounds = file_get_contents("../../json/media/default-sounds.json");
     $dsounds = json_decode($dsounds);  
-    $mySounds = file_get_contents("../../json/users/user-sound.json");
+    $mySounds = file_get_contents("../../json/users/bookdata/{$UFolder}/media/user-sound.json");
     $mySounds = json_decode($mySounds);
 
-    $defaultSound = (!empty($chInfo->sound)) ? $chInfo->sound : 0;
-    $defaultVolume = (!empty($chInfo->volume)) ? $chInfo->volume : 0.5;
+    $defaultSound = (!empty($chInfo[$ch]->sound)) ? $chInfo[$ch]->sound : 0;
+    $defaultVolume = (!empty($chInfo[$ch]->volume)) ? $chInfo[$ch]->volume : 0.5;
     if(!empty($defaultSound)){
         $a = str_replace("m","",$defaultSound);
         $actSound = $mySounds[$a];
@@ -39,6 +48,8 @@ if(isset($_POST['chapter']) && isset($_POST['book'])){
         $SoundID = 0;
         $alias = "";
     }
+
+    $delay = (!empty($chInfo[$ch]->delay)) ? $chInfo[$ch]->delay : 1;
     
 ?>
 
@@ -92,7 +103,8 @@ if(isset($_POST['chapter']) && isset($_POST['book'])){
                                 <div class="input-group-btn" style="margin-left:-2px;">
                                     <span class="fileUpload btn btn-warning d-block mx-2">
                                         <span class="upl text-light" id="upload"><?php echo (!is_integer($bgIMG)) ? "Upload" : "Update" ; ?></span>
-                                        <input type="hidden" name="chapter" value="<?php echo $chapter; ?>">
+                                        <input type="hidden" name="chapter" value="<?php echo $ch; ?>">
+                                        <input type="hidden" name="file" value="<?php echo $file; ?>">
                                         <input type="hidden" name="book" value="<?php echo $bookKey; ?>">
                                         <input type="file" accept="image/*" class="upload up" id="upbackground" name="background[]"/>
                                     </span><!-- btn-orange -->
@@ -113,6 +125,7 @@ if(isset($_POST['chapter']) && isset($_POST['book'])){
                             <div id="vbMyAudioWrap"><span id="vb-my-audio" class="slct-sounds-list act-sound h5" data-id="<?php echo $SoundID; ?>"><?php echo $alias; ?> <i class="fa fa-play" aria-hidden="true" data-dir="1" data-file="<?php echo $actSound->filename; ?>"></i></span></div>  
                             <div class="vb-volume-wrap"><i class="fa fa-volume-up" aria-hidden="true"></i> <input type="range" name="vb-volume-control" value="<?php echo $defaultVolume; ?>" min="0.0" max="1" step="0.01"></div>  
                         </div>
+                        <div class="py-3 px-5 delay-wrap <?php echo $aSound; ?>"><span class="p-2 mx-0 h5">Sound Delay : </span><input type="number" name="delay" value="<?php echo $delay; ?>" min="1" max="100" class="form-control py-0"></div>
                         <div class="input-group">
                         <input type="text" class="form-control d-none rdnly-plchldr" readonly>
                         <form class="input-empty" id="submit-audio" method="post" action="">
@@ -132,7 +145,7 @@ if(isset($_POST['chapter']) && isset($_POST['book'])){
         </div>
       </div>
       <div class="modal-footer">       
-        <button id="vb-save-chPage" data-key="<?php echo $chapter; ?>" type="button" class="btn btn-primary px-3 mr-4">Update</button>
+        <button id="vb-save-chPage" data-key="<?php echo $ch; ?>" type="button" class="btn btn-primary px-3 mr-4">Update</button>
       </div>
     </div>
   </div>
@@ -140,13 +153,13 @@ if(isset($_POST['chapter']) && isset($_POST['book'])){
 
 <script type="text/javascript">
 jQuery(document).ready(function($){
-    let chapterTitle = $(".ttl-<?php echo $chapter; ?>ch").text();
+    let chapterTitle = $(".ttl-<?php echo $ch; ?>ch").text();
     let title = `<?php echo $title ?>`;     
     //let contentKey = <?php //echo $key; ?>;
 
     //QUILL EDITOR
     let container = document.getElementById('style-preview');
-    let editor = QuillEditor(container,false,false);
+    let editor = QuillEditor(container,false,true);
 
     setTimeout(function(){
         $("div.ql-editor").html(title);

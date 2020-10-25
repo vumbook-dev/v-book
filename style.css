@@ -97,7 +97,16 @@ ul.title-list-group > li, ul.chapter-list-group > li, ul.vb-contentlist-wrap > l
   border-bottom-width: 1px!important;
   border-radius: 0!important;
   position: relative;
-  padding: .75rem 1.25rem; 
+  padding: .75rem 0; 
+  list-style-type: none;
+}
+
+li.list-item-vbcontent span.show-section-field{
+  color: #7a7a7a;
+}
+
+li.list-item-vbcontent span.show-section-field:hover{
+  color: #4a4a4a!important;
 }
 
 span.vb-status{
@@ -110,20 +119,59 @@ span.vb-status{
 }
 
 /*** BOOK CHAPTER ***/
+span.editable-title, span.editable-chtitle, span.editable-section{
+  vertical-align: text-top;
+  font-size: 18px;
+  visibility: hidden;
+  cursor: pointer;
+  color:#212529!important;
+}
+
+h1.h1-editable, h6.h6-editable,span.h6-editable{
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  /* height: 64px; */
+}
+
+h6.h6-editable,span.h6-editable{
+  /* height: 36px; */
+  line-height: 2rem;
+}
+
+span.h6-editable{
+  padding:0 40px;
+  width:70%;
+}
+
+h1#vb-full-title:hover > span.editable-title, li.list-item-vbtitle:hover h6>span.editable-chtitle, span.vb-cnt-title:hover span.editable-section{
+  visibility: visible;
+}
+
 #chapter-accordion{
   padding-left:0;
 }
 
-li.list-item-vbcontent > span i{
+#chapter-accordion .card{
+  border: unset;
+}
+
+li.list-item-vbtitle.d-flex > label.editable-label-title{
+  position: absolute;
+  top: -22px;
+  left: 17px;
+}
+
+li.list-item-vbcontent.d-flex > span i.fa-pencil{
   color: #555;
   font-size: 14px;;
 }
 
-li.list-item-vbcontent > span i:hover{
+li.list-item-vbcontent.d-flex > span i.fa-pencil:hover{
   opacity: .5;
 }
 
-li.list-item-vbcontent > span, a.ch-editor{
+li.list-item-vbcontent > span, a.ch-editor, i.vb-chapter-dlt{
   cursor: pointer;
 }
 
@@ -189,6 +237,7 @@ span.vb-btn-wrap > span{
 
 .vb-content-subtitle{
   display: inherit;
+  padding-left: 1.5rem;
 }
 
 input.content-name, #chapter-name{
@@ -242,6 +291,20 @@ button.prev-close, button.editstyle-close {
 #style-preview{
   overflow-y: scroll;
   height: 60vh;
+}
+
+div.delay-wrap{
+  display: flex;
+  border-top: 1px solid rgba(0,0,0,.075);
+}
+
+div.delay-wrap>span{
+  font-weight: 200;
+  width: 70%;
+}
+
+div.delay-wrap>input[type=number]{
+  width: 30%;
 }
 
 div.sound-option-wrap{
@@ -309,7 +372,7 @@ div#imgBackground-preview-wrap > i{
 }
 
 img#prev-img-background{
-  width:100%;
+  width:70%;
 }
 
 span#rm-image-background{  
@@ -472,12 +535,12 @@ div.vb-volume-wrap>input{
 }
 
 /*** BOOK COVER ***/
-#book-cover-preview-wrap > i{
+#book-cover-preview-wrap > i, #book-background-preview-wrap > i{
   font-size:7rem;
   color:#ccc;
 }
 
-div.edit-book-cover .form-control[readonly]{
+div.edit-book-cover .form-control[readonly], div.edit-book-background .form-control[readonly]{
     background-color: transparent;
 }
 
@@ -487,11 +550,11 @@ div.edit-book-cover form#submit-book-cover{
     position: relative;
 }
 
-img#prev-img-bookcover{
+img#prev-img-bookcover, #prev-img-bookbackground{
     width:100%;
 }
 
-#submit-book-cover button.btn-primary{
+#submit-book-cover button.btn-primary, #submit-book-background button.btn-primary{
     float: right;
     margin-top: -38px;
 }

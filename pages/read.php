@@ -1,13 +1,18 @@
 <?php
 
 if(isset($_POST['data'])){
+    if(isset($_COOKIE['userdata'])){
+        $UID = $_COOKIE['userdata']['id'];
+        $UName = $_COOKIE['userdata']['name'];
+    }
+    $UFolder = "{$UName}{$UID}";
     $book = $_POST['data'];
     $key = $book - 1;
-    $allBooks = file_get_contents("../json/books-list-title.json");
+    $allBooks = file_get_contents("../json/users/bookdata/{$UFolder}/books-list-title.json");
     $books = json_decode($allBooks);
     $thisChapters = $books[$key]->chapter;
     $filename = $books[$key]->storage;
-    $bookContents = file_get_contents("../json/book-content/$filename.json");
+    $bookContents = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/$filename.json");
     $bookContents = json_decode($bookContents);
 ?>
 <div class="col-md-12" style="margin-top:60px;">
@@ -21,7 +26,7 @@ if(isset($_POST['data'])){
 </div>
 <div class="col-md-12">
 <div id="vb-control-wrap" class="pb-4 pt-2 px-5">
-    <span id="vb-zoomvalue">100%</span> <input type="range" id="vb-sliderzoomer" value="2" min="1" max="6" step="1" id="vb-zoomer">
+    <span id="vb-zoomvalue">160%</span> <input type="range" id="vb-sliderzoomer" value="6" min="0" max="10" step="2" id="vb-zoomer">
 </div>
 <div id="book-container" data-actBG="0"></div>
 </div>
@@ -115,17 +120,20 @@ const ProcessSound = function(){
     let active = $("div.activePage");
     let File = active.data("sound");
     let volume = active.data("volume");
+    let delay = active.data("delay");
     let dir = active.data("sdir");
     let status = active.data("status");    
     if(status !== undefined){        
         let Sound = PlaySound(File,dir,volume,status);
-        if(status < 1){
-            Sound.play();
-            let = status = null;
-        }else{
-            Sound.pause();
-            let = status = null;
-        }
+        setTimeout(function(){        
+            if(status < 1){
+                Sound.play();
+                let = status = null;
+            }else{
+                Sound.pause();
+                let = status = null;
+            }
+        },delay);
     }
 }
 
@@ -133,18 +141,22 @@ $(document).on("click","ul.vb-section-list-nav li",function(){
     if(!$(this).hasClass("act-section")){
         let File = $(this).data("sound");
         let dir = $(this).data("sdir");
+        //let delay = $(this).data("delay");
         let status = $("ul.vb-section-list-nav > li").data("status");
         let index = $(this).data("nav");
         let chapter = $(this).data("chapter");
         let section = $(this).data("section");
         let Sound = PlaySound(File,dir,status);
-        if(status < 1){
-            Sound.play();
-            let = status = null;
-        }else{
-            Sound.pause();
-            let = status = null;
-        }
+        //setTimeout(function(){        
+            if(status < 1){
+                Sound.play();
+                let = status = null;
+            }else{
+                Sound.pause();
+                let = status = null;
+            }
+            console.log("Played");
+        //},delay);
         pageNav(index,"",false);
         console.log(index);
         $("ul.vb-section-list-nav > li").removeClass("act-section");
@@ -176,32 +188,37 @@ $(document).on("click","button#vb-download",function(){
 
 $("main.main-editor").removeClass("main-editor");
 
-//PAGINATION
-setTimeout(function(){
+const viewContent = function(container){
+    let editor = QuillEditor(container,true,false);
+    return editor;
+}
 
-    const viewContent = function(container){
-        let editor = QuillEditor(container,true,false);
-        return editor;
-    } 
-
-    $.ajax({
-        url: "../json/book-content/<?php echo $filename; ?>.json",
-        method: "GET",
-        dataType: "JSON",
-        success: function(json){
-            
-            for(let i = 0; i < json.length; i++) {                  
-                let obj = json[i];
-                let view;
-                let container = ".vbPage"+obj.id;
-                let text = obj.content;
-                text = JSON.parse(text);
-                view = viewContent(container);
-                view.setContents(text);           
+const loadBooksContent = function(){
+    let contentPage = $('div.vbPageContent');
+    let content = contentPage.length;
+    let view;
+    for(i=0;content>i;i++){
+        $.ajax({
+            url: "../model/books.php",
+            method: "POST",
+            data: {file:"<?php echo $filename; ?>",path:"<?php echo $UFolder; ?>",section:i,action:"loadBC"},
+            dataType: "text",
+            success: function(data){            
+                    let obj = JSON.parse(data);                
+                    let container = ".vbPage"+obj.id;
+                    let text = obj.content;
+                    text = JSON.parse(text);
+                    view = viewContent(container);
+                    view.setContents(text);      
+                    //console.log(obj);     
             }
-        }
-    });
+        });
+    }
+}
 
+//PAGINATION
+setTimeout(function(){ 
+    loadBooksContent();
     changeBG(0);
 },1000);
 
@@ -282,19 +299,22 @@ $(document).on("click","#vbPageNav > li > a",function(e){
 $(document).on('input', '#vb-sliderzoomer', function(){
     let value = $(this).val();
     let zoom;
+    let pb;
     switch(parseInt(value)){
-        case 1: zoom = 80; break;
-        case 2: zoom = 100; break;
-        case 3: zoom = 120; break;
-        case 4: zoom = 160; break;
-        case 5: zoom = 200; break;
-        case 6: zoom = 240; break;
+        case 0: zoom = 80; pb = 0; break;
+        case 2: zoom = 100; pb = 0; break;
+        case 4: zoom = 120; pb = 0; break;
+        case 6: zoom = 160; pb = 6; break;
+        case 8: zoom = 200; pb = 12; break;
+        case 10: zoom = 240; pb = 15; break;
     }
     $("#book-container").css("zoom",zoom+"%");
     $("#book-container").css({"-moz-transform":"scale("+zoom+"%,"+zoom+"%)","-moz-transform-origin":"top"});
     $("#book-container").css({"-ms-transform":"scale("+zoom+"%,"+zoom+"%)","-ms-transform-origin":"top"});
     $("#book-container").css("-webkit-zoom",zoom+"%");
+    $("#book-container").css("padding-bottom",pb+"rem");
     $("span#vb-zoomvalue").text(zoom+"%");
+
 });
 
 $(document).ready(function(){
@@ -303,7 +323,7 @@ $(document).ready(function(){
     main.removeClass("container");
     main.addClass("container-fluid");
     main.addClass("p-fixed");
-    bookwrap.css({"-moz-transform":"scale(1)","zoom":"100%","-webkit-zoom":"100%","-ms-transform":"scale(1)"});
+    bookwrap.css({"-moz-transform":"scale(1)","zoom":"160%","-webkit-zoom":"160%","-ms-transform":"scale(1)","padding-bottom":"6rem"});
 });
 </script>
 

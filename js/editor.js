@@ -34,6 +34,7 @@ jQuery(document).ready(function($){
                 $("#vbSelectSounds input.rdnly-plchldr").addClass("d-none");
                 $("form#submit-audio button.btn-primary").addClass("d-none");
                 $("#vbSelectSounds span.fileUpload").removeClass("d-none");
+                $("div.delay-wrap").removeClass("d-none");
                 //$(this).removeEventListener();
                 //loadMyAudio();
                 //selfsubmit.clear();               
@@ -127,14 +128,14 @@ jQuery(document).ready(function($){
     });
 
     //UPDATE STYLE
-    const UpdateContent = function(sound,volume,key,file,chapter,color,index = bookIndex){
+    const UpdateContent = function(sound,volume,delay,key,file,chapter,color,index = bookIndex){
         $("div.ql-editor").append(" ");
         setTimeout(function(){            
             let content = JSON.stringify(Quillcontents, null, 2);
             $.ajax({
                 method: "POST",
                 url: "../model/content.php",
-                data: {sound:sound,volume:volume,key:key,file:file,book:index,content:content,chapter:chapter,color:color,action:"update"},
+                data: {sound:sound,volume:volume,delay:delay,key:key,file:file,book:index,content:content,chapter:chapter,color:color,action:"update"},
                 dataType: "text",
                 success: function(data){
                     let json = JSON.parse(data);
@@ -297,7 +298,7 @@ jQuery(document).ready(function($){
     }
 
     //PROCESS QUILL IMAGE FORM
-    const uploadQuillImage = function(directory){
+    window.uploadQuillImage = function(directory){
         let image = $("div.ql-editor img");
         let allImageCount = image.length;        
         let file;
@@ -321,7 +322,7 @@ jQuery(document).ready(function($){
                         success: function(data){
                             let rs = JSON.parse(data);
                             $(image[i]).attr("src",rs.url);
-                            console.log(rs);                            
+                            //console.log(rs);                            
                         }
                     });                                          
                 }                                 
@@ -335,7 +336,9 @@ jQuery(document).ready(function($){
     $(document).on("click","#vb-save-styles",function(){
         //console.log(content);
         let key = $(this).data("key");
-        let actSound = $("span.act-sound").data("id");
+        let parent = $(this).parents('div.modal-content');
+        let actSound = parent.find("span#vb-my-audio.act-sound").data("id");
+        let delay = parent.find('input[name=delay]').val();
         let file = $("input#vb-ttl-cdidtfyr").data("universal");
         let vol = $("input[name=vb-volume-control]").val();
         //let ApplyAllSounds = $("input.allSounds");
@@ -347,7 +350,7 @@ jQuery(document).ready(function($){
             color = $("div.colorPick-wrap input.pcr-result").val();
         }             
         if(uploadQuillImage(file)){
-            UpdateContent(actSound,vol,key,file,chapter,color);
+            UpdateContent(actSound,vol,delay,key,file,chapter,color);
         }else{
             //alert("No Image");
         } 

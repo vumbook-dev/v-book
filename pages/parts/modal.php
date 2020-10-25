@@ -6,12 +6,13 @@ $title = $_POST['title'];
 $content = $_POST['content'];
 $chapter = $_POST['chapter'];
 
-}elseif(isset($_POST['book']) && isset($_POST['title']) && isset($_POST['chapter']) && isset($_POST['action'])){
+}elseif(isset($_POST['book']) && isset($_POST['title']) && isset($_POST['chapter']) && isset($_POST['action']) && isset($_POST['file'])){
   if($_POST['action'] == "chapter_delete"){
     $content = $_POST['book'];
     $title = $_POST['title'];
     $chapter = $_POST['chapter'];
     $action = $_POST['action'];
+    $file = $_POST['file'];
   }
 }
 ?>
@@ -88,12 +89,12 @@ elseif(!empty($title) && $_POST['action'] == "chapter_delete") { ?>
 jQuery(document).ready(function($){
 $("#vb-delete-modal").css("display","block");
 
-  function deleteChapter(book,chapter,title){
+  function deleteChapter(book,chapter,title,file){
     let modal = $("#vb-delete-modal"); 
     $.ajax({
         method: "POST",
         url: "../model/chapters.php",
-        data: {chapter:chapter,key:book,title:title,action:"delete"},
+        data: {chapter:chapter,key:book,title:title,file:file,action:"delete"},
         dataType: "text",
         beforeSend: function(){
           modal.find(".modal-body>p").html(`Deleting ...`);
@@ -114,7 +115,8 @@ $("#vb-delete-modal").css("display","block");
     let chapter = $(this).data("chapter");
     let book = $(this).data("key");
     let title = "<?php echo $title; ?>";
-    deleteChapter(book,chapter,title);
+    let file = "<?php echo $file; ?>";
+    deleteChapter(book,chapter,title,file);
   });
 
   $(document).on("click","#vb-modal-container .close, #vb-modal-container .btn-secondary",function(){
