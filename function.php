@@ -27,7 +27,7 @@ function redirectToPages($path = ""){
 
 function contentForm($key = "", $vbID,$book,$bookIndex = ""){
     $html = '
-    <div class="col-sm-4 tc-wrap">        
+    <div class="col-sm-12 tc-wrap d-none">        
         <div class="form-group">
         <form method="post" class="vb-new-section">
         <span class="vb-chapter'.$key.'">
@@ -52,3 +52,13 @@ function revertTextToEditor($post){
     $new = str_replace("</span>","</p>",$new);
     return $new;
 }
+
+function setCurrentUser(){
+    setcookie("userdata[id]","1");
+    setcookie("userdata[name]","john");
+    // $userID = $_COOKIE['userdata']['id'];
+    // $userName = $_COOKIE['userdata']['name'];
+    // echo $userID. " " .$userName;
+}
+
+setCurrentUser();

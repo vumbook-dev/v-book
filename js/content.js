@@ -99,4 +99,12 @@ jQuery(document).ready(function($){
         loadEditor(bookKey,chapter,key,title,file);
     });
 
+    //SHOW ADD SECTION FIELD
+    $(document).on('click','span.show-section-field',function(){
+        let selector = $(this).parents('div.card-body');
+        let field = selector.find('div.tc-wrap');
+        $(this).parent('li').addClass('d-none');
+        field.removeClass('d-none');
+    });
+
 });
