@@ -1,6 +1,10 @@
 <?php require_once "function.php"; ?>
 <?php require_once "header.php"; ?>
+<<<<<<< HEAD
 <div id="vbUpdateMessage"></div>
+=======
+
+>>>>>>> 7df1e76825bb62958a73bb96625892d8301467ed
     <header id="vb-header">
       <!-- Fixed navbar -->
       <nav class="navbar navbar-expand-md navbar-dark bg-dark px-4">
