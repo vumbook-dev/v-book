@@ -3,6 +3,98 @@
 * Author: Jojimer Castino
 * Prototype version: 1.0  */
 
+
+/* HEADER CSS */
+ul.navbar_user{
+  padding: .5rem 1rem;
+  color: white;
+}
+
+ul.navbar-nav{
+  width: 30%;
+}
+
+ul.navbar_user a:hover{
+  text-decoration: none;
+}
+
+ul.navbar_user li{
+  display: inline-block;
+  text-align: center;
+}
+
+ul.navbar_user li.account {
+  position: relative;
+  min-width: 50px;
+  padding-left: 20px;
+  vertical-align: middle;
+  background: #1e1e27;
+}
+
+ul.navbar_user li.account_dropdown a{
+  color:white;
+  margin-right: 5px;
+}
+
+ul.navbar_user ul.account_selection{
+  display: block;
+  position: absolute;
+  right: -80px;
+  top: -10px!important;
+  padding: 0;
+  margin: 0;
+  width: 120px;
+  background: #FFFFFF;
+  visibility: hidden;
+  opacity: 0;
+  z-index: 1;
+  box-shadow: 0 0 25px rgba(63, 78, 100, 0.15);
+  -webkit-transition: opacity 0.3s ease;
+  -moz-transition: opacity 0.3s ease;
+  -ms-transition: opacity 0.3s ease;
+  -o-transition: opacity 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+ul.navbar_user ul.account_selection li {
+  padding-left: 10px;
+  padding-right: 10px;
+  line-height: 50px;
+  width:100%;
+}
+
+ul.navbar_user ul.account_selection li a {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: block;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  color: #1e1e27;
+  -webkit-transition: color 0.3s ease;
+  -moz-transition: color 0.3s ease;
+  -ms-transition: color 0.3s ease;
+  -o-transition: color 0.3s ease;
+  transition: color 0.3s ease;
+  font-size: 14px;
+}
+
+ul.navbar_user ul.account_selection li:first-child a{
+  border-bottom: solid 1px #dddddd;
+}
+
+ul.navbar_user ul.account_selection li a i {
+  margin-right: 10px;
+}
+
+ul.navbar_user ul.account_selection.show_dropdown {
+  opacity: 1;
+  visibility: visible;
+}
+
 #vb-header{
   position: fixed;
   top: 0;
@@ -45,15 +137,18 @@ div{
   flex-wrap: wrap;
 }
 #vb-show-content .cb-wrap .form-group > span:nth-child(1){
-  flex: 30%;
+  flex: 5%;
 }
 
 #vb-show-content .cb-wrap .form-group > span:nth-child(2){
   flex: 40%;
 }
 
+#vb-show-content .cb-wrap .form-group > span:nth-child(3){
+  flex: 5%;
+}
+
 #vb-show-content .form-group > button{
-  flex: 30%;
   height: 38px;
   right: 0;
   margin-top: 32px;
@@ -61,8 +156,12 @@ div{
   margin-left: -2px;
 }
 
-#book-title{
+#book-template{
   border-radius: .25rem 0 0 .25rem;
+}
+
+#book-title{
+  border-radius: 0;
 }
 
 #sub-title{
@@ -92,6 +191,16 @@ span.vbook-title{
   flex: 100%;
 }
 
+i.tempicon{
+  font-size: 2.2rem;
+  margin-left: -2.5rem;
+  top: 12px;
+}
+
+div.chapter-list>ul.chapter-list-group>li.list-item-vbtitle:first-child{
+  display:none!important;
+}
+
 ul.title-list-group > li, ul.chapter-list-group > li, ul.vb-contentlist-wrap > li{
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-bottom-width: 1px!important;
@@ -118,7 +227,7 @@ span.vb-status{
   cursor:not-allowed;
 }
 
-/*** BOOK CHAPTER ***/
+/*** TABLE OF CONTENTS ***/
 span.editable-title, span.editable-chtitle, span.editable-section{
   vertical-align: text-top;
   font-size: 18px;
@@ -171,7 +280,7 @@ li.list-item-vbcontent.d-flex > span i.fa-pencil:hover{
   opacity: .5;
 }
 
-li.list-item-vbcontent > span, a.ch-editor, i.vb-chapter-dlt{
+li.list-item-vbcontent > span, a.ch-editor, i.vb-chapter-dlt, ul.navbar_user i{
   cursor: pointer;
 }
 
@@ -193,6 +302,11 @@ span.vb-btn-wrap > span{
   margin:0 5px;
 }
 
+@media (min-width: 1400px){
+  main.tbc.container {
+      max-width: 1380px;
+  }
+}
 
 /*** CONTENT PREVIEW ***/
 #vb-preview{
@@ -250,47 +364,43 @@ button.vb-new-content, .bc-wrap button{
   position: relative;
 }
 
-#vb-preview span, #style-preview span{
+/* #vb-preview span, #style-preview span{
   margin-bottom:1rem;
   display: inline-block;
   white-space: break-spaces;
-}
+} */
 
-.text-justify #style-preview span{
+/* .text-justify #style-preview span{
   display: unset!important;
   line-height: 2.5rem;
-}
+} */
 
 button.prev-close, button.editstyle-close {
-  padding: 0;
   background-color: transparent;
-  border: 0;
-  -webkit-appearance: none;
-  padding: 1rem;
-  margin: -1rem -1rem -1rem auto;
+  text-align: center;
   cursor: pointer;
+  border-radius: 100%;
+  position: absolute;
+  border: 0;
+  margin-top: -28px;
+  right: -12px;
 }
 
 .prev-close:hover, .editstyle-close:hover {
-  color: #000;
   text-decoration: none;
   opacity: .75;
 }
 
 .prev-close, .editstyle-close {
-  float: right;
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1;
-  color: #000;
-  text-shadow: 0 1px 0 #fff;
-  opacity: .5;
 }
 
 /*** EDIT STYLE PAGE ***/
 #style-preview{
   overflow-y: scroll;
-  height: 60vh;
+  height: 70vh;
 }
 
 div.delay-wrap{
@@ -362,7 +472,7 @@ div.sound-option-wrap{
 
 .style-widgets-corner, .editstyle-page{
   overflow-y: scroll;
-  height: 700px;
+  height: 75vh;
 }
 
 /*** BOOK Quill EDITOR ***/
@@ -417,11 +527,192 @@ div.ql-editor h1, div.ql-editor h2, div.ql-editor h3, div.ql-editor h4, div.ql-e
   line-height: 2rem;
 }
 
+div.booktemplate div.ql-toolbar{
+  background-color: white;
+  width: 910px;
+}
+
 div#style-preview{
   background-repeat: no-repeat!important;
   background-origin: border-box!important;
   background-size: cover!important;
   background-position: bottom!important;
+}
+
+#bookTemplateEditorWrap{
+  height: 750px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+div#bookTemplateEditorWrap.bmtp-newpage{
+  height: 675px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+#bookTemplateEditorWrap>div.bookTempZoomer{
+  zoom: 80%;
+  height: 90%;
+  position: relative;
+  margin: 15vh auto 0;
+}
+
+#bookTemplateEditorWrap>div.bookTempZoomer div#style-preview{
+  overflow: hidden;
+  background-color: white!important;
+  border: 0;
+  height: 100%;
+}
+
+#bookTemplateEditorWrap>div.bookTempZoomer div#style-preview div.ql-editor{
+  width: 380px;
+  padding: 0 25px;
+  height: 580px;
+  overflow-y: hidden;
+  background: white;
+}
+
+span.charLimiter{
+  background: rgb(105, 105, 105);
+  color: white;
+  position: absolute;
+  padding: 10px;
+  right: 0px;
+  top: 38px;
+  font-size: 1.3em;
+  line-height: .6;
+  z-index: 1;
+}
+
+div#btmpZoomControl{
+  position: absolute;
+  right: 30px;
+  top: 15px;
+  color: white;
+}
+
+div.btmp-page{
+  width: 380px;
+  height: 580px;
+  zoom:240%;
+  -webkit-zoom: 240%;
+  -moz-transform: scale(2);
+  -moz-transform-origin: top;
+  -ms-transform: scale(2);
+  -ms-transform-origin: top;
+}
+
+div.btmp-page>div.bmtp-startpage.text-center{
+  display: grid;
+  zoom: 50%;
+  margin: 25px auto;
+  width: 90%;
+  padding: 12rem 10rem;
+}
+
+div.btmp-page>div.ql-snow{
+  white-space: unset;
+  background-color: white;
+  z-index: 1;
+  position: relative;
+}
+
+div.btmp-content{
+  overflow-y: hidden;
+  background-color: white;
+  width: 380px;
+  height: 580px;
+  padding: .8rem 1.2rem;
+  z-index: 1;
+  position: relative;
+}
+
+div.btmp-content, div#style-preview div.ql-editor{
+  background-position: center!important;
+  background-repeat: no-repeat!important;
+  background-size: cover!important;
+}
+
+div.btmp-content.ql-editor{
+  font-family: Helvetica, Arial, sans-serif!important;
+}
+
+div.btmp-content.ql-editor h1{
+  font-size: 26px;
+}
+
+div.btmp-content.ql-editor h2{
+  font-size: 19.5px;
+}
+
+div.btmp-content.ql-editor h3{
+  font-size: 15.21px;
+}
+
+div.btmp-content.ql-editor h4{
+  font-size: 13px;
+}
+
+div.btmp-content.ql-editor h5{
+  font-size: 10.79px;
+}
+
+div.btmp-content.ql-editor h6{
+  font-size: 8.71px;
+}
+
+div.btmp-content.ql-editor p, div.btmp-content.ql-editor li{
+  font-size: 13px;
+}
+
+div.btmp-btn-edwrap, div.btmp-btn-scwrap{
+  right: 20px;
+  top: 45px;
+}
+
+ul.btmp-pagelist{
+  position: absolute;
+  list-style: none!important;
+  top: 0px;
+  left: -4.4rem;
+  height: 580px;
+  overflow-y: scroll;
+  z-index: 0;
+}
+
+ul.btmp-pagelist > li{
+  background-color: #555;
+  border-bottom: 1px #ddd solid;
+  padding: 0 1rem 0 .3rem;
+  cursor: pointer;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  color: white;
+  text-align: right;
+}
+
+ul.btmp-pagelist > li.btmp-active{
+  color: #f8f9fa;
+  background-color: #007bff!important;
+}
+
+ul.btmp-pagelist > li:hover{
+  background-color: #656565;
+}
+
+ul.btmp-pagelist > li:before{
+  content: none!important;
+}
+
+ul.btmp-pagelist > li#btmp-add-page-btn{
+  color: #fff;
+  background-color: #28a745;
+  padding-left: .45rem;
+}
+
+ul.btmp-pagelist > li#btmp-add-page-btn > i{
+  margin-top: 5px;
 }
 
 /*** ALIGN TEXT OPTION ***/
@@ -804,15 +1095,16 @@ div.pcr-app{
 }
 
 div.colorPick-wrap div.pcr-selection{
-  height: 17.5em!important;
+  height: 30vh!important;
 }
 
 /*** UPDATE MESSAGE ***/
 div#vbUpdateMessage{
   position: fixed;
   right: 0;
-  margin: -25px 70px 0 25px;
+  margin: -25px 22px 0 25px;
   z-index: 10000;
+  top: 90px;
 }
 
 /*** CSS LOAD EFFECTS ***/

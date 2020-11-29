@@ -1,6 +1,10 @@
 <?php require_once "function.php"; ?>
 <?php require_once "header.php"; ?>
+<<<<<<< HEAD
+<div id="vbUpdateMessage"></div>
+=======
 
+>>>>>>> 7df1e76825bb62958a73bb96625892d8301467ed
     <header id="vb-header">
       <!-- Fixed navbar -->
       <nav class="navbar navbar-expand-md navbar-dark bg-dark px-4">
@@ -11,19 +15,26 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item active mx-2">
-              <a class="nav-link" id="0" data-nav="home" href="/home/">Home</a>
+              <a class="nav-link" id="0" data-nav="home" href="/">Home</a>
             </li>
-            <li class="nav-item d-none">
-              <a class="nav-link" id="1" data-nav="editor" href="/editor/">Editor</a>
-            </li>
+            <?php if(isset($_COOKIE['userdata'])) : ?>
             <li class="nav-item">
-              <a class="nav-link btn btn-success text-white" id="2" data-nav="create-books" href="/create-books/">Create Books</a>
+              <a class="nav-link btn btn-success text-white" id="2" data-nav="create" href="/create/">Create Books</a>
             </li>
-          </ul>
-          <!-- <form class="form-inline mt-2 mt-md-0">
-            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-          </form> -->
+            <?php endif; ?>
+            <ul class="navbar_user">
+        <li class="account_dropdown"><span class="pr-2"><i class="fa fa-user pr-1" aria-hidden="true"></i> <?php if(isset($_COOKIE['userdata']['name'])) echo $_COOKIE['userdata']['name']; ?></span><i class="fa fa-angle-down"></i></li>
+        <li class="account">
+            <ul class="account_selection">
+              <?php if(!isset($_COOKIE['userdata'])) : ?>
+              <li><a href="<?php echo VUMBOOK; ?>login"><i class="fa fa-sign-in" aria-hidden="true"></i>Login</a></li>
+              <li><a href="<?php echo VUMBOOK; ?>user/signup"><i class="fa fa-user-plus" aria-hidden="true"></i>Sign Up</a></li>
+              <?php else : ?>
+              <li><a href="<?php echo VUMBOOK; ?>user/logout"><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</a></li>
+              <?php endif; ?>
+            </ul>
+        </li>
+        </ul>
         </div>
       </nav>
     </header>

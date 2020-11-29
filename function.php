@@ -1,28 +1,49 @@
 <?php
+//DEFINE APP ROOT LINK
+define('URLROOT','http://app.vumbook.test/',true);
+define('VUMBOOK','http://vumbook.test/',true);
+function get_string_between($string, $start, $end){
+    $string = ' ' . $string;
+    $ini = strpos($string, $start);
+    if ($ini == 0) return '';
+    $ini += strlen($start);
+    $len = strpos($string, $end, $ini) - $ini;
+    return substr($string, $ini, $len);
+}
 
 function redirectToPages($path = ""){
-    session_start();
-    if(isset($_SESSION['page'])){
-        $path = $_SESSION['page'];
-        $state = $_SESSION['state'];        
-        if((isset($_SESSION['book']) && $state === 3) || (isset($_SESSION['book']) && $state === 4)){
-            $book = $_SESSION['book'];
-            echo "history.pushState($state, `V-Book > $path`, `./$path/book={$book}`);";
+    $html = "";
+    $url = $_SERVER['REQUEST_URI'];
+    $path = get_string_between($url,"/","/");
+    $template = get_string_between($url,"/","=");
+    $book = substr($url, strpos($url, "=") + 1);
+    switch($path){
+        case "editor"; $state = 1; break;
+        case "create"; $state = 2; break;
+        case "table-of-contents"; $state = 3; break;
+        case "read"; $state = 4; break;
+        default: $state = 0; break;
+    }
+    if(!empty($_COOKIE['userdata'])){
+        if((!empty($book) && $state === 3) || (!empty($book) && $state === 4)){
+            //$html .= "history.pushState($state, `V-Book > $path`, `./$path/book={$book}`);";
             //echo "history.replaceState($state, `V-Book > $path`, `./$path/book={$book}`);";
             if($path == "download"){
-                echo "sendToPage('$path',vbloader,$book,'download');";
+                $html .= "sendToPage('$path',vbloader,$book,'download');";
             }else{
-                echo "sendToPage('$path',vbloader,$book);";
+                //$html .= "sendToPage('$path',vbloader,$book);";
             }
-        }else{
-            echo "history.pushState($state, `V-Book > $path`, `./$path/`);";
+        }elseif(!empty($path)){
+            //"history.pushState($state, `V-Book > $path`, `./$path/`);";
             //echo "history.replaceState($state, `V-Book > $path`, `./$path/`);";            
-            echo "loadPage('$path',vbloader);";             
+            $html .= "loadPage('create',vbloader);";          
+            //return $template;   
         }        
-        echo "$('title').text(`V-Book > $path`);";
-    }
+    }else{
+        $html .= 'usernotLoggedIn';
+    }    
 
-    session_destroy();
+    return $html;
 }
 
 function contentForm($key = "", $vbID,$book,$bookIndex = ""){
@@ -61,4 +82,4 @@ function setCurrentUser(){
     // echo $userID. " " .$userName;
 }
 
-setCurrentUser();
+//setCurrentUser();
