@@ -19,26 +19,32 @@
               let userdata = getCookie('userdata[id]');              
               if(userdata != null){
                 <?php echo $page; ?>
+                $("a[data-nav=create]").removeClass('d-none');
               }else{
                 $("a[data-nav=create]").remove();
                 window.location.href = '/';
               }
               //console.log(userdata);
               <?php
-            }else{
-              if($page === 'usernotLoggedIn'){
-                ?>
-                let session = getCookie('sessiondata[session]');
-                if(session != null){
+            }else{ ?>
+            let session = getCookie('sessiondata[session]');
+            <?php if($page === 'usernotLoggedIn'){ ?>                
+                if(session != null){                 
                   $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-danger" role="alert"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Your session expired please login to your account.</div>');
-                  history.replaceState(0, `V-Book > Home`, `/`);
                   setTimeout(function(){
                     $("div#vbUpdateMessage>div").fadeOut(500);
                   },1800);
                 }
-                <?php
-              } 
-              echo "loadPage('home',vbloader);";
+                history.replaceState(0, `V-Book > Home`, `/`);                
+            <?php } ?>      
+            if(session != null){
+              $("a[data-nav=create]").remove(); 
+              $("li.account_dropdown>span.pr-2").html('<i class="fa fa-user pr-1" aria-hidden="true"></i>');
+              $("ul.account_selection").html(`<li><a href="<?php echo VUMBOOK; ?>user/login"><i class="fa fa-sign-in" aria-hidden="true"></i>Login</a></li><li><a href="<?php echo VUMBOOK; ?>user/signup"><i class="fa fa-user-plus" aria-hidden="true"></i>Sign Up</a></li>`);
+            }else{
+              $("a[data-nav=create]").removeClass('d-none');
+            }      
+            <?php  echo "loadPage('home',vbloader);";
             }
             
             ?>
