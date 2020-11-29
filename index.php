@@ -1,10 +1,6 @@
 <?php require_once "function.php"; ?>
 <?php require_once "header.php"; ?>
-<<<<<<< HEAD
 <div id="vbUpdateMessage"></div>
-=======
-
->>>>>>> 7df1e76825bb62958a73bb96625892d8301467ed
     <header id="vb-header">
       <!-- Fixed navbar -->
       <nav class="navbar navbar-expand-md navbar-dark bg-dark px-4">
@@ -19,7 +15,7 @@
             </li>
             <?php if(isset($_COOKIE['userdata'])) : ?>
             <li class="nav-item">
-              <a class="nav-link btn btn-success text-white" id="2" data-nav="create" href="/create/">Create Books</a>
+              <a class="nav-link btn btn-success text-white d-none" id="2" data-nav="create" href="/create/">Create Books</a>
             </li>
             <?php endif; ?>
             <ul class="navbar_user">
@@ -27,7 +23,7 @@
         <li class="account">
             <ul class="account_selection">
               <?php if(!isset($_COOKIE['userdata'])) : ?>
-              <li><a href="<?php echo VUMBOOK; ?>login"><i class="fa fa-sign-in" aria-hidden="true"></i>Login</a></li>
+              <li><a href="<?php echo VUMBOOK; ?>user/login"><i class="fa fa-sign-in" aria-hidden="true"></i>Login</a></li>
               <li><a href="<?php echo VUMBOOK; ?>user/signup"><i class="fa fa-user-plus" aria-hidden="true"></i>Sign Up</a></li>
               <?php else : ?>
               <li><a href="<?php echo VUMBOOK; ?>user/logout"><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</a></li>
