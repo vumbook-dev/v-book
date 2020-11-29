@@ -1,0 +1,37 @@
+/*** BOOK READER ***/
+#book-navigation-container button > small, .card-header button > i{
+    display:none;
+}
+
+#style-bookview ol{
+  margin-top:1rem!important;
+}
+
+ul.vb-section-list-nav{
+  list-style: none;
+}
+
+ul.vb-section-list-nav > li{
+  padding: 10px 20px 10px 30px;
+  text-align: left;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+ul.vb-section-list-nav > li.act-section{
+  background-color: #007bff;
+  color: white;
+}
+
+div#vbBookNavigationList{
+  width: 300px;
+  margin: 0 auto;
+}
+
+div#style-bookview{
+  /* overflow-y: scroll; */
+  height: 100%;
+}
