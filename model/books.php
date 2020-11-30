@@ -12,6 +12,8 @@ if(isset($_COOKIE['userdata'])){
             if(isset($_POST['title'])){
                 $sub = (isset($_POST['subTitle'])) ? $_POST['subTitle'] : "";
                 $title = $_POST['title'];
+                $template = $_POST['template'];
+                $contentArray = ($template == 'book') ? [] : "";
                 $hshtitle = str_replace(" ","-",$title);
                 $hash = "$title".rand(0,1000);
                 $id = md5($hash);
@@ -20,15 +22,15 @@ if(isset($_COOKIE['userdata'])){
                 $bookInformation = array("name" => "Book Info","bgType" => "color","background" => "#fff");
                 $bookInformation = json_encode($bookInformation);
                 $chapterArray[] = $bookInformation;
-                $newBook = array("id" => $id, "title" => $title, "subtitle" => $sub, "storage" => $storage, "status" => "unpublished", "cover" => null, "speed" => "1000", "dsound" => "0", "chapter" => $chapterArray);
+                $newBook = array("id" => $id, "title" => $title, "subtitle" => $sub, "storage" => $storage, "status" => "unpublished", "cover" => null, "speed" => "1000", "dsound" => "0", "chapter" => $chapterArray,"template" => $template,"bookInfoSkip" => 2);
                 $oldData = file_get_contents("../json/users/bookdata/{$UFolder}/books-list-title.json");
                 $arrayData = json_decode($oldData,true);
                 $arrayData[] = $newBook;
                 $countBook = count($arrayData);
                 $json = json_encode($arrayData);
                 $contentlist = array();
-                $CRP = array("id" => "00","chapter" => 0, "cpart" => "Copyright Page", "sound" => 0, "content" => "", "bgType" => "color", "background" => "#fff");
-                $TBLC = array("id" => "01","chapter" => 0, "cpart" => "Table of Contents", "sound" => 0, "content" => "", "bgType" => "color", "background" => "#fff");
+                $CRP = array("id" => "00","chapter" => 0, "cpart" => "Copyright Page", "sound" => 0, "content" => $contentArray, "bgType" => "color", "background" => "#fff");
+                $TBLC = array("id" => "01","chapter" => 0, "cpart" => "Table of Contents", "sound" => 0, "content" => $contentArray, "bgType" => "color", "background" => "#fff");
                 $contentlist[] = $CRP;
                 $contentlist[] = $TBLC;
                 $ARR = array_column($contentlist, 'id');

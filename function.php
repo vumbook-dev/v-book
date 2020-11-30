@@ -15,7 +15,7 @@ function redirectToPages($path = ""){
     $html = "";
     $url = $_SERVER['REQUEST_URI'];
     $path = get_string_between($url,"/","/");
-    $template = get_string_between($url,"/","=");
+    //$template = get_string_between($url,"/","=");
     $book = substr($url, strpos($url, "=") + 1);
     switch($path){
         case "editor"; $state = 1; break;
@@ -31,7 +31,7 @@ function redirectToPages($path = ""){
             if($path == "download"){
                 $html .= "sendToPage('$path',vbloader,$book,'download');";
             }else{
-                //$html .= "sendToPage('$path',vbloader,$book);";
+                $html .= "sendToPage('$path',vbloader,$book);";
             }
         }elseif(!empty($path)){
             //"history.pushState($state, `V-Book > $path`, `./$path/`);";

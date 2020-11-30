@@ -14,7 +14,7 @@
             <?php 
             
             $page = redirectToPages(); 
-            if(!empty($page) && $page !== 'usernotLoggedIn'){
+            if(!empty($page) && $page != 'usernotLoggedIn'){
               ?>
               let userdata = getCookie('userdata[id]');              
               if(userdata != null){

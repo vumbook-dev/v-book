@@ -171,7 +171,7 @@ div{
   border-radius: 0;
 }
 
-.list-item-vbtitle > span:first-child{
+.list-item-vbtitle > span:nth-child(2){
   align-items: center;
   display: flex;
   flex-wrap: wrap;
@@ -181,6 +181,15 @@ div{
 
 .list-item-vbtitle > span >small{
   flex:1;
+}
+
+.list-item-vbtitle > span.btmp-icon{
+  left:-50px;
+}
+
+.list-item-vbtitle > span.btmp-icon > i{
+  font-size: 2.5rem;
+  color:#007bff;
 }
 
 .list-item-vbtitle > h6{
