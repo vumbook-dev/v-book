@@ -12,18 +12,18 @@ jQuery(document).ready(function($){
     listBooks();
 
     //CREATE A JSON BOOK DATA
-    function createBook(title,input,sub,subInput){
+    function createBook(title,sub,template){
         $.ajax({
             method: "POST",
             url: "../model/books.php",
-            data: {title:title,subTitle:sub,action:"add"},
+            data: {title:title,subTitle:sub,template:template,action:"add"},
             dataType: "text",
             success: function(data){
                 //alert("book-chapter/book="+data);
                 //listBooks();
                 //input.val("");
                 //subInput.val("");
-                window.location.replace("/book-chapter/book="+data);
+                window.location.replace("/table-of-contents/book="+data);
             }
         });
     }
@@ -35,8 +35,9 @@ jQuery(document).ready(function($){
         let title = titleInput.val();
         let subInput = $(this).find("input[name=sub-title]");
         let subtitle = subInput.val();
+        let template = $(this).find("select[name=template]").val();
         //$(this).off(e);
-        createBook(title,titleInput,subtitle,subInput);
+        createBook(title,subtitle,template);
         //$(this).reset();
     });    
 

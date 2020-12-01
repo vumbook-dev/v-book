@@ -1,10 +1,17 @@
 <div class="col">
-    <h1 class="text-monospace text-center p-5 mb-0 mt-5">Create Books <small class="d-block h6">Lorem ipsum dolor sit amet, adipiscing elit.</small></h1>
+    <h1 class="text-monospace text-center p-5 mb-0 mt-5">Start a project <small class="d-block h6">Write the title and subtitle of your book and click "Create" button.</small></h1>
 </div>
 
 <div class="col-sm-12 cb-wrap">
-    <form action="/create-books" method="get" autocomplete="off">
+    <form action="/create" method="get" autocomplete="off">
     <div class="form-group">
+        <span>
+            <label for="book title">Template</label>
+            <select class="form-control" name="template" id="book-template">
+                <option value="book">Book</option>
+                <option value="newspaper">Newspaper</option>
+            </select>    
+        </span>
         <span>
             <label for="book title">Main Title</label>
             <input name="book-title" id="book-title" type="text" class="form-control">    

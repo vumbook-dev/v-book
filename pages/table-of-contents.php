@@ -10,6 +10,7 @@ if(isset($_POST['data'])){
     $list = file_get_contents("../json/users/bookdata/{$UFolder}/books-list-title.json");
     $book = json_decode($list);    
     $file = $book[$key]->storage;
+    $btmp = $book[$key]->template;
     $bookcover = "";
 
     $coverkey = $book[$key]->cover;
@@ -34,7 +35,7 @@ if(isset($_POST['data'])){
 </div>
 <div class="col-sm-12 my-5 pt-5">    
     <label for="Book Title" class="d-none text-right editable-label-title"><small>Put text inside <strong class="h4">{...}</strong> for book subtitle</small></label>
-    <h1 id="vb-full-title" data-cover="<?php echo $book[$key]->cover; ?>" data-book="<?php echo $key; ?>" data-title="<?php echo $book[$key]->title; ?>" class="text-monospace text-center p-1 mb-5"><?php echo $book[$key]->title ?> <span class="editable-title"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></span><small class="d-block h6"><?php echo $book[$key]->subtitle ?></small></h1>  
+    <h1 id="vb-full-title" data-template="<?php echo $btmp; ?>" data-cover="<?php echo $book[$key]->cover; ?>" data-book="<?php echo $key; ?>" data-title="<?php echo $book[$key]->title; ?>" class="text-monospace text-center p-1 mb-5"><?php echo $book[$key]->title ?> <span class="editable-title"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></span><small class="d-block h6"><?php echo $book[$key]->subtitle ?></small></h1>  
     <div class="float-right d-none editable-btn" style="margin-top: -42px;"><button class="btn btn-danger">Cancel</button>
     <button class="btn btn-primary">Save</button></div>
 </div>

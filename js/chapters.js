@@ -1,6 +1,7 @@
 jQuery(document).ready(function($){
     const bookKey = $("h1#vb-full-title").data("book");   
     const bookData = $("input#vb-ttl-cdidtfyr").data("universal");  
+    const bookTemplate = $("h1#vb-full-title").data("template");   
 
     /*** START BOOK CHAPTER ***/
     //LIST BOOK CHAPTER
@@ -58,7 +59,7 @@ jQuery(document).ready(function($){
         $.ajax({
             method: "POST",
             url: "../pages/parts/content-list.php",
-            data: {chapter:chapter,title:title,file:bookData,id:id},
+            data: {chapter:chapter,title:title,template:bookTemplate,file:bookData,id:id},
             dataType: "text",
             success: function(data){
                 $("div#vbcontent-list"+chapter).html(data);
