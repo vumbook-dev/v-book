@@ -532,6 +532,15 @@ div#style-preview div.ql-editor{
   -ms-transform-origin: top;
 }
 
+div.btmp-editor-wrap div#style-preview.editstyle-page div.ql-editor{
+  zoom: 0%;
+  -webkit-zoom: 0%;
+  -moz-transform: scale(0);
+  -moz-transform-origin: top;
+  -ms-transform: scale(0);
+  -ms-transform-origin: top;
+}
+
 div.ql-editor h1, div.ql-editor h2, div.ql-editor h3, div.ql-editor h4, div.ql-editor h5, div.ql-editor h6, div.ql-editor ul{
   line-height: 2rem;
 }
@@ -549,9 +558,11 @@ div#style-preview{
 }
 
 #bookTemplateEditorWrap{
-  height: 750px;
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: hidden;
+  margin: 0 auto;
+  zoom: 120%;
+  margin-bottom: 3rem;
 }
 
 div#bookTemplateEditorWrap.bmtp-newpage{
@@ -561,10 +572,17 @@ div#bookTemplateEditorWrap.bmtp-newpage{
 }
 
 #bookTemplateEditorWrap>div.bookTempZoomer{
-  zoom: 80%;
-  height: 90%;
+  zoom: 120%;
+  width: 380px;
+  height: 580px;
   position: relative;
-  margin: 15vh auto 0;
+  margin: 9% auto 0;
+}
+
+div#btmp-action-control-wrap{
+  text-align: right;
+  position: relative;
+  top: 60px;
 }
 
 #bookTemplateEditorWrap>div.bookTempZoomer div#style-preview{
@@ -575,22 +593,28 @@ div#bookTemplateEditorWrap.bmtp-newpage{
 }
 
 #bookTemplateEditorWrap>div.bookTempZoomer div#style-preview div.ql-editor{
-  width: 380px;
-  padding: 0 25px;
+  width: 100%;
+  padding: 0;
   height: 580px;
-  overflow-y: hidden;
+  overflow-y: scroll;
   background: white;
+  padding: .5rem;
+}
+
+div.btmp-editor-wrap div.ql-toolbar{
+  background-color: white;
+  zoom: 60%;
 }
 
 span.charLimiter{
   background: rgb(105, 105, 105);
   color: white;
   position: absolute;
-  padding: 10px;
+  padding: 3px;
   right: 0px;
-  top: 38px;
-  font-size: 1.3em;
-  line-height: .6;
+  top: 39px;
+  font-size: .5em;
+  line-height: .8;
   z-index: 1;
 }
 
@@ -601,10 +625,10 @@ div#btmpZoomControl{
   color: white;
 }
 
-div.btmp-page{
-  width: 380px;
-  height: 580px;
-  zoom:240%;
+div.btmp-page{  
+  width: 100%;
+  height: 100%;
+  zoom:0%;
   -webkit-zoom: 240%;
   -moz-transform: scale(2);
   -moz-transform-origin: top;
@@ -612,11 +636,10 @@ div.btmp-page{
   -ms-transform-origin: top;
 }
 
-div.btmp-page>div.bmtp-startpage.text-center{
+div.bmtp-startpage.text-center{
   display: grid;
-  zoom: 50%;
-  margin: 25px auto;
-  width: 90%;
+  margin: 10% auto;
+  width: 50%;
   padding: 12rem 10rem;
 }
 
@@ -625,14 +648,15 @@ div.btmp-page>div.ql-snow{
   background-color: white;
   z-index: 1;
   position: relative;
+  height: 580px;
 }
 
 div.btmp-content{
   overflow-y: hidden;
-  background-color: white;
-  width: 380px;
-  height: 580px;
-  padding: .8rem 1.2rem;
+  background-color: white;  
+  width: 100%;
+  height: 100%;
+  padding: .8rem .6rem;
   z-index: 1;
   position: relative;
 }
@@ -647,7 +671,7 @@ div.btmp-content.ql-editor{
   font-family: Helvetica, Arial, sans-serif!important;
 }
 
-div.btmp-content.ql-editor h1{
+/* div.btmp-content.ql-editor h1{
   font-size: 26px;
 }
 
@@ -669,7 +693,7 @@ div.btmp-content.ql-editor h5{
 
 div.btmp-content.ql-editor h6{
   font-size: 8.71px;
-}
+} */
 
 div.btmp-content.ql-editor p, div.btmp-content.ql-editor li{
   font-size: 13px;
@@ -684,10 +708,11 @@ ul.btmp-pagelist{
   position: absolute;
   list-style: none!important;
   top: 0px;
-  left: -4.4rem;
+  left: -3.3rem;
   height: 580px;
   overflow-y: scroll;
   z-index: 0;
+  zoom: 240%;
 }
 
 ul.btmp-pagelist > li{
@@ -699,6 +724,7 @@ ul.btmp-pagelist > li{
   border-radius: 6px;
   color: white;
   text-align: right;
+  zoom: 40%;
 }
 
 ul.btmp-pagelist > li.btmp-active{

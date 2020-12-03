@@ -1,4 +1,5 @@
 jQuery(document).ready(function($){
+    const bookTemplate = $("h1#vb-full-title").data("template");
     /*** START CONTENT ***/
 
     //SHOW LIGHTBOX EDITOR
@@ -19,7 +20,7 @@ jQuery(document).ready(function($){
         $.ajax({
             method: "POST",
             url: "../model/content.php",
-            data: {id:id,index:bookIndex,name:name,chapter:chapter,title:book,action:"add"},
+            data: {id:id,index:bookIndex,name:name,chapter:chapter,title:book,template:bookTemplate,action:"add"},
             dataType: "text",
             success: function(data){
                 let key = data - 1;
@@ -78,7 +79,7 @@ jQuery(document).ready(function($){
     const loadEditor = function(bookKey,chapter,content,title,lctn){        
         $.ajax({
             method:"POST",
-            url:"../pages/parts/editor.php",
+            url:"../pages/parts/"+bookTemplate+"-editor.php",
             data: {bookKey:bookKey,chapter:chapter,content:content,title:title,file:lctn},
             dataType: "text",
             success: function(data){

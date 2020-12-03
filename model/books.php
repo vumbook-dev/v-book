@@ -13,6 +13,7 @@ if(isset($_COOKIE['userdata'])){
                 $sub = (isset($_POST['subTitle'])) ? $_POST['subTitle'] : "";
                 $title = $_POST['title'];
                 $template = $_POST['template'];
+                $path = "../json/users/bookdata/{$UFolder}/";
                 $contentArray = ($template == 'book') ? [] : "";
                 $hshtitle = str_replace(" ","-",$title);
                 $hash = "$title".rand(0,1000);
@@ -36,8 +37,9 @@ if(isset($_COOKIE['userdata'])){
                 $ARR = array_column($contentlist, 'id');
                 array_multisort($ARR, SORT_ASC, $contentlist);
                 $contentSection = json_encode($contentlist);
-                file_put_contents("../json/users/bookdata/{$UFolder}/books-list-title.json",$json);
-                file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$storage}.json",$contentSection);
+                file_put_contents("{$path}books-list-title.json",$json);
+                file_put_contents("{$path}book-content/{$storage}.json",$contentSection);
+                file_put_contents("{$path}book-chapter/{$file}.json",[]);
                 echo $countBook;
                 //$_POST = array();
             }

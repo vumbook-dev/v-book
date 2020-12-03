@@ -26,7 +26,7 @@ if(isset($_POST['data'])){
 </div>
 <div class="col-md-12">
 <div id="vb-control-wrap" class="pb-4 pt-2 px-5">
-    <span id="vb-zoomvalue">160%</span> <input type="range" id="vb-sliderzoomer" value="6" min="0" max="10" step="2" id="vb-zoomer">
+    <span id="vb-zoomvalue">160%</span> <input type="range" id="vb-sliderzoomer" value="6" min="0" max="10" step="2">
 </div>
 <div id="book-container" data-actBG="0"></div>
 </div>
@@ -189,7 +189,7 @@ $(document).on("click","button#vb-download",function(){
 $("main.main-editor").removeClass("main-editor");
 
 const viewContent = function(container){
-    let editor = QuillEditor(container,true,false);
+    let editor = QuillEditor(container,null,true,false);
     return editor;
 }
 
@@ -314,7 +314,6 @@ $(document).on('input', '#vb-sliderzoomer', function(){
     $("#book-container").css("-webkit-zoom",zoom+"%");
     $("#book-container").css("padding-bottom",pb+"rem");
     $("span#vb-zoomvalue").text(zoom+"%");
-
 });
 
 $(document).ready(function(){

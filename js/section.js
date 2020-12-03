@@ -17,7 +17,7 @@ jQuery(document).ready(function($){
 
         if(content.length != 0){
             addContent(id,content,key,title,"",bookIndex);
-            $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-success" role="alert"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Section '+input.val()+' Successfully Added</div>');
+            $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-success" role="alert"><i class="fa fa-check-circle-o" aria-hidden="true"></i> '+input.val()+' Successfully Added</div>');
             setTimeout(function(){
                 $("div.message-status").remove();
             },4000);
