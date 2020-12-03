@@ -362,7 +362,7 @@ class TableModule {
     }
 }
 
-window.QuillEditor = function(container,readOpt = false,toolbarOpt = true){
+window.QuillEditor = function(container,limit = null,readOpt = false,toolbarOpt = true){
 
     let Container = Quill.import('blots/container');
     Quill.register(TableCell);
@@ -370,6 +370,21 @@ window.QuillEditor = function(container,readOpt = false,toolbarOpt = true){
     Quill.register(Table);
     Quill.register(ContainBlot);
     Quill.register('modules/table', TableModule);
+    Quill.register('modules/maxlength', function(quill, options) {
+
+        if(options.value != null){
+            quill.on('text-change', function(e) {
+                
+                    let size = quill.getText();
+                    $('span.charLimiter>span').text(options.value - size.length);
+                    if (size.length > options.value){                        
+                        quill.history.undo();
+                    } 
+        
+            });
+        }
+
+    });
 
     Container.order = [
         'list', 'contain',   // Must be lower
@@ -405,7 +420,9 @@ window.QuillEditor = function(container,readOpt = false,toolbarOpt = true){
         debug: false,
         modules: {
             toolbar: toolbarSwitch,
-            table: true
+            table: true,
+            maxlength : {value : limit},
+            history: { delay: 100, userOnly: true }  
         },
         placeholder: false,
         readOnly: readOpt,

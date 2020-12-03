@@ -24,9 +24,11 @@ if(isset($_COOKIE['userdata'])){
         $action = $_POST['action'];
         if($action == "add"){
             //ADD CONTENT CHAPTER
-            if(isset($_POST['id']) && isset($_POST['chapter']) && isset($_POST['title']) && isset($_POST['name']) && isset($_POST['index'])){
+            if(isset($_POST['id']) && isset($_POST['chapter']) && isset($_POST['title']) && isset($_POST['name']) && isset($_POST['index']) && isset($_POST['template'])){
                 $id = $_POST['id'];
                 $index = $_POST['index'];
+                $template = $_POST['template'];
+                $contentArray = ($template == 'book') ? [] : "";
                 $bookData = file_get_contents("../json/users/bookdata/{$UFolder}/books-list-title.json");
                 $bookData = json_decode($bookData);
                 $default = $bookData[$index];
@@ -45,7 +47,7 @@ if(isset($_COOKIE['userdata'])){
                     $ACC = ($value->chapter == $chapter) ? $ACC+1 : $ACC;
                 }
                 $id = "$chapter".$ACC;
-                $newContent = array("id" => $id,"chapter" => $chapter, "cpart" => $name, "sound" => $default->dsound, "content" => "", "bgType" => "color", "background" => "#fff");
+                $newContent = array("id" => $id,"chapter" => $chapter, "cpart" => $name, "sound" => $default->dsound, "content" => $contentArray, "bgType" => "color", "background" => "#fff");
                 $contentlist[] = $newContent;
                 $ARR = array_column($contentlist, 'id');
                 array_multisort($ARR, SORT_ASC, $contentlist);
@@ -57,17 +59,62 @@ if(isset($_COOKIE['userdata'])){
                 //print_r($bookData);
                 echo $count;
             }
+        }elseif($action == "btmp_add"){
+            if(isset($_POST['chapter']) && isset($_POST['file'])){
+                $chapter = $_POST['chapter'];
+                $file = $_POST['file'];
+                $id = (isset($_POST['id'])) ? intval($_POST['id']) : "";
+                $list = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");
+                $contentlist = json_decode($list);
+                $count = count($contentlist[$chapter]->content);
+                $newID = (!empty($id)) ? intval($id+1) : $count+1;
+                $content = array("id" => $newID, "text" => "");
+                $content = json_encode($content);
+                $contentlist[$chapter]->content[] = $content;
+                $json = json_encode($contentlist);
+                file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
+                echo $newID;
+            }
+        }elseif($action == "btmp_delete"){
+            if(isset($_POST['chapter']) && isset($_POST['file']) && isset($_POST['key'])){
+                $chapter = $_POST['chapter'];
+                $file = $_POST['file'];
+                $key = $_POST['key'];
+                $list = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");
+                $contentlist = json_decode($list);
+                unset($contentlist[$chapter]->content[$key]);
+                $contentlist[$chapter]->content = array_values($contentlist[$chapter]->content);
+                $count = count($contentlist[$chapter]->content);
+                $json = json_encode($contentlist);
+                file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
+                echo $count;
+            }
+        }elseif($action == "btmp_update"){
+            if(isset($_POST['chapter']) && isset($_POST['file']) && isset($_POST['key']) && isset($_POST['content'])){
+                $chapter = $_POST['chapter'];
+                $file = $_POST['file'];
+                $key = $_POST['key'];
+                $content = $_POST['content'];
+                $list = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");
+                $contentlist = json_decode($list);
+                $oldContent = $contentlist[$chapter]->content[$key];
+                $oldContent = json_decode($oldContent,true);
+                $oldContent['text'] = $content;
+                $oldContent = json_encode($oldContent);
+                $contentlist[$chapter]->content[$key] = $oldContent;
+                $json = json_encode($contentlist);
+                file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
+            }
         }elseif($action == "update"){
             //UPDATE CONTENT CHAPTER
-            if(isset($_POST['file']) && isset($_POST['sound']) && isset($_POST['content']) && isset($_POST['key'])){
+            if(isset($_POST['file']) && isset($_POST['sound']) && isset($_POST['key'])){
                 $file = $_POST['file'];
                 $sound = $_POST['sound'];
                 $volume = $_POST['volume'];
                 $delay = $_POST['delay'];
                 $color = (isset($_POST['color'])) ? $_POST['color'] : "";
                 $key = $_POST['key'];
-                //$ch = $_POST['chapter'];
-                $content = $_POST['content'];
+                //$ch = $_POST['chapter'];                
                 $allData = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");        
                 $section = json_decode($allData);
 
@@ -113,7 +160,10 @@ if(isset($_COOKIE['userdata'])){
                         }                   
                     }
 
-                    $section[$key]->content = $content;                        
+                    if(isset($_POST['content'])){
+                        $section[$key]->content = $_POST['content'];
+                    }
+                                            
                     $json = json_encode($section);
                     file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
 

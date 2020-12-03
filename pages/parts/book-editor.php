@@ -44,25 +44,66 @@ if(isset($_COOKIE['userdata'])){
     <div class="modal" id="vb-modal-editstyle" tabindex="-1" role="dialog" style="display:block">
     <div class="modal-editor-wrap" role="document">
         <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title">Editor</h5>
-            <div class="p-fixed">
+        <div class="modal-header">            
+            <div class="float-right">
             <span id="btn-stop" class="btn mr-2 text-danger d-none"><i class="fa fa-stop" aria-hidden="true"></i> Stop</span>
             <span class="btn mr-2 text-success preplay-section btn-play d-none" data-status="inactive" data-line="0" data-key="<?php echo $key; ?>" data-chapter="<?php echo $chapter; ?>"><i class="fa fa-play" aria-hidden="true"></i> Play</span>
             <span class="btn btn-light back-to-preview d-none" data-title="<?php echo $content[$key]->cpart; ?>" data-key="<?php echo $key; ?>" data-chapter="<?php echo $chapter; ?>"><i class="fa fa-eye pr-2" aria-hidden="true"></i> Preview</span>
-            <button type="button" class="editstyle-close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+            <button type="button" class="editstyle-close text-danger" data-dismiss="modal" aria-label="Close">
+            <i class="fa fa-times-circle" aria-hidden="true"></i>
             </button>
             </div>
+            <button id="vb-save-styles" data-key="<?php echo $key; ?>" type="button" class="btn btn-primary px-3 mr-4">Update</button>
+            <h5 class="modal-title">Book Editor</h5>            
         </div>
         <div class="modal-body p-4">
             <div class="row">
-                <div class="col-md-9 px-4 <?php //echo "text-{$content[$key]->align}"; ?>">
-                    <!-- <h3 class="vb-ch-title mb-3"></h3>
-                    <h5 class="mb-5"></h5> -->
-                    <div id="toolbar"></div>
-                    <div id="style-preview" class="editstyle-page py-2 px-4">
-                        
+                <div class="col-md-9" style="background-color: #454545; max-height: 75vh; overflow-y: scroll;">
+                <?php $hide = (count($content[$key]->content) < 1) ? "d-none" : ""; ?>
+                <div id="btmpZoomControl" class="pb-4 pt-2 <?php echo $hide; ?>">
+                    <span id="btmp-zoomvalue">120%</span> <input type="range" id="btmp-sliderzoomer" value="4" min="0" max="6" step="2">
+                </div>
+                <div class="pr-3 <?php echo $hide; ?>" id="btmp-action-control-wrap">
+                    <span class="btn btn-primary btmp-ed-action" data-key="0"><i class='bx bx-edit'></i> Edit Page <span>1</span></span>
+                    <span class="btn btn-danger btmp-ed-action" data-key="0"><i class='bx bx-trash'></i> Delete Page <span>1</span></span>
+                    <span class="btn btn-primary btmp-save-wrap d-none" data-key="0"><i class='bx bx-save'></i> Save</span>
+                    <span class="btn btn-secondary btmp-cancel-wrap d-none"><i class='bx bx-x'></i> Cancel</span>
+                </div>
+                    <div class="btmp-bg <?php echo $hide; ?>" id="bookTemplateEditorWrap">
+                        <div class="btmp-editor-wrap bookTempZoomer">
+                            <div class="d-none">
+                                <div id="toolbar"></div>
+                                <span class="charLimiter">1300 / <span>1300</span></span>
+                                <div id="style-preview" class="editstyle-page"></div>
+                            </div>
+                            <div class="btmp-page">
+                                    <ul class="btmp-pagelist">
+                                        <?php
+                                        $np = "";
+                                            foreach($content[$key]->content as $xy => $val){
+                                                $n = json_decode($val);
+                                                $active = ($xy == 0) ? "btmp-active" : "";
+                                                $np = $n->id;
+                                                echo "<li class='btmp-pages {$active}' data-pageid='{$np}' data-key='{$xy}'>$np</li>";
+                                            }
+                                        ?>
+                                        <li id="btmp-add-page-btn" data-lastKey="<?php echo $np; ?>"><i class='bx bx-plus p-relative' style="left:3px"></i></li>
+                                    </ul>
+                                    <div class="ql-snow">
+                                        <?php
+                                            foreach($content[$key]->content as $xy => $val){
+                                                $n = json_decode($val);
+                                                $active = ($xy != 0) ? "d-none" : "";
+                                                echo '<div class="ql-editor btmp-content btmpPage'.$xy.' '.$active.'" data-key="'.$xy.'">'.$n->text.'</div>';
+                                            }
+                                        ?>
+                                    </div>                  
+                            </div>
+                        </div>                 
+                    </div>
+                    <div class="bmtp-startpage text-center <?php echo (empty($hide)) ? "d-none" : ""; ?>">
+                        <label class="text-muted" for="Start New Page">Add Page to Start</label>
+                        <span class="btn btn-success">Add New Page</span>
                     </div>
                 </div>
                 <div class="col-md-3 style-widgets-corner">
@@ -107,65 +148,6 @@ if(isset($_COOKIE['userdata'])){
                     <!-- SOUNDS SECTION -->
                     <div class="form-group text-center sound-option-wrap">
                         <span class="h6"><i class="fa fa-music" aria-hidden="true"></i> Page Sounds</span>                    
-                        <!-- <div class="accordion mt-3 d-none" id="vbSelectSounds">
-                            <div id="default-sounds" class="card">
-                                <div class="card-header p-0" id="headingOne">
-                                <h5 class="mb-0">
-                                    <button class="btn collapsed" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                        Default Sounds
-                                    </button>
-                                </h5>
-                                </div>
-
-                                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#vbSelectSounds">
-                                <div class="card-body p-0">
-                                    <ul class="mb-0 p-0 slct-sounds">
-                                        <?php 
-                                            // foreach($dsounds as $k => $value){
-                                            //     $icon = ($value->id != 0) ? '<i class="fa fa-play px-3" aria-hidden="true" data-dir="default" data-file="'.$value->filename.'"></i></li>' : ' ';
-                                            //     if(is_numeric($content[$key]->sound)){
-                                            //         $activeSound = ($value->id == $content[$key]->sound) ? 'act-sound' : '';
-                                            //     }else{
-                                            //         $activeSound = "";
-                                            //     }                                        
-                                            //     echo '<li class="slct-sounds-list '.$activeSound.'" data-id="'.$value->id.'">'.$value->alias.' '.$icon;
-                                            // }
-                                        ?>
-                                    </ul>
-                                </div>
-                                </div>
-                            </div>
-
-                            <div id="personal-sounds" class="card">
-                                <div class="card-header p-0" id="headingTwo">
-                                <h5 class="mb-0">
-                                    <button class="btn" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                        My Media Sounds
-                                    </button>
-                                </h5>
-                                </div>
-
-                                <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#vbSelectSounds">
-                                <div class="card-body p-0 pb-2" style="height:auto;">
-                                    <div id="vb-my-audio"></div>                                                                               
-                                    <div id="vb-sound-upload" class="form-group px-2 mb-0 pt-2">
-                                    <div class="input-group">
-                                    <input type="text" class="form-control d-none rdnly-plchldr" readonly>
-                                    <form class="input-empty" id="submit-audio" method="post" action="">
-                                    <div class="input-group-btn" style="margin-left:-2px;">
-                                        <span class="fileUpload btn btn-info">
-                                            <span class="upl" id="upload">Upload</span>
-                                            <input type="file" accept="audio/*" class="upload up" id="up" name="audio[]" multiple/>
-                                        </span>
-                                    </div>
-                                    <button class="btn btn-primary d-none">Submit</button>
-                                    </form>
-                                    </div>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                        </div> -->
                         <div class="vbSoundDemo form-group" id="vbSelectSounds">
                             <?php if($actSound === null){ $noSound = ""; $aSound = "d-none"; }
                                 else{ $noSound = "d-none"; $aSound = ""; }?>
@@ -195,8 +177,7 @@ if(isset($_COOKIE['userdata'])){
         </div>
         <div class="modal-footer">       
             <!-- <input id="vbcc-text" type="hidden" value=""> -->
-            <!-- <button id="vb-addnew-section" data-key="<?php echo $key; ?>" type="button" class="btn btn-secondary px-3 mr-1">Add New Section</button> -->
-            <button id="vb-save-styles" data-key="<?php echo $key; ?>" type="button" class="btn btn-primary px-3 mr-4">Update</button>
+            <!-- <button id="vb-addnew-section" data-key="<?php //echo $key; ?>" type="button" class="btn btn-secondary px-3 mr-1">Add New Section</button> -->            
         </div>
         </div>
     </div>
@@ -210,34 +191,7 @@ if(isset($_COOKIE['userdata'])){
 
         // QUILL EDITOR
         let container = document.getElementById('style-preview');
-        let editor = QuillEditor(container);
-
-        const getContent = function(key){
-            $.ajax({
-                url: "../../model/content.php",
-                method: "POST",
-                data: {file:"<?php echo $file; ?>",key:key,action:"load"},
-                dataType: "text",
-                success: function(data){
-                    dataContent = JSON.parse(data);
-                    editor.setContents(dataContent);
-                }
-            });
-        }
-
-        setTimeout(function(){
-            window.Quillcontents = editor.getContents();
-        },1000);
-        
-        editor.on('text-change', function(delta, oldDelta, source) {
-        if (source == 'api') {
-            console.log("An API call triggered this change.");
-            //console.log(delta);
-        } else if (source == 'user') {
-            console.log("A user action triggered this change."); 
-            window.Quillcontents = editor.getContents();             
-        }
-        });
+        let editor = QuillEditor(container,1300);
 
         //COLOR PICKER
         <?php
@@ -301,13 +255,7 @@ if(isset($_COOKIE['userdata'])){
 
         loadMyAudio();
 
-        setTimeout(function(){
-            <?php if(!empty($content[$key]->content)){ ?>
-                getContent(contentKey);
-            <?php }else{ ?>
-                $("div#style-preview div.ql-editor").prepend("<h1><strong>"+title+"</strong></h1>");
-            <?php } ?>
-            
+        setTimeout(function(){            
             <?php if($bgType == "color"){ ?>
                 let bgColor = $("div.colorPick-wrap input.pcr-result").val();
                 $("div#style-preview").css("background",bgColor);
@@ -317,7 +265,26 @@ if(isset($_COOKIE['userdata'])){
         },500);
             
 
+    //ZOOMER
+    $(document).on('input', '#btmp-sliderzoomer', function(){
+        let value = $(this).val();
+        let mrgn;
+        let zoom;
+        switch(parseInt(value)){
+            case 0: zoom = 60; mrgn = 0; break;
+            case 2: zoom = 80; mrgn = 0; break;
+            case 4: zoom = 120; mrgn = 9; break;
+            case 6: zoom = 160; mrgn = 9; break;
+        }
+        $("div#bookTemplateEditorWrap").css("zoom",zoom+"%");
+        $("div#bookTemplateEditorWrap").css({"-moz-transform":"scale("+zoom+"%,"+zoom+"%)","-moz-transform-origin":"top"});
+        $("div#bookTemplateEditorWrap").css({"-ms-transform":"scale("+zoom+"%,"+zoom+"%)","-ms-transform-origin":"top"});
+        $("div#bookTemplateEditorWrap").css("-webkit-zoom",zoom+"%");
+        $("div.btmp-editor-wrap").css("margin-top",mrgn+"%");
+        $("span#btmp-zoomvalue").text(zoom+"%");
     });
+});
+
     </script>
     </div>
     <div class="modal-backdrop show"></div>

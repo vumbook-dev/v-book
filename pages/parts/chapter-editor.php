@@ -56,16 +56,17 @@ if(isset($_POST['chapter']) && isset($_POST['book'])){
 <div class="modal" id="vb-modal-editstyle" tabindex="-1" role="dialog" style="display:block">
   <div class="modal-editor-wrap" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Editor</h5>
-        <div class="p-fixed">
+      <div class="modal-header">        
+        <div class="float-right">
           <span id="btn-stop" class="btn mr-2 text-danger d-none"><i class="fa fa-stop" aria-hidden="true"></i> Stop</span>
           <span class="btn mr-2 text-success preplay-section btn-play d-none" data-status="inactive" data-line="0" data-key="<?php echo $key; ?>" data-chapter="<?php echo $chapter; ?>"><i class="fa fa-play" aria-hidden="true"></i> Play</span>
           <span class="btn btn-light back-to-preview d-none" data-title="<?php echo $content[$key]->cpart; ?>" data-key="<?php echo $key; ?>" data-chapter="<?php echo $chapter; ?>"><i class="fa fa-eye pr-2" aria-hidden="true"></i> Preview</span>
-          <button type="button" class="editstyle-close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="editstyle-close text-danger" data-dismiss="modal" aria-label="Close">
+             <i class="fa fa-times-circle" aria-hidden="true"></i>
           </button>
         </div>
+        <button id="vb-save-chPage" data-key="<?php echo $ch; ?>" type="button" class="btn btn-primary px-3 mr-4">Update</button>
+        <h5 class="modal-title">Editor</h5>
       </div>
       <div class="modal-body p-4">
         <div class="row">
@@ -144,8 +145,8 @@ if(isset($_POST['chapter']) && isset($_POST['book'])){
             </div>
         </div>
       </div>
-      <div class="modal-footer">       
-        <button id="vb-save-chPage" data-key="<?php echo $ch; ?>" type="button" class="btn btn-primary px-3 mr-4">Update</button>
+      <div class="modal-footer px-5">       
+        
       </div>
     </div>
   </div>

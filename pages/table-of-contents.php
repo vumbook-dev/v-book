@@ -111,7 +111,7 @@ if(isset($_POST['data'])){
 <script type="text/javascript" src="/js/chapters.js"></script>
 <script type="text/javascript" src="/js/section.js"></script>
 <script type="text/javascript" src="/js/content.js"></script>
-<script type="text/javascript" src="/js/editor.js"></script>
+<script type="text/javascript" src="/js/<?php echo $btmp; ?>-editor.js"></script>
 <?php
 
 }else{
