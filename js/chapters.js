@@ -31,7 +31,7 @@ jQuery(document).ready(function($){
                 let chptr = JSON.parse(data);
                 //addSectionLightbox(chptr['title'],chptr['file'],chptr['chapter'],chptr['index']);
                 input.val("");
-                $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-success" role="alert"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Chapter '+chptr['title']+' Successfully Added</div>');
+                $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-success" role="alert"><i class="fa fa-check-circle-o" aria-hidden="true"></i>'+chptr['title']+' Successfully Added</div>');
                 setTimeout(function(){
                     $("div.message-status").remove();
                 },4000);
@@ -289,7 +289,7 @@ jQuery(document).ready(function($){
         let parent = $(this).parents('div.modal-content');
         let title = $("h1.ch-main-title").text();
         let subtitle = $("p.ch-subtitle").text();
-        let file = $("input#vb-ttl-cdidtfyr").data("universal");
+        //let file = $("input#vb-ttl-cdidtfyr").data("universal");
         let actSound = $("span.act-sound").data("id");
         let vol = $("input[name=vb-volume-control]").val();
         let delay = parent.find('input[name=delay]').val();
@@ -298,10 +298,12 @@ jQuery(document).ready(function($){
         if(inputColor.length > 0){
             color = $("div.colorPick-wrap input.pcr-result").val();
         }
-        if(uploadQuillImage(file)){
+        if(uploadQuillImage(bookData)){
             updateChPage(key,actSound,vol,delay,color,title,subtitle);
+            console.log(1);
         }else{
-            //alert("No Image");
+            updateChPage(key,actSound,vol,delay,color,title,subtitle);
+            console.log(2);
         }        
     });
 

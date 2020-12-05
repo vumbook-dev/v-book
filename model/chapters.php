@@ -111,7 +111,7 @@ if(isset($_COOKIE['userdata'])){
             $newUpdate = json_encode($chapters);
             file_put_contents("../json/users/bookdata/{$UFolder}/book-chapter/{$file}.json",$newUpdate); 
 
-            $message = '<i class="fa fa-check-circle-o" aria-hidden="true"></i> Chapter Successfully Updated';
+            $message = '<i class="fa fa-check-circle-o" aria-hidden="true"></i> Book Part Successfully Updated';
             $status = "success";
             $arry = array("message" => $message, "status" => $status);
             $arry = json_encode($arry);
@@ -122,8 +122,8 @@ if(isset($_COOKIE['userdata'])){
                 $ch = $_POST['chapter'];
 
                 $fullTitle = $_POST['title'];
-                $fullTitle = str_replace("<small class='vb-content-subtitle h6'>","{",$fullTitle);
-                $fullTitle = str_replace("</small>","}",$fullTitle);                
+                $fullTitle = str_replace("{","<small class='vb-content-subtitle h6'>",$fullTitle);
+                $fullTitle = str_replace("}","</small>",$fullTitle);                
 
                 $path = "../json/users/bookdata/{$UFolder}/";
                 $booklist = file_get_contents("{$path}books-list-title.json");

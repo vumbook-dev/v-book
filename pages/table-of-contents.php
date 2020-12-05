@@ -94,7 +94,7 @@ if(isset($_POST['data'])){
     
     <div class="form-group">
     <span>
-        <label for="Chapter" class="h5">New Chapter <small>Put text inside <strong class="h4">{...}</strong> for chapter subtitle</small></label>
+        <label for="Chapter" class="h5">Add New Part <small>Put text inside <strong class="h4">{...}</strong> for chapter subtitle</small></label>
         <input name="chapter-name" id="chapter-name" type="text" class="form-control">
         
     </span>
@@ -108,10 +108,10 @@ if(isset($_POST['data'])){
 <input id="vb-ttl-cdidtfyr" data-bookid="<?php echo $book[$key]->id; ?>" data-universal="<?php echo $file; ?>" type="hidden">
 
 <div id="vb-modal-container"></div>
+<script type="text/javascript" src="/js/<?php echo $btmp; ?>-editor.js"></script>
 <script type="text/javascript" src="/js/chapters.js"></script>
 <script type="text/javascript" src="/js/section.js"></script>
 <script type="text/javascript" src="/js/content.js"></script>
-<script type="text/javascript" src="/js/<?php echo $btmp; ?>-editor.js"></script>
 <?php
 
 }else{
