@@ -12,7 +12,7 @@ function crud_btn($listKey,$action,$pages = 0,$template){
     $btnClass = ($pages == 0)? "btn-secondary" : "btn-success";
     $book = $listKey + 1;
     $btn = '<span class="vb-wrap-btn px-2">
-    <a id="vb-view" href="/read/book='.$book.'" target="_blank" class="btn '.$btnClass.' '.$na.'" data-key="'.$listKey.'" '.$disable.'><i class="fa '.$icon.'" aria-hidden="true"></i> View</a>
+    <a id="vb-view" href="/read/'.$template.'='.$book.'" target="_blank" class="btn '.$btnClass.' '.$na.'" data-key="'.$listKey.'" '.$disable.'><i class="fa '.$icon.'" aria-hidden="true"></i> View</a>
     <a id="3" class="btn btn-primary mx-1 vb-link" href="/table-of-contents/'.$template.'='.$book.'" data-page="book-chapter">'.$action.'</a>
     <button class="btn btn-danger vb-delete" data-key="'.$listKey.'" data-toggle="modal" data-target="#vb-delete-modal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
     </span>';

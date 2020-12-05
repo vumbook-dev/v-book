@@ -160,7 +160,7 @@ jQuery(document).ready(function($){
 
     //QUILL EDITOR
     let container = document.getElementById('style-preview');
-    let editor = QuillEditor(container,false,true);
+    let editor = QuillEditor(container,null,false,true);
 
     setTimeout(function(){
         $("div.ql-editor").html(title);

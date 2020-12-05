@@ -39,7 +39,7 @@ if(isset($_COOKIE['userdata'])){
                 $contentSection = json_encode($contentlist);
                 file_put_contents("{$path}books-list-title.json",$json);
                 file_put_contents("{$path}book-content/{$storage}.json",$contentSection);
-                file_put_contents("{$path}book-chapter/{$file}.json",[]);
+                file_put_contents("{$path}book-chapter/{$file}.json",$bookInformation);
                 echo $countBook;
                 //$_POST = array();
             }
@@ -138,7 +138,7 @@ if(isset($_COOKIE['userdata'])){
             $new_name = "{$og_name}-".substr($new_name,-11);
             $new_name = str_replace(" ","-",$new_name);
             $sourcePath = $_FILES['book-cover']['tmp_name'][0];  
-            $targetPath = "../media/bookcover/user/".$new_name;  
+            $targetPath = "../media/bookcover/{$UFolder}/".$new_name;  
 
             if(move_uploaded_file($sourcePath, $targetPath)){
                 $new_count = $og_count;
@@ -167,10 +167,10 @@ if(isset($_COOKIE['userdata'])){
         $og_name = $_FILES['book-background']['name'][0];
         $file_name = explode(".", $_FILES['book-background']['name'][0]);
         $new_name = md5(rand()) . '.' . $file_name[1];  
-        $new_name = "{$og_name}-".substr($new_name,-11);
+        $new_name = "{$file_name[0]}-".substr($new_name,-11);
         $new_name = str_replace(" ","-",$new_name);
         $sourcePath = $_FILES['book-background']['tmp_name'][0];  
-        $targetPath = "../media/book-background/user/".$new_name;  
+        $targetPath = "../media/book-background/{$UFolder}/".$new_name;  
 
         if(move_uploaded_file($sourcePath, $targetPath)){
             $new_count = $og_count;

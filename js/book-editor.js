@@ -154,9 +154,10 @@ jQuery(document).ready(function($){
     }
 
     //UPDATE BOOK TEMPLATE CONTENT
-    const UpdateContentArray = function(chapter,key,text = "",action){
+    const UpdateContentArray = function(chapter,key,action){
         let allList = $('li.btmp-pages');
         let id = $('ul.btmp-pagelist>li.btmp-pages:nth-child('+allList.length+')').data('pageid');
+        let text = (action == 'btmp_update') ? $('div#style-preview>div.ql-editor').html() : "";
         $.ajax({
             method: "POST",
             url: "../model/content.php",
@@ -164,7 +165,7 @@ jQuery(document).ready(function($){
             dataType: "text",
             beforeSend: function(){
                 if(action == 'btmp_update'){
-                    $('span.btmp-save-wrap').html("<i class='bx bx-loader-circle bx-spin' ></i> Saving...");
+                    
                 }
             },
             success: function(data){
@@ -184,6 +185,7 @@ jQuery(document).ready(function($){
                     $('ul.btmp-pagelist>li.btmp-pages:first-child').addClass('btmp-active');
                     let dk = $('li.btmp-active');                    
                     $('div.btmp-content[data-key='+key+']').remove();
+                    $('div.btmp-page div.btmp-content:first-child').removeClass('d-none');
                     let newallList = $('li.btmp-pages');
                     //console.log(newallList.length);
                     for(i=0;i<newallList.length;i++){
@@ -207,7 +209,7 @@ jQuery(document).ready(function($){
                             $('span.btmp-save-wrap, span.btmp-cancel-wrap').toggleClass('d-none');
                             $('span.btmp-save-wrap').html("<i class='bx bx bx-save' ></i> Save");
                         },1000);
-                    },2000);
+                    },1500);
                 }
             }
         })
@@ -216,7 +218,7 @@ jQuery(document).ready(function($){
     //START A NEW PAGE 
     $(document).on('click','div.bmtp-startpage>span.btn, li#btmp-add-page-btn',function(){
         let chapter = $("#vb-save-styles").data('key');
-        UpdateContentArray(chapter,"","",'btmp_add');
+        UpdateContentArray(chapter,"",'btmp_add');
     });
 
     //NAVIGATE PAGES
@@ -248,15 +250,22 @@ jQuery(document).ready(function($){
     $(document).on('click','span.btn-danger.btmp-ed-action',function(){
         let key = $('li.btmp-active').data('key');
         let chapter = $("#vb-save-styles").data('key');
-        UpdateContentArray(chapter,key,'','btmp_delete');
+        UpdateContentArray(chapter,key,'btmp_delete');
     });
 
     //UPDATE CONTENT
     $(document).on('click','span.btmp-save-wrap',function(){
         let key = $('li.btmp-active').data('key');
-        let chapter = $("#vb-save-styles").data('key');
-        let text = $('div#style-preview>div.ql-editor').html();
-        UpdateContentArray(chapter,key,text,'btmp_update');
+        let chapter = $("#vb-save-styles").data('key'); 
+        $('span.btmp-save-wrap').html("<i class='bx bx-loader-circle bx-spin' ></i> Saving...");       
+        if(uploadQuillImage(bookFile)){
+            setTimeout(function(){
+                UpdateContentArray(chapter,key,'btmp_update');
+            },2500);
+        }else{
+            UpdateContentArray(chapter,key,'btmp_update');
+        }     
+            
     });
 
     /*** BACKGROUND  SCRIPT ***/
@@ -378,20 +387,6 @@ jQuery(document).ready(function($){
         });
     });
 
-    //SAVE COLOR PICK
-    // window.saveBG = function(key,type,value){
-    //     let file = $("input#vb-ttl-cdidtfyr").data("universal");
-    //     $.ajax({
-    //         url: "../model/books.php",
-    //         type: "POST",
-    //         data: {action: "update",key: key, file: file, bgType: type, bgValue: value},
-    //         dataType: "text",
-    //         success: function(data){
-    //             //console.log("Background Saved "+ data);
-    //         }
-    //     });
-    // }
-
     //CONVERT BASED64 SOURCE TO FILE
     const DataURIToBlob = function(dataURI) {
     const splitDataURI = dataURI.split(',')
@@ -407,7 +402,7 @@ jQuery(document).ready(function($){
 
     //PROCESS QUILL IMAGE FORM
     window.uploadQuillImage = function(directory){
-        let image = $("div.ql-editor img");
+        let image = $("div#style-preview div.ql-editor img");
         let allImageCount = image.length;        
         let file;
         if(allImageCount > 0){
@@ -434,10 +429,10 @@ jQuery(document).ready(function($){
                         }
                     });                                          
                 }                                 
-            }                                
-            return true; 
+            }   
+            return true;                           
         }else{
-            return true;
+            return false;
         }    
     }
 

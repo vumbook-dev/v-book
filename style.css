@@ -598,7 +598,7 @@ div#btmp-action-control-wrap{
   height: 580px;
   overflow-y: scroll;
   background: white;
-  padding: .5rem;
+  padding: .8rem 1.2rem 1rem;
 }
 
 div.btmp-editor-wrap div.ql-toolbar{
@@ -656,9 +656,15 @@ div.btmp-content{
   background-color: white;  
   width: 100%;
   height: 100%;
-  padding: .8rem .6rem;
+  padding: .8rem 1.2rem 1rem;
   z-index: 1;
   position: relative;
+}
+
+div#bookTemplateEditorWrap img{
+  max-width: 75%;
+  margin: 0 auto;
+  display: block;
 }
 
 div.btmp-content, div#style-preview div.ql-editor{
@@ -671,7 +677,7 @@ div.btmp-content.ql-editor{
   font-family: Helvetica, Arial, sans-serif!important;
 }
 
-/* div.btmp-content.ql-editor h1{
+div.btmp-content.ql-editor h1{
   font-size: 26px;
 }
 
@@ -693,7 +699,7 @@ div.btmp-content.ql-editor h5{
 
 div.btmp-content.ql-editor h6{
   font-size: 8.71px;
-} */
+}
 
 div.btmp-content.ql-editor p, div.btmp-content.ql-editor li{
   font-size: 13px;
@@ -1025,12 +1031,12 @@ h1.vb-book-main-title > small{
   font-weight: 400;
 }
 
-div#book-container{
+div#newspaper-container{
   height: 48rem;
   overflow-y: scroll;
 }
 
-div#book-container > div{
+div#newspaper-container > div{
   background-repeat: no-repeat;
   background-size: cover;
   background-position: bottom;

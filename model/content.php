@@ -34,7 +34,7 @@ if(isset($_COOKIE['userdata'])){
                 $default = $bookData[$index];
                 $chapter = $_POST['chapter'];
                 $title = $_POST['title'];
-                $hshtitle = str_replace(" ","-",$title);
+                $hshtitle = $default->storage;
                 $name = $_POST['name'];
 
                 $file = "{$hshtitle}-".substr($id,-6);

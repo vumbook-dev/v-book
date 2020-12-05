@@ -129,7 +129,7 @@ if(isset($_COOKIE['userdata'])){
             $new_name = str_replace("(","",$new_name);
             $new_name = str_replace(")","",$new_name);
             $sourcePath = $_FILES['background']['tmp_name'][$key];  
-            $targetPath = "../media/background/".$new_name;  
+            $targetPath = "../media/background/{$UFolder}/".$new_name;  
 
             if(move_uploaded_file($sourcePath, $targetPath)){
                 $new_count = $og_count + $key;

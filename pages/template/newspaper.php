@@ -66,18 +66,18 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
 <div id="bookWrapQuill">
     <?php 
     if($bookData[$book]->cover !== null){
-        echo '<div id="page0" class="vbBookCover-wrap vbPages" data-chapter="0"><img src="/media/bookcover/user/'.$bookCover[$coverKey]->filename.'" alt="'.$title.'"></div>';
+        echo '<div id="page0" class="vbBookCover-wrap vbPages" data-chapter="0"><img src="/media/bookcover/'.$UFolder.'/'.$bookCover[$coverKey]->filename.'" alt="'.$title.'"></div>';
         $xpage = 4;
     }else{
         $xpage = 3;
     }
     $show1stpage = ($xpage === 4) ? "d-none" : "";
     $tb = $contents[0];
-    $chBgType = (!empty($chapterData[0]->bgType)) ? $chapterData[0]->bgType : "color";
-    $chBackground = (!empty($chapterData[0]->background)) ? $chapterData[0]->background : "#fff";
-    $chSnd = (!empty($chapterData[0]->sound)) ? $chapterData[0]->sound : null;
-    $chVol = (!empty($chapterData[0]->volume)) ? $chapterData[0]->volume : 0.5;
-    $chDelay = (!empty($chapterData[0]->delay)) ? $chapterData[0]->delay*1000 : 1*1000;
+    $chBgType = (!empty($contents[0]->bgType)) ? $contents[0]->bgType : "color";
+    $chBackground = (!empty($contents[0]->background)) ? $contents[0]->background : "#fff";
+    $chSnd = (!empty($contents[0]->sound)) ? $contents[0]->sound : null;
+    $chVol = (!empty($contents[0]->volume)) ? $contents[0]->volume : 0.5;
+    $chDelay = (!empty($contents[0]->delay)) ? $contents[0]->delay*1000 : 1*1000;
     if(!is_numeric($chSnd)){
         $chDIR = 1;
         $chSnd = ltrim($chSnd,"m");
@@ -189,7 +189,7 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
     div.vbBookCover-wrap.vbPages{
         padding:0;
     }
-    div#book-container{
+    div#newspaper-container{
         width: 380px;
         margin: auto;
         height:580px;
@@ -199,7 +199,7 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
         background-size: cover!important;
         background-position: bottom!important;
     }
-    div#book-container{
+    div#newspaper-container{
         scrollbar-width: none;        
     }
     div.vbChapter-wrap h1{

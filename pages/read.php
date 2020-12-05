@@ -15,8 +15,8 @@ if(isset($_POST['data'])){
     $bookContents = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/$filename.json");
     $bookContents = json_decode($bookContents);
 ?>
-<div class="col-md-12" style="margin-top:60px;">
-    <div class="bg-light mt-4 mb-3 px-5 py-2 d-flex justify-content-between">
+<div class="col-md-12" style="margin-top:120px;">
+    <div class="bg-light mt-4 mb-3 px-5 py-2 d-none justify-content-between">
         <p class="m-0 p-2">Download as HTML5! </p>
         <button id="vb-download" class="btn btn-primary">Download</button>
     </div>    
@@ -28,10 +28,10 @@ if(isset($_POST['data'])){
 <div id="vb-control-wrap" class="pb-4 pt-2 px-5">
     <span id="vb-zoomvalue">160%</span> <input type="range" id="vb-sliderzoomer" value="6" min="0" max="10" step="2">
 </div>
-<div id="book-container" data-actBG="0"></div>
+<div <?php echo ($books[$key]->template == 'book') ? 'id="book-container"' : 'id="newspaper-container"'; ?>  data-actBG="0"></div>
 </div>
 <div class="col-md-12">
-<nav class="p-5" aria-label="Book page navigation">
+<nav class="p-5 <?php echo ($books[$key]->template == 'book') ? 'd-none' : ''; ?>" aria-label="Book page navigation">
   <ul class="pagination" id="vbPageNav" data-prev="-1" data-next="0">
     <li class="page-item">
         <a data-nav="prev" class="bookprev" href="#" style="display:none;">
@@ -57,19 +57,19 @@ if(isset($_POST['data'])){
 <script type="text/javascript">
 const book = <?php echo $key; ?>;
 const loadBook = function(book = <?php echo $key; ?>, chapter = 0, section = 0, parts = 0){
-    let url = "book.php";
+    let url = "<?php echo $books[$key]->template; ?>.php";
     $.ajax({
-        url: "/pages/book/"+url,
+        url: "/pages/template/"+url,
         method: "POST",
         data: {book:book,chapter:chapter,section:section,file: "<?php echo $books[$key]->storage; ?>"},
         dataType: "text",
         beforeSend: function(){
 
         },success: function(data){
-            if(parts === 0){
-                $("div#book-navigation-container").append(data);
+            if(url === 'book.php'){
+                $("div#book-container").append(data);
             }else{
-                $("div#book-container").html(data);
+                $("div#newspaper-container").html(data);
             }
         }
     });
@@ -188,6 +188,7 @@ $(document).on("click","button#vb-download",function(){
 
 $("main.main-editor").removeClass("main-editor");
 
+<?php if($books[$key]->template == "newspaper"){ ?>
 const viewContent = function(container){
     let editor = QuillEditor(container,null,true,false);
     return editor;
@@ -219,8 +220,10 @@ const loadBooksContent = function(){
 //PAGINATION
 setTimeout(function(){ 
     loadBooksContent();
-    changeBG(0);
+    <?php if($books[$key]->template == 'newspaper') echo 'changeBG(0);'; ?>
 },1000);
+
+<?php } ?>
 
 $(document).on('click','div.vbChapter-wrap .tbcLink',function(){
     let n = $(this).data("page");
@@ -246,7 +249,7 @@ const changeBG = function(x){
     let bgValue = $(bgData[x]).data("background");
     let bgStyle = (bgType == "color") ? bgValue : "url(../../media/background/"+bgValue+")";
     let bgResult = (bgValue != "") ? bgStyle : "#fff";
-    $("div#book-container").css("background",bgResult);
+    $("div#newspaper-container").css("background",bgResult);
     //$("div#book-container").data("actbg",x);
     //console.log(bgType,bgStyle,x);
 }
@@ -298,6 +301,7 @@ $(document).on("click","#vbPageNav > li > a",function(e){
 //ZOOMER
 $(document).on('input', '#vb-sliderzoomer', function(){
     let value = $(this).val();
+    let container = $("#<?php echo $books[$key]->template; ?>-container");
     let zoom;
     let pb;
     switch(parseInt(value)){
@@ -308,21 +312,22 @@ $(document).on('input', '#vb-sliderzoomer', function(){
         case 8: zoom = 200; pb = 12; break;
         case 10: zoom = 240; pb = 15; break;
     }
-    $("#book-container").css("zoom",zoom+"%");
-    $("#book-container").css({"-moz-transform":"scale("+zoom+"%,"+zoom+"%)","-moz-transform-origin":"top"});
-    $("#book-container").css({"-ms-transform":"scale("+zoom+"%,"+zoom+"%)","-ms-transform-origin":"top"});
-    $("#book-container").css("-webkit-zoom",zoom+"%");
-    $("#book-container").css("padding-bottom",pb+"rem");
+    container.css("zoom",zoom+"%");
+    container.css({"-moz-transform":"scale("+zoom+"%,"+zoom+"%)","-moz-transform-origin":"top"});
+    container.css({"-ms-transform":"scale("+zoom+"%,"+zoom+"%)","-ms-transform-origin":"top"});
+    container.css("-webkit-zoom",zoom+"%");
+    $("#newspaper-container").css("padding-bottom",pb+"rem");
     $("span#vb-zoomvalue").text(zoom+"%");
 });
 
 $(document).ready(function(){
     let main = $("main");
-    let bookwrap = $("div#book-container");
+    let bookwrap = $("div#<?php echo $books[$key]->template; ?>-container");
     main.removeClass("container");
     main.addClass("container-fluid");
     main.addClass("p-fixed");
-    bookwrap.css({"-moz-transform":"scale(1)","zoom":"160%","-webkit-zoom":"160%","-ms-transform":"scale(1)","padding-bottom":"6rem"});
+    bookwrap.css({"-moz-transform":"scale(1)","zoom":"160%","-webkit-zoom":"160%","-ms-transform":"scale(1)"});
+    $("#newspaper-container").css("padding-bottom","6rem");
 });
 </script>
 
