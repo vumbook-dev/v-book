@@ -226,11 +226,6 @@ $line = 16;
             $pageNumber += 1;
             $html .= '<div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></div></div></div>';      
             $page = $page+1;            
-            //
-            if($xpage){
-                $pageNumber += 1;
-            }
-            $xpge = true;
         }
 
         foreach($contents as $k => $value){        
@@ -238,6 +233,7 @@ $line = 16;
             $chPtitle = $value->chapter;
             $volume = (!empty($contents[$k]->volume)) ? $contents[$k]->volume : 0.5;
             $delay = (!empty($contents[$k]->delay)) ? $contents[$k]->delay : 1;
+
             if($value->id != "00" && $value->id != "01" && $k >= $bookInfoNumber){
                 if(!is_numeric($value->sound)){
                     $dir = 1;
@@ -254,26 +250,23 @@ $line = 16;
                     $bgVal = (!empty($value->background))  ? $value->background : "#fff";
                     $contentText = $value->content;
                     $contentPage = count($contentText);
-                    foreach($contentText as $key => $v){
+                    foreach($contentText as $ckey => $v){
                         $pageNumber += 1;
                         $getText = json_decode($v);                    
                         $face = ($n == 1) ? 'back' : 'front';
                         $arrow = ($n == 1) ? 'left' : 'right';
-                        $html .= ($face == 'front') ? '<div class="book page-'.$key.' d-none ql-snow" style="z-index: 0;">' : '';
+                        $html .= ($face == 'front') ? '<div class="book page-'.$ckey.' d-none ql-snow" style="z-index: 0;">' : '';
                         $html .= '<div class="face-'.$face.'"><div class="book-wrap ql-editor btmp-content">';
                         $html .= "<div class='vbPage{$value->id} vbPages vbPageContent{$contentPage}' id='page{$page}'  data-bgtype='{$bgType}' data-background='{$bgVal}' data-status='0' data-volume='$volume' data-sound='$sound' data-sound='$delay' data-sdir='$dir'>{$getText->text}</div>";
                         $html .= '</div><div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-'.$arrow.'" aria-hidden="true"></i></div></div>';
                         $html .= ($face == 'back') ? '</div>' : ''; 
-                        if($contentPage-1 == $key){
+                        if($contentPage-1 == $ckey){
                             $pageNumber += 1;
                             $html .= ($face == 'back') ? '' : '<div class="face-back"><div class="book-wrap"></div><div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></div></div></div>';
                         }
                                        
                         $n = ($face == 'back') ? 0 : 1;                        
-                    }
-                    if($contentPage > 0){
-                        $xpge = false;
-                    }                    
+                    }                   
                     //$html .= ($face == 'back') ? : '</div><div class="page-arrow-wrap"><i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i></div></div><div class="face-back"><div class="book-wrap"></div><div class="page-arrow-wrap"><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></div></div></div>';
                 }
                 

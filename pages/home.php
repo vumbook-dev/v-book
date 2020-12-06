@@ -50,7 +50,7 @@
         VUMBOOK team:<p></p>
         Tion Uros Sinigoj, CEO, CPO uros@vumbook.com<p></p>
         Jojimer C., ATO<p></p>
-</br>
+        </br>
     
     
     
