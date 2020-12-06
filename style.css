@@ -661,7 +661,7 @@ div.btmp-content{
   position: relative;
 }
 
-div#bookTemplateEditorWrap img{
+div.ql-editor.btmp-content img{
   max-width: 75%;
   margin: 0 auto;
   display: block;

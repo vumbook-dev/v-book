@@ -4,7 +4,7 @@
     <header id="vb-header">
       <!-- Fixed navbar -->
       <nav class="navbar navbar-expand-md navbar-dark bg-dark px-4">
-        <a class="navbar-brand" href="/home" data-nav="home"><i class="fa fa-book" aria-hidden="true"></i> V-Book</a>
+        <a class="navbar-brand" href="/home" data-nav="home">G-Book Editor</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -15,7 +15,7 @@
             </li>
             <?php if(isset($_COOKIE['userdata'])) : ?>
             <li class="nav-item">
-              <a class="nav-link btn btn-success text-white d-none" id="2" data-nav="create" href="/create/">Create Books</a>
+              <a class="nav-link btn btn-success text-white d-none" id="2" data-nav="create" href="/create/">Create G-Books</a>
             </li>
             <?php endif; ?>
             <ul class="navbar_user">
