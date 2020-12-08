@@ -23,7 +23,7 @@ if(isset($_POST['data'])){
     if(!empty($book[$key]->background)){
         $BBGkey = $book[$key]->background;
         if(is_integer($BBGkey)){
-            $BBG = file_get_contents("../json/users/bookdata/{$UFolder}/media/book-background.json");
+            $BBG = file_get_contents("../json/users/bookdata/{$UFolder}/media/user-background.json");
             $BBG = json_decode($BBG);
             $bookBG = "../media/book-background/user/{$BBG[$BBGkey]->filename}";
         }

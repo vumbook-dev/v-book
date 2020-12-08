@@ -5,7 +5,7 @@
 <div class="col-sm-12 cb-wrap">
     <form action="/create" method="get" autocomplete="off">
     <div class="form-group">
-        <span>
+        <span class="d-none">
             <label for="book title">Template</label>
             <select class="form-control" name="template" id="book-template">
                 <option value="book">Book</option>
