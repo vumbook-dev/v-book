@@ -30,8 +30,8 @@ if(isset($_COOKIE['userdata'])){
                 $countBook = count($arrayData);
                 $json = json_encode($arrayData);
                 $contentlist = array();
-                $CRP = array("id" => "00","chapter" => 0, "cpart" => "Copyright Page", "sound" => 0, "content" => $contentArray, "bgType" => "color", "background" => "#fff");
-                $TBLC = array("id" => "01","chapter" => 0, "cpart" => "Table of Contents", "sound" => 0, "content" => $contentArray, "bgType" => "color", "background" => "#fff");
+                $CRP = array("id" => "00","chapter" => 0, "cpart" => "Copyright Page", "sound" => 0, "volume" => 0.5, "content" => $contentArray, "bgType" => "color", "background" => "#fff");
+                $TBLC = array("id" => "01","chapter" => 0, "cpart" => "Table of Contents", "sound" => 0, "volume" => 0.5, "content" => $contentArray, "bgType" => "color", "background" => "#fff");
                 $contentlist[] = $CRP;
                 $contentlist[] = $TBLC;
                 $ARR = array_column($contentlist, 'id');
@@ -39,7 +39,7 @@ if(isset($_COOKIE['userdata'])){
                 $contentSection = json_encode($contentlist);
                 file_put_contents("{$path}books-list-title.json",$json);
                 file_put_contents("{$path}book-content/{$storage}.json",$contentSection);
-                file_put_contents("{$path}book-chapter/{$file}.json",$bookInformation);
+                file_put_contents("{$path}book-chapter/{$storage}.json","[{$bookInformation}]");
                 echo $countBook;
                 //$_POST = array();
             }
@@ -57,14 +57,19 @@ if(isset($_COOKIE['userdata'])){
                 $archive = array("id" => $active[$k]['id'], "title" => $active[$k]['title'], "subtitle" => $active[$k]['subtitle'], "storage" => $active[$k]['storage'], "status" => $active[$k]['status'], "cover" => $active[$k]['cover'], "speed" => $active[$k]['speed'], "dsound" => $active[$k]['dsound'], "chapter" => $active[$k]['chapter']);
                 unset($active[$k]);
                 $active = array_values($active);
+                $filename = $archive['storage'];
 
                 //NEW SET OF BOOKS
                 $newActive = json_encode($active);
                 file_put_contents("{$path}books-list-title.json",$newActive);
 
-                $inactive[] = $archive;
-                $newInActive = json_encode($inactive);
-                file_put_contents("{$path}archive-book-title.json",$newInActive);
+                //DELETE BOOK DATA
+                unlink("{$path}book-chapter/{$filename}.json");
+                unlink("{$path}book-content/{$filename}.json");
+
+                // $inactive[] = $archive;
+                // $newInActive = json_encode($inactive);
+                // file_put_contents("{$path}archive-book-title.json",$newInActive);
                 echo $archive['title'];
                 //print_r($data);
                 //$_POST = array();
@@ -72,7 +77,7 @@ if(isset($_COOKIE['userdata'])){
         }
 
         elseif($action == "update_title"){
-            if(isset($_POST['title']) && $_POST['book']){
+            if(isset($_POST['title']) && isset($_POST['book'])){
                 $fullTitle = $_POST['title'];
                 $newTitle = explode("{",$fullTitle);
                 if(!empty($newTitle[1])){
@@ -183,7 +188,7 @@ if(isset($_COOKIE['userdata'])){
             $json = json_encode($media);        
             $newcover = json_encode($arrayData);        
             file_put_contents("../json/users/bookdata/{$UFolder}/books-list-title.json",$newcover);
-            file_put_contents("../json/users/bookdata/{$UFolder}/media/book-background.json",$json);
+            file_put_contents("../json/users/bookdata/{$UFolder}/media/user-background.json",$json);
             
             $result = array("target" => $targetPath, "type" => "background", "message" => "Background");
             echo json_encode($result);

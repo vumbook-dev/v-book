@@ -1,7 +1,7 @@
 <?php
 //DEFINE APP ROOT LINK
-define('URLROOT','http://app.vumbook.test/',true);
-define('VUMBOOK','http://vumbook.test/',true);
+require_once "config.php";
+
 function get_string_between($string, $start, $end){
     $string = ' ' . $string;
     $ini = strpos($string, $start);
@@ -32,12 +32,16 @@ function redirectToPages($path = ""){
                 $html .= "sendToPage('$path',vbloader,$book,'download');";
             }else{
                 $html .= "sendToPage('$path',vbloader,$book);";
-            }
+            }            
         }elseif(!empty($path)){
             //"history.pushState($state, `V-Book > $path`, `./$path/`);";
-            //echo "history.replaceState($state, `V-Book > $path`, `./$path/`);";            
-            $html .= "loadPage('create',vbloader);";          
-            //return $template;   
+            //echo "history.replaceState($state, `V-Book > $path`, `./$path/`);";                     
+            if(createUserFolders()){
+                createUserFiles();
+                $html .= "loadPage('create',vbloader);";
+            }else{
+                $html .= "loadPage('create',vbloader);";
+            }  
         }        
     }else{
         $html .= 'usernotLoggedIn';
@@ -74,12 +78,60 @@ function revertTextToEditor($post){
     return $new;
 }
 
-function setCurrentUser(){
-    setcookie("userdata[id]","1");
-    setcookie("userdata[name]","john");
-    // $userID = $_COOKIE['userdata']['id'];
-    // $userName = $_COOKIE['userdata']['name'];
-    // echo $userID. " " .$userName;
+//CREATE USER FOLDERS
+function createUserFolders(){
+    if(isset($_COOKIE['userdata'])){
+        $UID = $_COOKIE['userdata']['id'];
+        $UName = $_COOKIE['userdata']['name'];
+        $UFolder = "{$UName}{$UID}";
+        $booklist = "json/users/bookdata/{$UFolder}/books-list-title.json";
+        $allUserFolders = array(
+            "book_background" => "media/book-background/{$UFolder}",
+            "page_cover" => "media/page-background/{$UFolder}",
+            "book_cover" => "media/bookcover/{$UFolder}",
+            "book_images" => "media/images/users/{$UFolder}",
+            "media_images" => "media/images/users/{$UFolder}",
+            "media_sounds" => "media/sounds/users/{$UFolder}",
+            "user_json" => "json/users/bookdata/{$UFolder}",
+            "media_json" => "json/users/bookdata/{$UFolder}/media",
+            "bookchapter_json" => "json/users/bookdata/{$UFolder}/book-chapter",
+            "bookcontent_json" => "json/users/bookdata/{$UFolder}/book-content",
+        );
+
+        if(file_exists($booklist)){
+            return false;   
+        }else{
+            //Create User Folders
+            foreach($allUserFolders as $value){
+                if(!is_dir($value)){
+                    mkdir($value);            
+                }
+            }  
+            return true;
+        }
+    }
 }
 
-//setCurrentUser();
+//CREATE USER INITIAL NECESSARY FILES
+function createUserFiles(){
+    $UID = $_COOKIE['userdata']['id'];
+    $UName = $_COOKIE['userdata']['name'];
+    $UFolder = "{$UName}{$UID}";
+    $path = "json/users/bookdata/{$UFolder}";
+    $booklist = "{$path}/books-list-title.json";
+    $files = array(
+        "booklist" => "{$path}/books-list-title.json",
+        "archive" => "{$path}/archive-book-title.json",
+        "background" => "{$path}/media/user-background.json",
+        "cover" => "{$path}/media/user-bookcover.json",
+        "sounds" => "{$path}/media/user-sound.json"
+    );
+
+    if(!file_exists($booklist)){
+        //Create Initial Book List Files
+        foreach($files as $key => $value){
+            file_put_contents($value,"[]");
+        }    
+        return true;    
+    }
+}

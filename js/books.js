@@ -22,7 +22,6 @@ jQuery(document).ready(function($){
                 //alert("book-chapter/book="+data);
                 //listBooks();
                 //input.val("");
-                //subInput.val("");
                 window.location.replace("/table-of-contents/book="+data);
             }
         });

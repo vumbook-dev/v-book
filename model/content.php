@@ -47,7 +47,7 @@ if(isset($_COOKIE['userdata'])){
                     $ACC = ($value->chapter == $chapter) ? $ACC+1 : $ACC;
                 }
                 $id = "$chapter".$ACC;
-                $newContent = array("id" => $id,"chapter" => $chapter, "cpart" => $name, "sound" => $default->dsound, "content" => $contentArray, "bgType" => "color", "background" => "#fff");
+                $newContent = array("id" => $id,"chapter" => $chapter, "cpart" => $name, "sound" => $default->dsound, "volume" => 0.5, "delay" => 1, "content" => $contentArray, "bgType" => "color", "background" => "#fff");
                 $contentlist[] = $newContent;
                 $ARR = array_column($contentlist, 'id');
                 array_multisort($ARR, SORT_ASC, $contentlist);

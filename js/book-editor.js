@@ -64,7 +64,8 @@ jQuery(document).ready(function($){
 
         let File = $(this).data("file");
         let dir = $(this).data("dir");
-        let path = (dir == 1) ? "user/" : "";
+        let user = $(this).data("path");
+        let path = (dir == 1) ? "users/"+user+"/" : "";
         let vol = $("input[name=vb-volume-control]").val();
         let Sound = $("#vb-prevAudio")[0];
             Sound.src = '../../media/sounds/'+path+File;   
@@ -130,14 +131,14 @@ jQuery(document).ready(function($){
     });
 
     //UPDATE STYLE
-    const UpdateContent = function(sound,volume,delay,key,file,chapter,color,index = bookIndex){
+    const UpdateContent = function(sound,volume,delay,key,chapter,color,index = bookIndex){
         $("div.ql-editor").append(" ");
         setTimeout(function(){            
             //let content = JSON.stringify(Quillcontents, null, 2);
             $.ajax({
                 method: "POST",
                 url: "../model/content.php",
-                data: {sound:sound,volume:volume,delay:delay,key:key,file:file,book:index,chapter:chapter,color:color,template:bookTemplate,action:"update"},
+                data: {sound:sound,volume:volume,delay:delay,key:key,file:bookFile,book:index,chapter:chapter,color:color,template:bookTemplate,action:"update"},
                 dataType: "text",
                 success: function(data){
                     let json = JSON.parse(data);
@@ -281,11 +282,11 @@ jQuery(document).ready(function($){
             divColor.addClass("d-none");
             img.removeClass("d-none");
             input.prop('checked', true);
-            $("div#style-preview").css("background","url('"+bgIMG+"')");
+            $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background-image","url('"+bgIMG+"')");
         }else{
             input.prop('checked', true);
             $("div.bgContainer > .custom-radio:nth-child(3) > input").prop('checked', false);
-            $("div#style-preview").css("background",bgColor);
+            $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background-color",bgColor);
             img.addClass("d-none");
             divColor.removeClass("d-none");
         }
@@ -298,7 +299,7 @@ jQuery(document).ready(function($){
             
             reader.onload = function(e) {
                 $('#prev-img-background').attr('src', e.target.result);  
-                $("div#style-preview").css("background","url("+e.target.result+")");               
+                $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background-image","url("+e.target.result+")");               
                 $('#prev-img-background').removeClass('d-none');
                 $("div#imgBackground-preview-wrap > i").addClass("d-none");
                 $("#upload").text("Update");
@@ -442,7 +443,7 @@ jQuery(document).ready(function($){
         let parent = $(this).parents('div.modal-content');
         let actSound = parent.find("span#vb-my-audio.act-sound").data("id");
         let delay = parent.find('input[name=delay]').val();
-        let file = $("input#vb-ttl-cdidtfyr").data("universal");
+        //let file = $("input#vb-ttl-cdidtfyr").data("universal");
         let vol = $("input[name=vb-volume-control]").val();
         //let ApplyAllSounds = $("input.allSounds");
         //let dsounds = (ApplyAllSounds.prop("checked") == true) ? 1 : 0;
@@ -452,11 +453,9 @@ jQuery(document).ready(function($){
         if(inputColor.length > 0){
             color = $("div.colorPick-wrap input.pcr-result").val();
         }             
-        if(uploadQuillImage(file)){
-            UpdateContent(actSound,vol,delay,key,file,chapter,color);
-        }else{
-            //alert("No Image");
-        } 
+
+        UpdateContent(actSound,vol,delay,key,chapter,color);
+
     });
 
 });

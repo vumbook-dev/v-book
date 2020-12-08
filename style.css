@@ -141,11 +141,11 @@ div{
 }
 
 #vb-show-content .cb-wrap .form-group > span:nth-child(2){
-  flex: 40%;
+  flex: 20%;
 }
 
 #vb-show-content .cb-wrap .form-group > span:nth-child(3){
-  flex: 5%;
+  flex: 15%;
 }
 
 #vb-show-content .form-group > button{
@@ -156,12 +156,8 @@ div{
   margin-left: -2px;
 }
 
-#book-template{
-  border-radius: .25rem 0 0 .25rem;
-}
-
 #book-title{
-  border-radius: 0;
+  border-radius: .25rem 0 0 .25rem;
 }
 
 #sub-title{

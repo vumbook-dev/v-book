@@ -10,7 +10,7 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
     $ch = 0;
     $section = $_POST['section'];
     $file = $_POST['file'];
-    $bkBG = file_get_contents("{$path}media/book-background.json");
+    $bkBG = file_get_contents("{$path}media/user-background.json");
     $bkBG = json_decode($bkBG);
 
     if(isset($_POST['chapters']) && isset($_POST['title']) && isset($_POST['subtitle'])){
