@@ -25,6 +25,11 @@ if(isset($_POST['data'])){
     <button id="vb-showMenu" class="btn btn-secondary float-right mr-3">Menu</button>
 </div>
 <div class="col-md-12">
+<div class="lordicon-loader py-5">
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<lottie-player src="https://assets10.lottiefiles.com/packages/lf20_30nris2g.json"  background="transparent"  speed="1"  style="width: 100px; height: 100px;"  loop  autoplay></lottie-player>
+<p class="text-center text-muted h5">Collecting Book Important Files...</p>
+</div>
 <div id="vb-control-wrap" class="pb-4 pt-2 px-5">
     <span id="vb-zoomvalue">160%</span> <input type="range" id="vb-sliderzoomer" value="6" min="0" max="10" step="2">
 </div>
@@ -64,12 +69,15 @@ const loadBook = function(book = <?php echo $key; ?>, chapter = 0, section = 0, 
         data: {book:book,chapter:chapter,section:section,file: "<?php echo $books[$key]->storage; ?>"},
         dataType: "text",
         beforeSend: function(){
-
+            $('div#vb-control-wrap, div#book-container, div#newspaper-container').addClass('d-none');
         },success: function(data){
+            $('div.lordicon-loader').addClass('d-none');
             if(url === 'book.php'){
                 $("div#book-container").append(data);
+                $('div#vb-control-wrap, div#book-container').removeClass('d-none');
             }else{
                 $("div#newspaper-container").html(data);
+                $('div#vb-control-wrap, div#newspaper-container').removeClass('d-none');
             }
         }
     });
@@ -137,6 +145,49 @@ const ProcessSound = function(){
     }
 }
 
+<?php 
+if($books[$key]->template === 'newspaper'){ ?>
+
+<?php } ?>
+
+
+$("main.main-editor").removeClass("main-editor");
+
+<?php if($books[$key]->template == "newspaper"){ ?>
+const viewContent = function(container){
+    let editor = QuillEditor(container,null,true,false);
+    return editor;
+}
+
+const loadBooksContent = function(){
+    let contentPage = $('div.vbPageContent');
+    let content = contentPage.length;
+    let view;
+    for(i=0;content>i;i++){
+        $.ajax({
+            url: "../model/books.php",
+            method: "POST",
+            data: {file:"<?php echo $filename; ?>",path:"<?php echo $UFolder; ?>",section:i,action:"loadBC"},
+            dataType: "text",
+            success: function(data){            
+                    let obj = JSON.parse(data);                
+                    let container = ".vbPage"+obj.id;
+                    let text = obj.content;
+                    text = JSON.parse(text);
+                    view = viewContent(container);
+                    view.setContents(text);      
+                    //console.log(obj);     
+            }
+        });
+    }
+}
+
+//PAGINATION
+setTimeout(function(){ 
+    loadBooksContent();
+    <?php if($books[$key]->template == 'newspaper') echo 'changeBG(0);'; ?>
+},1000);
+
 $(document).on("click","ul.vb-section-list-nav li",function(){
     if(!$(this).hasClass("act-section")){
         let File = $(this).data("sound");
@@ -185,45 +236,6 @@ $(document).on("click","#vb-showMenu",function(){
 $(document).on("click","button#vb-download",function(){
     bookDownloadData();
 });
-
-$("main.main-editor").removeClass("main-editor");
-
-<?php if($books[$key]->template == "newspaper"){ ?>
-const viewContent = function(container){
-    let editor = QuillEditor(container,null,true,false);
-    return editor;
-}
-
-const loadBooksContent = function(){
-    let contentPage = $('div.vbPageContent');
-    let content = contentPage.length;
-    let view;
-    for(i=0;content>i;i++){
-        $.ajax({
-            url: "../model/books.php",
-            method: "POST",
-            data: {file:"<?php echo $filename; ?>",path:"<?php echo $UFolder; ?>",section:i,action:"loadBC"},
-            dataType: "text",
-            success: function(data){            
-                    let obj = JSON.parse(data);                
-                    let container = ".vbPage"+obj.id;
-                    let text = obj.content;
-                    text = JSON.parse(text);
-                    view = viewContent(container);
-                    view.setContents(text);      
-                    //console.log(obj);     
-            }
-        });
-    }
-}
-
-//PAGINATION
-setTimeout(function(){ 
-    loadBooksContent();
-    <?php if($books[$key]->template == 'newspaper') echo 'changeBG(0);'; ?>
-},1000);
-
-<?php } ?>
 
 $(document).on('click','div.vbChapter-wrap .tbcLink',function(){
     let n = $(this).data("page");
@@ -297,6 +309,14 @@ $(document).on("click","#vbPageNav > li > a",function(e){
 
     ProcessSound();
 });
+
+<?php } //END LOAD IF NEWSPAPER TEMPLATE 
+
+elseif($books[$key]->template == "book"){ ?>
+
+<?php } ?>
+
+
 
 //ZOOMER
 $(document).on('input', '#vb-sliderzoomer', function(){

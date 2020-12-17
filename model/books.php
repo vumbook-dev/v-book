@@ -140,7 +140,7 @@ if(isset($_COOKIE['userdata'])){
             $og_name = $_FILES['book-cover']['name'][0];
             $file_name = explode(".", $_FILES['book-cover']['name'][0]);
             $new_name = md5(rand()) . '.' . $file_name[1];  
-            $new_name = "{$og_name}-".substr($new_name,-11);
+            $new_name = "{$file_name[0]}-".substr($new_name,-11);
             $new_name = str_replace(" ","-",$new_name);
             $sourcePath = $_FILES['book-cover']['tmp_name'][0];  
             $targetPath = "../media/bookcover/{$UFolder}/".$new_name;  
