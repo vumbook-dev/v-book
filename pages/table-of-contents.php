@@ -17,7 +17,7 @@ if(isset($_POST['data'])){
     if(is_integer($coverkey)){
         $cover = file_get_contents("../json/users/bookdata/{$UFolder}/media/user-bookcover.json");
         $cover = json_decode($cover);
-        $bookcover = "../media/bookcover/user/{$cover[$coverkey]->filename}";
+        $bookcover = "../media/bookcover/{$UFolder}/{$cover[$coverkey]->filename}";
     }
 
     if(!empty($book[$key]->background)){
@@ -25,7 +25,7 @@ if(isset($_POST['data'])){
         if(is_integer($BBGkey)){
             $BBG = file_get_contents("../json/users/bookdata/{$UFolder}/media/user-background.json");
             $BBG = json_decode($BBG);
-            $bookBG = "../media/book-background/user/{$BBG[$BBGkey]->filename}";
+            $bookBG = "../media/book-background/{$UFolder}/{$BBG[$BBGkey]->filename}";
         }
     }else{
         $BBGkey = null;

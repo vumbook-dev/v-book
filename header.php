@@ -18,7 +18,7 @@
     <link href="/includes/css/quill.table.css" rel="stylesheet">
     <script src="/js/quilljs.min.js"></script>
     <script src="/js/quill-editor.js"></script>
-    <title>V-Book</title>
+    <title>G-Book</title>
   </head>
   <body>
     

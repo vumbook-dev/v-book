@@ -38,7 +38,7 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
         $mainTitle = "{$title} {$subtitle}";
         $BGID = (!empty($bookData[$book]->background)) ? $bookData[$book]->background : "";        
         $bookBackground = (!empty($bkBG) && !empty($bkBG[$BGID]->filename)) ? $bkBG[$BGID]->filename : "";
-        $bookCoverFile = ($coverKey != null) ? $bookCover[$coverKey]->filename : ""; 
+        $bookCoverFile = ($coverKey !== null) ? $bookCover[$coverKey]->filename : ""; 
     }
     
     $contents = file_get_contents("{$path}book-content/{$file}.json");
@@ -65,12 +65,12 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
     $volume = (!empty($contents[0]->volume)) ? $contents[0]->volume : 0.5;
     ?>
     
-<div class="paper-effect custom-wrapper" id="bookWrapQuill">
+<div class="paper-effect custom-wrapper rbook-template" id="bookWrapQuill">
 <div class="book-content trnsf-reset">
 
     <?php 
     if($bookData[$book]->cover !== null){ ?>
-        <!-- <div id="page0" class="vbBookCover-wrap vbPages" data-chapter="0"><img src="/media/bookcover/'.$UFolder.'/'.$bookCover[$coverKey]->filename.'" alt="'.$title.'"></div> -->
+        <!-- <div id="page0" class="vbBookCover-wrap vbPages" data-chapter="0"><img src="<?php echo 'media/bookcover/'.$UFolder.'/'.$bookCover[$coverKey]->filename; ?>" alt="'.$title.'"></div> -->
         <div class="book page-0" style="z-index: 1; transform: rotateY(0deg);">
         <div class="face-front" id="front-cover"></div>
         <div class="face-back" id="trsf">
@@ -112,6 +112,7 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
     $n = 1;
     $pageNumber = 4;
     $bookInfoNumber = $bookData[$book]->bookInfoSkip;
+    $copyrightPageBG = ($chBgType == 'image') ? "background-image:url(/media/page-background/{$UFolder}/{$chBackground});" : "background-color:{$chBackground};";
     //LOAD BOOK INFO PAGES
     for($cp=0; $cp<$bookInfoNumber; $cp++){
         //TEMPLATE FRONT PAGE AND BACK PAGE
@@ -121,7 +122,7 @@ if(isset($_POST['book']) && isset($_POST['chapter']) && isset($_POST['section'])
             $face = ($n == 1) ? 'back' : 'front';
             $arrow = ($n == 1) ? 'left' : 'right';
             $html .= ($face == 'front') ? '<div class="book page-1 d-none" style="z-index: 0;">' : '';
-            $html .= '<div class="face-'.$face.'"><div class="book-wrap">'.$getText->text.'</div>';
+            $html .= '<div class="face-'.$face.' face-'.$chBgType.'" style="'.$copyrightPageBG.'"><div class="book-wrap">'.$getText->text.'</div>';
             $html .= '<div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-'.$arrow.'" aria-hidden="true"></i></div></div>';
             $html .= ($face == 'back') ? '</div>' : '';
             $n = ($face == 'back') ? 0 : 1;
@@ -162,14 +163,14 @@ $line = 16;
             
             $html .= '<div class="vbChapter-wrap pb-2">';
             if($key != 0){
-                $html .= "<h5 class='tbcLink' data-page='$xpage'>$chapterName</h5>";
+                $html .= "<h5 class='tbcLink part-page$key' data-page='$xpage'><div>$chapterName</div></h5>";
                 $xpage = $xpage+1;
                 $line -= 2;
             }
             $html .= '<ul>';            
                 foreach($contents as $k => $val){
                     if($val->chapter == $key && $val->id != 00 && $val->id != 01){
-                        $html .= "<li class='tbcLink' data-page='$xpage'>$val->cpart</li>";
+                        $html .= "<li class='tbcLink chapter-page$k' data-page='$xpage'>$val->cpart</li>";
                         $xpage = $xpage+1;
                         $line -= 1;
                     }                
@@ -201,6 +202,7 @@ $line = 16;
         if($key != 0 ){         
             $chBgType = (!empty($i->bgType)) ? $i->bgType : "color";
             $chBackground = (!empty($i->background)) ? $i->background : "#fff"; 
+            $rbPageBG = ($chBgType == 'image') ? "background-image:url(/media/page-background/{$UFolder}/{$chBackground});" : "background-color:{$chBackground};";
             $chvolume = (!empty($i->volume)) ? $i->volume : 0.5; 
             $chdelay = (!empty($i->delay)) ? $i->delay : 1; 
             if(!empty($i->sound)){
@@ -220,9 +222,9 @@ $line = 16;
             $face = ($n == 1) ? 'back' : 'front';
             $arrow = ($n == 1) ? 'left' : 'right';
             $html .= ($face == 'front') ? '<div class="book page-'.$key.' d-none ql-snow" style="z-index: 0;">' : '';
-            $html .= '<div class="face-'.$face.'"><div class="book-wrap ql-editor btmp-content">';
+            $html .= '<div class="face-'.$face.'"><div class="book-wrap ql-editor btmp-content face-'.$chBgType.'" style="'.$rbPageBG.'">';
             $html .= "<div class='vbPages vbPagesTitle' id='page{$page}' data-bgtype='{$chBgType}' data-background='{$chBackground}' data-volume='{$chvolume}' data-sound='{$chsound}' data-sound='{$chdelay}'>$i->name</div>";
-            $html .= '</div><div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i></div></div><div class="face-back"><div class="book-wrap"></div>';        
+            $html .= '</div><div class="page-arrow-wrap"><p class="text-center page-number page-part-number" data-partpage="'.$key.'">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i></div></div><div class="face-back"><div class="book-wrap face-'.$chBgType.'" style="'.$rbPageBG.' height:100%;"></div>';        
             $pageNumber += 1;
             $html .= '<div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></div></div></div>';      
             $page = $page+1;            
@@ -248,21 +250,23 @@ $line = 16;
                 if($value->chapter == $key && $value->id != 00){
                     $bgType = (!empty($value->bgType)) ? $value->bgType : "color";
                     $bgVal = (!empty($value->background))  ? $value->background : "#fff";
+                    $rbPageBG = ($bgType == 'image') ? "background-image:url(/media/page-background/{$UFolder}/{$bgVal});" : "background-color:{$bgVal};";
                     $contentText = $value->content;
                     $contentPage = count($contentText);
                     foreach($contentText as $ckey => $v){
                         $pageNumber += 1;
+                        $pgData = ($ckey == 0) ? ' page-chapter-number" data-chapterpage="'.$k.'"' : '"';
                         $getText = json_decode($v);                    
                         $face = ($n == 1) ? 'back' : 'front';
                         $arrow = ($n == 1) ? 'left' : 'right';
                         $html .= ($face == 'front') ? '<div class="book page-'.$ckey.' d-none ql-snow" style="z-index: 0;">' : '';
-                        $html .= '<div class="face-'.$face.'"><div class="book-wrap ql-editor btmp-content">';
+                        $html .= '<div class="face-'.$face.'"><div class="book-wrap ql-editor btmp-content face-'.$bgType.'" style="'.$rbPageBG.'">';
                         $html .= "<div class='vbPage{$value->id} vbPages vbPageContent{$contentPage}' id='page{$page}'  data-bgtype='{$bgType}' data-background='{$bgVal}' data-status='0' data-volume='$volume' data-sound='$sound' data-sound='$delay' data-sdir='$dir'>{$getText->text}</div>";
-                        $html .= '</div><div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-'.$arrow.'" aria-hidden="true"></i></div></div>';
+                        $html .= '</div><div class="page-arrow-wrap"><p class="text-center page-number'.$pgData.'>'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-'.$arrow.'" aria-hidden="true"></i></div></div>';
                         $html .= ($face == 'back') ? '</div>' : ''; 
                         if($contentPage-1 == $ckey){
                             $pageNumber += 1;
-                            $html .= ($face == 'back') ? '' : '<div class="face-back"><div class="book-wrap"></div><div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></div></div></div>';
+                            $html .= ($face == 'back') ? '' : '<div class="face-back"><div class="book-wrap  face-'.$bgType.'" style="'.$rbPageBG.' height:100%;"></div><div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></div></div></div>';
                         }
                                        
                         $n = ($face == 'back') ? 0 : 1;                        
@@ -500,7 +504,7 @@ div.book>div.face-front:after{
 	font-size: 12px;
 }
 #front-cover{
-	background: url('../../media/bookcover/<?php echo $UFolder."/".$bookCoverFile; ?>');
+	background-image: url('../../media/bookcover/<?php echo "{$UFolder}/{$bookCoverFile}"; ?>');
 }
 #back-cover{
 	background: url('../img/portadaBack.jpg');
@@ -530,6 +534,21 @@ h1.vb-book-main-title > small {
 
 .px-5 {
     padding: 0 3rem!important;
+}
+
+div.rbook-template div.face-image{
+    background-position: center!important;
+    background-repeat: no-repeat!important;
+    background-size: cover!important;
+}
+
+span.prt-pg-number{
+    margin-top: -30px;
+    margin-right: -15px;
+}
+
+div.vbChapter-wrap li.tbcLink{
+    margin-bottom: .2rem;
 }
 
 /* Classes for Javascript use */
@@ -627,6 +646,30 @@ jQuery(document).ready(function($){
 			console.log(page);
 		}
 	});
+
+    //Load book pages in Table of contents
+    setTimeout(function(){
+        let partTitlePages = $('p.page-part-number');
+        let chapterPages = $('p.page-chapter-number');
+        let partPN;
+        let partData;
+        let chPN;
+        let chPNData;
+        //console.log('Part Title: '+partTitlePages.length, 'Chapter Page: '+chapterPages.length);
+        for(i=0; i<partTitlePages.length; i++){
+            partPN = $(partTitlePages[i]).text();
+            partData = $(partTitlePages[i]).data('partpage');
+            $('h5.part-page'+partData).append('<span class="float-right prt-pg-number"> '+partPN+'</span>');
+            //console.log(partPN);
+        }
+
+        for(i=0; i<chapterPages.length; i++){
+            chPN = $(chapterPages[i]).text();
+            chPNData = $(chapterPages[i]).data('chapterpage');
+            $('li.chapter-page'+chPNData).append('<span class="float-right"> '+chPN+'</span>');
+            console.log(chPN);
+        }
+    },1000)
 });
 </script>
 
