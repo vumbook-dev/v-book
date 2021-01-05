@@ -28,7 +28,7 @@ if(isset($_POST['data'])){
 <div class="lordicon-loader py-5">
 <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_30nris2g.json"  background="transparent"  speed="1"  style="width: 100px; height: 100px;"  loop  autoplay></lottie-player>
-<p class="text-center text-muted h5">Collecting Book Important Files...</p>
+<p class="text-center text-muted h5">Collecting Book's Important Files...</p>
 </div>
 <div id="vb-control-wrap" class="pb-4 pt-2 px-5">
     <span id="vb-zoomvalue">160%</span> <input type="range" id="vb-sliderzoomer" value="6" min="0" max="10" step="2">
@@ -107,43 +107,6 @@ const bookDownloadData = function(){
 $(document).ready(function(){    
     loadBook(book,0,0,1);    
 });
-
-const PlaySound = function(File,Dir,vol,Status){    
-    
-    if(Status === 0){
-        let path = (Dir == 1) ? "user/" : "";
-        let Sound = $("#vb-audioplayer")[0];
-        Sound.src='../../media/sounds/'+path+File;
-        Sound.volume = vol;
-        Sound.loop = true;
-        $("div.vbPages").attr("data-status",0);
-        return Sound; 
-    }else{
-        return null;
-    }
-    
-}
-
-const ProcessSound = function(){
-    let active = $("div.activePage");
-    let File = active.data("sound");
-    let volume = active.data("volume");
-    let delay = active.data("delay");
-    let dir = active.data("sdir");
-    let status = active.data("status");    
-    if(status !== undefined){        
-        let Sound = PlaySound(File,dir,volume,status);
-        setTimeout(function(){        
-            if(status < 1){
-                Sound.play();
-                let = status = null;
-            }else{
-                Sound.pause();
-                let = status = null;
-            }
-        },delay);
-    }
-}
 
 <?php 
 if($books[$key]->template === 'newspaper'){ ?>
@@ -353,4 +316,6 @@ $(document).ready(function(){
 
 <?php
 
+}else{
+    echo "EMpty";
 }

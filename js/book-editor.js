@@ -164,11 +164,6 @@ jQuery(document).ready(function($){
             url: "../model/content.php",
             data: {chapter:chapter,key:key,id:id,file:bookFile,content:text,action:action},
             dataType: "text",
-            beforeSend: function(){
-                if(action == 'btmp_update'){
-                    
-                }
-            },
             success: function(data){
                 if(action == 'btmp_add'){
                     let key = Number(data)-1;
@@ -258,15 +253,17 @@ jQuery(document).ready(function($){
     $(document).on('click','span.btmp-save-wrap',function(){
         let key = $('li.btmp-active').data('key');
         let chapter = $("#vb-save-styles").data('key'); 
-        $('span.btmp-save-wrap').html("<i class='bx bx-loader-circle bx-spin' ></i> Saving...");       
-        if(uploadQuillImage(bookFile)){
+        let images;
+        $('span.btmp-save-wrap').html("<i class='bx bx-loader-circle bx-spin' ></i> Saving...");    
+        images = $("div#style-preview div.ql-editor img");   
+        if(images.length > 0){
+            uploadQuillImage(bookFile)
             setTimeout(function(){
                 UpdateContentArray(chapter,key,'btmp_update');
             },2500);
         }else{
             UpdateContentArray(chapter,key,'btmp_update');
-        }     
-            
+        }                 
     });
 
     /*** BACKGROUND  SCRIPT ***/
@@ -424,7 +421,7 @@ jQuery(document).ready(function($){
                         processData:false, 
                         data: dataIMG,
                         success: function(data){
-                            let rs = JSON.parse(data);
+                            let rs = JSON.parse(data);                            
                             $(image[i]).attr("src",rs.url);
                             //console.log(rs);                            
                         }

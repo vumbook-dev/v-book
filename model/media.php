@@ -1,4 +1,7 @@
 <?php
+//DEFINE APP ROOT LINK
+require_once "../config.php";
+
 if(isset($_COOKIE['userdata'])){
     $UID = $_COOKIE['userdata']['id'];
     $UName = $_COOKIE['userdata']['name'];
@@ -133,7 +136,7 @@ if(isset($_COOKIE['userdata'])){
             $new_name = str_replace("(","",$new_name);
             $new_name = str_replace(")","",$new_name);
             $sourcePath = $_FILES['background']['tmp_name'][$key];  
-            $targetPath = "../media/page-background/{$UFolder}/".$new_name;  
+            $targetPath = URLROOT."media/page-background/{$UFolder}/".$new_name;  
 
             if(move_uploaded_file($sourcePath, $targetPath)){
                 $new_count = $og_count + $key;
@@ -163,8 +166,8 @@ if(isset($_COOKIE['userdata'])){
         if(!is_dir("../media/images/users/{$UFolder}")){
             mkdir("../media/images/users/{$UFolder}");            
         }
-        if(!is_dir("../media/images/users/{$UFolder}".$dir)){
-            mkdir("../media/images/users/{$UFolder}".$dir); 
+        if(!is_dir("../media/images/users/{$UFolder}/".$dir)){
+            mkdir("../media/images/users/{$UFolder}/".$dir); 
         }
         foreach ($_FILES['image'] as $key => $value){        
             $og_name = $_FILES['image']['name'][0];
@@ -174,10 +177,11 @@ if(isset($_COOKIE['userdata'])){
             $new_name = "{$filename[0]}-".substr($new_name,-11);
             $new_name = str_replace(" ","-",$new_name);
             $sourcePath = $_FILES['image']['tmp_name'][0];
-            $targetPath = "../media/images/users/{$UFolder}".$dir."/".$new_name;
+            $targetPath = "../media/images/users/{$UFolder}/".$dir."/".$new_name;
+            $savePath = URLROOT."media/images/users/{$UFolder}/".$dir."/".$new_name;
 
             if(move_uploaded_file($sourcePath, $targetPath)){
-                $data["url"] = $targetPath;
+                $data["url"] = $savePath;
                 $status["status"] = "success";
             }else{
                 $status["status"] = "failed";
