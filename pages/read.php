@@ -1,11 +1,11 @@
 <?php
-
+require_once "../config.php";
 if(isset($_POST['data'])){
     if(isset($_COOKIE['userdata'])){
         $UID = $_COOKIE['userdata']['id'];
         $UName = $_COOKIE['userdata']['name'];
     }
-    $UFolder = "{$UName}{$UID}";
+    $UFolder = DATAPATH;
     $book = $_POST['data'];
     $key = $book - 1;
     $allBooks = file_get_contents("../json/users/bookdata/{$UFolder}/books-list-title.json");
@@ -31,7 +31,7 @@ if(isset($_POST['data'])){
 <p class="text-center text-muted h5">Collecting Book's Important Files...</p>
 </div>
 <div id="vb-control-wrap" class="pb-4 pt-2 px-5">
-    <span id="vb-zoomvalue">160%</span> <input type="range" id="vb-sliderzoomer" value="6" min="0" max="10" step="2">
+    <span id="vb-zoomvalue">160%</span> <input type="range" id="vb-sliderzoomer" value="6" min="0" max="8" step="2">
 </div>
 <div <?php echo ($books[$key]->template == 'book') ? 'id="book-container"' : 'id="newspaper-container"'; ?>  data-actBG="0"></div>
 </div>
@@ -293,7 +293,6 @@ $(document).on('input', '#vb-sliderzoomer', function(){
         case 4: zoom = 120; pb = 0; break;
         case 6: zoom = 160; pb = 6; break;
         case 8: zoom = 200; pb = 12; break;
-        case 10: zoom = 240; pb = 15; break;
     }
     container.css("zoom",zoom+"%");
     container.css({"-moz-transform":"scale("+zoom+"%,"+zoom+"%)","-moz-transform-origin":"top"});
@@ -309,7 +308,7 @@ $(document).ready(function(){
     main.removeClass("container");
     main.addClass("container-fluid");
     main.addClass("p-fixed");
-    bookwrap.css({"-moz-transform":"scale(1)","zoom":"160%","-webkit-zoom":"160%","-ms-transform":"scale(1)"});
+    bookwrap.css({"-moz-transform":"scale(1.6)","-moz-transform-origin":"top","zoom":"160%","-webkit-zoom":"160%","-ms-transform":"scale(1.6)","-ms-transform-origin":"top"});
     $("#newspaper-container").css("padding-bottom","6rem");
 });
 </script>

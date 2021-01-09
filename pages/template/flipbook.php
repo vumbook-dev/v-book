@@ -1,9 +1,10 @@
 <?php
+require_once "../../config.php";
 if(isset($_POST['book']) && isset($_POST['file'])){
     if(isset($_COOKIE['userdata'])){
         $UID = $_COOKIE['userdata']['id'];
         $UName = $_COOKIE['userdata']['name'];
-        $UFolder = "{$UName}{$UID}";
+        $UFolder = DATAPATH;
     }
     $path = "../../json/users/bookdata/{$UFolder}/";
     $book = $_POST['book'];

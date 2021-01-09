@@ -10,13 +10,15 @@ jQuery(document).ready(function($){
         let json = JSON.parse(data);
         let placeHolder = $("#vbSelectSounds>h4");
         let mediaPlayer = $("#vbMediaPlayerWrap");
+        let path = json.filepath;
         let id = json.id;
         let alias = (json.alias.length < 11) ? json.alias : json.alias.substr(0,11);
         let filename = json.filename;
-        let sound = '<span id="vb-my-audio" class="slct-sounds-list act-sound h5" data-id="'+id+'">'+alias+' <i class="fa fa-play" aria-hidden="true" data-dir="1" data-file="'+filename+'"></i></span>';
+        let sound = '<span id="vb-my-audio" class="slct-sounds-list act-sound h5" data-id="'+id+'">'+alias+' <i class="fa fa-play" aria-hidden="true" data-dir="1" data-path="'+path+'" data-file="'+filename+'"></i></span>';
         $("#vbMyAudioWrap").html(sound);
         mediaPlayer.removeClass("d-none");
         placeHolder.addClass("d-none");
+        return true;
     }
     //SUBMIT MULTI SOUND
     $(document).on("submit","#submit-audio",function(e){
@@ -27,37 +29,26 @@ jQuery(document).ready(function($){
             data: new FormData(this),  
             contentType: false,  
             processData:false,  
-            success: function(data){                
-                $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-success" role="alert"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Audio Successfully Uploaded</div>');
-                setTimeout(function(){
-                    $("div.message-status").remove();
-                },4000);
-                $("form#submit-audio").addClass("input-empty");
-                $("#vbSelectSounds input.rdnly-plchldr").addClass("d-none");
-                $("form#submit-audio button.btn-primary").addClass("d-none");
-                $("#vbSelectSounds span.fileUpload").removeClass("d-none");
-                $("div.delay-wrap").removeClass("d-none");
-                //$(this).removeEventListener();
-                //loadMyAudio();
-                //selfsubmit.clear();               
-                newAudio(data);       
+            beforeSend: function(){
+                $('button#vb-sound-upload').html("<i class='bx bx-loader-circle bx-spin' ></i> Saving...");
+            },
+            success: function(data){             
+                window.flashMessage("Audio Successfully Uploaded","success");
+                $('button#vb-sound-upload').html("Saved");             
+                if(newAudio(data)){                          
+                    UpdateSound();
+                    setTimeout(function(){
+                        $("form#submit-audio").addClass("input-empty");
+                        $("#vbSelectSounds input.rdnly-plchldr").addClass("d-none");
+                        $("form#submit-audio button.btn-primary").addClass("d-none");
+                        $("#vbSelectSounds span.fileUpload").removeClass("d-none");
+                        $("div.delay-wrap").removeClass("d-none");
+                        $('button#vb-sound-upload').html("Submit");  
+                    },1500);
+                }
             }  
         }); 
     });
-
-    //SELECT AUDIO
-    // $(document).on("click",".slct-sounds > li.slct-sounds-list", function(){
-    //     SoundStatus = $(this).hasClass("act-sound");
-    //     id = $(this).data("id");
-    //     $("li.apllySoundsToAll").remove();
-    //     if(!SoundStatus){
-    //         $(".slct-sounds > li").removeClass("act-sound");            
-    //         $(this).addClass("act-sound");
-    //         $(this).after("<li class='apllySoundsToAll bg-light'><input type='checkbox' data='"+id+"' class='allSounds' name='allSounds'><label class='m-0 px-2'>Set as default sound to all pages?</label></li>");
-    //     }    
-        
-    //     //$(this).removeEventListener('click', e);           
-    // });
 
     //PLAY SOUND
     $(document).on("click",".slct-sounds-list > i", function(e){
@@ -88,8 +79,21 @@ jQuery(document).ready(function($){
     $(document).on('change','input[name=vb-volume-control]',function(){
         let Sound = $("#vb-prevAudio")[0];
         let vol = $(this).val();
+        $("span.fileUpload").addClass('d-none');
+        $("span.save_changes").removeClass('d-none');
         Sound.volume = vol;
-        //console.log(vol);
+    });
+
+    $(document).on('change','input[name=delay]',function(){
+        $("span.fileUpload").addClass('d-none');
+        $("span.save_changes").removeClass('d-none');
+    });
+
+    $(document).on('click','span.save_changes',function(){
+        UpdateSound();
+        window.flashMessage('Sound Settings Updated','success');
+        $("span.fileUpload").removeClass('d-none');
+        $("span.save_changes").addClass('d-none');
     });
 
     //MULTIPLE SOUND UPLOADS
@@ -101,10 +105,7 @@ jQuery(document).ready(function($){
         let fileName = $(this).get(0).files[0].name;
         let fileExtension = ['mp3', 'wav', 'm4a'];
         if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
-            $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-danger" role="alert"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Please Upload mp3, m4a or wav format only</div>');
-            setTimeout(function(){
-                $("div.message-status").remove();
-            },4000);
+            window.flashMessage('Please Upload mp3, m4a or wav format only','danger');
         }else{
             readOnly.attr("value",fileName);
             uploader.addClass("d-none");
@@ -130,28 +131,70 @@ jQuery(document).ready(function($){
         $("#vb-modal-container div").remove();
     });
 
-    //UPDATE STYLE
-    const UpdateContent = function(sound,volume,delay,key,chapter,color,index = bookIndex){
+    //UPDATE SOUND
+    const UpdateSound = function(){
         $("div.ql-editor").append(" ");
+        let key = $("#vb-save-styles").data("key");
+        let parent = $("#vb-save-styles").parents('div.modal-content');
+        let sound = parent.find("span#vb-my-audio.act-sound").data("id");
+        let delay = parent.find('input[name=delay]').val();
+        let volume = $("input[name=vb-volume-control]").val();
+        let chapter = $("input[name=chapter]").val();  
         setTimeout(function(){            
-            //let content = JSON.stringify(Quillcontents, null, 2);
             $.ajax({
                 method: "POST",
                 url: "../model/content.php",
-                data: {sound:sound,volume:volume,delay:delay,key:key,file:bookFile,book:index,chapter:chapter,color:color,template:bookTemplate,action:"update"},
+                data: {sound:sound,volume:volume,delay:delay,key:key,file:bookFile,book:bookIndex,chapter:chapter,template:bookTemplate,action:"update_sound"},
                 dataType: "text",
                 success: function(data){
+                    console.log(data);
                     let json = JSON.parse(data);
-                    let state = (json.status == "success") ? "alert-success" : "alert-danger";
-                    $("div#vbUpdateMessage").prepend('<div class="message-status alert '+state+'" role="alert">'+json.message+'</div>');
-                    //$("#vb-new-section").removeClass("d-none");
-                    $("li.apllySoundsToAll").remove();
-                    setTimeout(function(){
-                        $("div.message-status").remove();                    
-                    },3000);
+                    if(json.status == "success"){
+                        return true;                        
+                    }else{
+                        return false;
+                    }                    
                 }
             });        
         },500);
+    }
+
+    const UpdateColor = function(color,key,part){
+        $("div.ql-editor").append(" ");
+        setTimeout(function(){            
+            $.ajax({
+                method: "POST",
+                url: "../model/content.php",
+                data: {color:color,key:key,file:bookFile,book:bookIndex,chapter:part,template:bookTemplate,action:"update_color"},
+                dataType: "text",
+                beforeSend: function(){
+                    $('div.colorPick-wrap input.pcr-save').val('Saving...');
+                },
+                success: function(data){
+                    let json = JSON.parse(data);
+                    let state = (json.status == "success") ? "success" : "danger";
+                    $('div.colorPick-wrap input.pcr-save').val('Saved');
+                    setTimeout(function(){
+                        $('div.colorPick-wrap input.pcr-save').val('Save');                        
+                        $('div.colorPick-wrap input.pcr-save').removeClass('pckrbtn');
+                    },1500);
+                    window.flashMessage(json.message,state);                    
+                    $("li.apllySoundsToAll").remove();
+                }
+            });        
+        },500);
+    }
+
+    //UPDATE COLOR BUTTON
+    window.saveBG = function(){
+        let key = $("#vb-save-styles").data("key");
+        let color;
+        let part = $("input[name=chapter]").val();
+        let inputColor = $("div.bgContainer>div.custom-radio input#bgColor:checked");
+        if(inputColor.length > 0){
+            color = $("div.colorPick-wrap input.pcr-result").val();
+        }            
+        UpdateColor(color,key,part);
     }
 
     //UPDATE BOOK TEMPLATE CONTENT
@@ -256,8 +299,7 @@ jQuery(document).ready(function($){
         let images;
         $('span.btmp-save-wrap').html("<i class='bx bx-loader-circle bx-spin' ></i> Saving...");    
         images = $("div#style-preview div.ql-editor img");   
-        if(images.length > 0){
-            uploadQuillImage(bookFile)
+        if(images.length > 0 && uploadQuillImage(bookFile)){            
             setTimeout(function(){
                 UpdateContentArray(chapter,key,'btmp_update');
             },2500);
@@ -269,7 +311,7 @@ jQuery(document).ready(function($){
     /*** BACKGROUND  SCRIPT ***/
     $(document).on("click","div.bgContainer > .custom-radio",function(){
         let radio = $(this).data("act");
-        let input = $(this).find("input");
+        let input = $(this).find("input[type=radio]");
         let bgColor = $("div.colorPick-wrap input.pcr-result").val();
         let divColor = $("div.colorPick-wrap");
         let img = $("div.imgPick-wrap");
@@ -279,11 +321,19 @@ jQuery(document).ready(function($){
             divColor.addClass("d-none");
             img.removeClass("d-none");
             input.prop('checked', true);
-            $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background-image","url('"+bgIMG+"')");
-        }else{
+            if(!$("img#prev-img-background").hasClass('prev-chapter-bg')){
+                $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background-image","url('"+bgIMG+"')");
+            }else{
+                $("div#style-preview").css("background-image","url("+bgIMG+")");
+            }
+        }else{            
             input.prop('checked', true);
             $("div.bgContainer > .custom-radio:nth-child(3) > input").prop('checked', false);
-            $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background-color",bgColor);
+            if(!$("img#prev-img-background").hasClass('prev-chapter-bg')){
+                $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background",bgColor);
+            }else{
+                $("div#style-preview").css("background",bgColor);
+            }
             img.addClass("d-none");
             divColor.removeClass("d-none");
         }
@@ -293,10 +343,13 @@ jQuery(document).ready(function($){
     function readURL(input) {
         if (input.files && input.files[0]) {
             let reader = new FileReader();
-            
             reader.onload = function(e) {
                 $('#prev-img-background').attr('src', e.target.result);  
-                $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background-image","url("+e.target.result+")");               
+                if(!$("#prev-img-background").hasClass('prev-chapter-bg')){
+                    $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background-image","url("+e.target.result+")");
+                }else{
+                    $("div#style-preview").css("background-image","url("+e.target.result+")");
+                }                           
                 $('#prev-img-background').removeClass('d-none');
                 $("div#imgBackground-preview-wrap > i").addClass("d-none");
                 $("#upload").text("Update");
@@ -315,10 +368,7 @@ jQuery(document).ready(function($){
         let submit = $("#vbIMGbackground button.btn-primary");        
         let fileExtension = ['jpg', 'png', 'gif'];
         if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
-            $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-danger" role="alert">Please Upload jpg, png or gif format only</div>');
-            setTimeout(function(){
-                $("div.message-status").remove();
-            },3000);
+            window.flashMessage('Please Upload jpg, png or gif format only','danger');
         }else{
             for (var i = 0; i < $(this).get(0).files.length; ++i) {
                 names.push($(this).get(0).files[i].name);
@@ -369,17 +419,20 @@ jQuery(document).ready(function($){
             data: new FormData(this),  
             contentType: false,  
             processData:false,  
-            success: function(){                
-                $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-success" role="alert"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Background Image Successfully Saved</div>');                     
+            beforeSend: function(){
+                $('#submit-background button.btn-primary').html("<i class='bx bx-loader-circle bx-spin' ></i> Saving...");
+            },
+            success: function(){          
+                $('#submit-background button.btn-primary').html("Saved");     
+                window.flashMessage('Background Image Successfully Saved.','success');                                 
                 uploader.removeClass("d-none");
                 uploader.addClass("d-block");
                 readOnly.addClass("d-none");
                 $("span#rm-image-background").css("display","none");
                 submit.addClass("d-none");
                 setTimeout(function(data){
-                    $("input#upbackground").attr("data-image",data);
-                    console.log(data);
-                    $("div.message-status").remove();
+                    $("input#upbackground").attr("data-image",data);     
+                    $('#submit-background button.btn-primary').html("Save");                 
                 },3000);
             }  
         });
@@ -404,55 +457,38 @@ jQuery(document).ready(function($){
         let allImageCount = image.length;        
         let file;
         if(allImageCount > 0){
-            for(let i=0; i < allImageCount; i++){
-                let dataIMG = new FormData;
-                dataIMG.append("dir",directory);
-                //let src = image[i].attributes[0].value;
-                let src = $(image[i]).attr("src");
-                let res = src.split(':');
-                if(res[0] == "data"){
-                    //console.log("Yes this is from based64");   
-                    file = DataURIToBlob(src);                    
-                    dataIMG.append("image[]", file);   
-                    window.selfsubmit = $.ajax({
-                        url: "../model/media.php",
-                        method: "POST",
-                        contentType: false,  
-                        processData:false, 
-                        data: dataIMG,
-                        success: function(data){
-                            let rs = JSON.parse(data);                            
-                            $(image[i]).attr("src",rs.url);
-                            //console.log(rs);                            
-                        }
-                    });                                          
-                }                                 
+            for(let i=0; i <= allImageCount; i++){
+                if(i != allImageCount){
+                    let dataIMG = new FormData;
+                    dataIMG.append("dir",directory);
+                    //let src = image[i].attributes[0].value;
+                    let src = $(image[i]).attr("src");
+                    let res = src.split(':');
+                    if(res[0] == "data"){
+                        //console.log("Yes this is from based64");   
+                        file = DataURIToBlob(src);                    
+                        dataIMG.append("image[]", file);   
+                        window.selfsubmit = $.ajax({
+                            url: "../model/media.php",
+                            method: "POST",
+                            contentType: false,  
+                            processData:false, 
+                            data: dataIMG,
+                            success: function(data){
+                                let rs = JSON.parse(data);                            
+                                $(image[i]).attr("src",rs.url);
+                                //console.log(rs);                            
+                            }
+                        });                                          
+                    }  
+                }else{
+                    return true;
+                }                               
             }   
             return true;                           
         }else{
             return false;
         }    
     }
-
-    $(document).on("click","#vb-save-styles",function(){
-        //console.log(content);
-        let key = $(this).data("key");
-        let parent = $(this).parents('div.modal-content');
-        let actSound = parent.find("span#vb-my-audio.act-sound").data("id");
-        let delay = parent.find('input[name=delay]').val();
-        //let file = $("input#vb-ttl-cdidtfyr").data("universal");
-        let vol = $("input[name=vb-volume-control]").val();
-        //let ApplyAllSounds = $("input.allSounds");
-        //let dsounds = (ApplyAllSounds.prop("checked") == true) ? 1 : 0;
-        let color;
-        let chapter = $("input[name=chapter]").val();
-        let inputColor = $("div.bgContainer>div.custom-radio input#bgColor:checked");
-        if(inputColor.length > 0){
-            color = $("div.colorPick-wrap input.pcr-result").val();
-        }             
-
-        UpdateContent(actSound,vol,delay,key,chapter,color);
-
-    });
 
 });

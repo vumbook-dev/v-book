@@ -3,7 +3,7 @@ require_once "../../function.php";
 if(isset($_COOKIE['userdata'])){
     $UID = $_COOKIE['userdata']['id'];
     $UName = $_COOKIE['userdata']['name'];
-    $UFolder = "{$UName}{$UID}";
+    $UFolder = DATAPATH;
     if(isset($_POST['key']) && isset($_POST['data'])){        
         $k = $_POST['key'];
         $file = $_POST['data'];

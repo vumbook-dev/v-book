@@ -5,7 +5,7 @@ require_once "../config.php";
 if(isset($_COOKIE['userdata'])){
     $UID = $_COOKIE['userdata']['id'];
     $UName = $_COOKIE['userdata']['name'];
-    $UFolder = "{$UName}{$UID}";
+    $UFolder = DATAPATH;
     if(isset($_FILES['audio']) && $_FILES['audio']['name'] != ''){
 
         $media = file_get_contents("../json/users/bookdata/{$UFolder}/media/user-sound.json");
@@ -29,7 +29,7 @@ if(isset($_COOKIE['userdata'])){
 
             if(move_uploaded_file($sourcePath, $targetPath)){
                 $new_count = $og_count + $key;
-                $fileData = array("userID" => "u01", "id" => "m{$new_count}", "alias" => $file_name[0], "filename" => $new_name);
+                $fileData = array("userID" => "u01", "filepath" => "{$UFolder}", "id" => "m{$new_count}", "alias" => $file_name[0], "filename" => $new_name);
                 $media[] = $fileData;            
             }
         }
@@ -157,7 +157,7 @@ if(isset($_COOKIE['userdata'])){
             $chapters[$k] = $newChapter;
             $chapters = array_values($chapters);
             $newUpdate = json_encode($chapters);
-            file_put_contents("../json/users/bookdata/{$UFolder}/book-chapter/{$file}.json",$newUpdate);  
+            file_put_contents("../json/users/bookdata/{$UFolder}/book-chapter/{$file}.json",$newUpdate);              
             echo $new_name;
         }
     }elseif(isset($_FILES['image']) && isset($_POST['dir'])){

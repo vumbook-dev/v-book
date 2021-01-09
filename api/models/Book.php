@@ -4,6 +4,7 @@
     private $_conn;
     private $_purchasedTable = 'purchased';
     private $_userTable = 'users';
+    private $_groupTable = 'group_teams';
     private $_bookIndex;
     private $_singleBook;
     // Set User if verified
@@ -14,6 +15,7 @@
     public $userID;
     public $author;
     public $account;
+    public $group_id;
     public $token;
     public $created_at;
     public $attempt;
@@ -112,4 +114,16 @@
         return ($num > 0) ? $row['pathname'] : false;
     }
 
+    //Verify Team Member
+    public function teamFetchBook(){
+      $query = 'SELECT CONCAT(u.username,u.id) as pathname FROM ' . $this->_userTable . ' u JOIN '. $this->_groupTable .' gt ON u.id = gt.created_by WHERE u.account_type = :accountTYPE AND gt.token = :token LIMIT 0, 1';
+      $stmt = $this->conn->prepare($query);
+      $stmt->bindParam(':accountTYPE', $this->account);
+      $stmt->bindParam(':token', $this->token);
+      $stmt->execute();
+      $num = $stmt->rowCount();
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      // Validate If Access is valid;
+      return ($num > 0) ? $row['pathname'] : false;
+    }
   }

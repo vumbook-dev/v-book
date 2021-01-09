@@ -31,10 +31,7 @@ jQuery(document).ready(function($){
                 let chptr = JSON.parse(data);
                 //addSectionLightbox(chptr['title'],chptr['file'],chptr['chapter'],chptr['index']);
                 input.val("");
-                $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-success" role="alert"><i class="fa fa-check-circle-o" aria-hidden="true"></i>'+chptr['title']+' Successfully Added</div>');
-                setTimeout(function(){
-                    $("div.message-status").remove();
-                },4000);
+                window.flashMessage(chptr['title']+' Successfully Added</div>','success');
             }
         });
     }
@@ -188,7 +185,7 @@ jQuery(document).ready(function($){
         let fileExtension = ['jpg', 'png', 'gif'];
         let div = (type == "cover") ? "#vbUploadBookCover" : "#vbUploadBookBackground";
         if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
-            $(div).prepend('<div class="message-status alert alert-danger" role="alert">Please Upload jpg, png or gif format only</div>');
+            $(div).prepend('<div class="message-status alert alert-danger" role="alert"></div>');
             setTimeout(function(){
                 $("div.message-status").remove();
             },4000);
@@ -217,26 +214,30 @@ jQuery(document).ready(function($){
         e.preventDefault();
         let img = $("#prev-img-bookcover");
         let formData = new FormData(this);
+        let formID = $(this);
         let json;
-        //formData.append( 'file', $( '#upcover' )[0].files[0] );
-        //formData.append("book",bookIndex);
         window.selfsubmit = $.ajax({  
             url: "../model/books.php",  
             type: "POST",  
             data: formData,  
             contentType: false,  
             processData:false,  
+            beforeSend: function(){
+                console.log(formID);
+                $(formID).find('button.btn-primary').html("<i class='bx bx-loader-circle bx-spin' ></i> Saving...");
+            },
             success: function(data){   
+                $(formID).find('button.btn-primary').html("Saved");
                 json = JSON.parse(data);            
-                $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-success" role="alert"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Book '+json.message+' Successfully Uploaded</div>');
-                setTimeout(function(){
-                    $("div.message-status").remove();
-                },4000);
-                $("form#submit-book-"+json.type).addClass("input-empty");
-                $("#vbUploadBook"+json.message+" input.rdnly-plchldr").addClass("d-none");
-                $("form#submit-book-"+json.type+" button.btn-primary").addClass("d-none");
-                $("#vbUploadBook"+json.message+" span.fileUpload").removeClass("d-none");
-                console.log(json.type,json.message);                            
+                window.flashMessage('Book '+json.message+' Successfully Uploaded','success');
+                setTimeout(function(){                    
+                    $("form#submit-book-"+json.type).addClass("input-empty");
+                    $("#vbUploadBook"+json.message+" input.rdnly-plchldr").addClass("d-none");
+                    $("form#submit-book-"+json.type+" button.btn-primary").addClass("d-none");
+                    $("#vbUploadBook"+json.message+" span.fileUpload").removeClass("d-none");
+                    $(formID).find('button.btn-primary').html("Save");
+                },1500);
+                //console.log(json.type,json.message);                            
             }  
         }); 
     });
@@ -273,13 +274,9 @@ jQuery(document).ready(function($){
             dataType: "text",
             success: function(data){
                 let json = JSON.parse(data);
-                let state = (json.status == "success") ? "alert-success" : "alert-danger";
-                $("div#vbUpdateMessage").prepend('<div class="message-status alert '+state+'" role="alert">'+json.message+'</div>');
-                //$("#vb-new-section").removeClass("d-none");
+                let state = (json.status == "success") ? "success" : "danger";
+                window.flashMessage(json.message,state);
                 $("li.apllySoundsToAll").remove();
-                setTimeout(function(){
-                    $("div.message-status").remove();                    
-                },3000);
             }
         })
     }
@@ -300,10 +297,8 @@ jQuery(document).ready(function($){
         }
         if(uploadQuillImage(bookData)){
             updateChPage(key,actSound,vol,delay,color,title,subtitle);
-            console.log(1);
         }else{
             updateChPage(key,actSound,vol,delay,color,title,subtitle);
-            console.log(2);
         }        
     });
 
@@ -398,11 +393,7 @@ jQuery(document).ready(function($){
             data: {title:newTitle,book:bookKey,file:bookData,chapter:chapter,section:section,action:"update_title"},
             dataType: "text",            
             success: function(data){
-                //console.log(data);
-                $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-success" role="alert">'+data+'</div>');
-                setTimeout(function(){
-                    $("div.message-status").remove();             
-                },3000);
+                window.flashMessage(data,'success');
             }
         });
         return true;

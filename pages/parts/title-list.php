@@ -1,9 +1,10 @@
 <?php
+require_once "../../config.php";
 if(isset($_COOKIE['userdata'])){
     $UID = $_COOKIE['userdata']['id'];
     $UName = $_COOKIE['userdata']['name'];
 }
-$UFolder = "{$UName}{$UID}";
+$UFolder = DATAPATH;
 
 function crud_btn($listKey,$action,$pages = 0,$template){
     $na = ($pages == 0)? "vb-btn-disable" : "";

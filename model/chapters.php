@@ -1,8 +1,9 @@
 <?php
+require_once "../config.php";
 if(isset($_COOKIE['userdata'])){
     $UID = $_COOKIE['userdata']['id'];
     $UName = $_COOKIE['userdata']['name'];
-    $UFolder = "{$UName}{$UID}";
+    $UFolder = DATAPATH;
     if(isset($_POST['action'])){
         $action = $_POST['action'];
         if($action == "add"){
@@ -79,13 +80,7 @@ if(isset($_COOKIE['userdata'])){
             $chapters = json_decode($list,true);
             $bk = $_POST['book'];
             $ch = $_POST['chapter'];
-            // if(!empty($_POST['title']) && !empty($_POST['subtitle'])){
-            //     $title = $_POST['title'];
-            //     $subtitle = $_POST['subtitle'];                
-            //     $content = "{$title} <small class='vb-content-subtitle h6'>{$subtitle}</small>";
-            // }else{
-                $content = $_POST['content'];
-            //}
+            $content = $_POST['content'];
             
             $sound = $_POST['sound'];
             $volume = $_POST['volume'];    
@@ -113,7 +108,7 @@ if(isset($_COOKIE['userdata'])){
 
             $message = '<i class="fa fa-check-circle-o" aria-hidden="true"></i> Book Part Successfully Updated';
             $status = "success";
-            $arry = array("message" => $message, "status" => $status);
+            $arry = array("message" => $message, "status" => $status, "filepath" => $UFolder);
             $arry = json_encode($arry);
             echo $arry;
         }elseif($action == "update_title"){

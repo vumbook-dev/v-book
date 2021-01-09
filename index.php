@@ -26,6 +26,7 @@
               <li><a href="<?php echo VUMBOOK; ?>user/login"><i class="fa fa-sign-in" aria-hidden="true"></i>Login</a></li>
               <li><a href="<?php echo VUMBOOK; ?>user/signup"><i class="fa fa-user-plus" aria-hidden="true"></i>Sign Up</a></li>
               <?php else : ?>
+                <li><a href="<?php echo VUMBOOK; ?>user/account">My Account</a></li>
               <li><a href="<?php echo VUMBOOK; ?>user/logout"><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</a></li>
               <?php endif; ?>
             </ul>

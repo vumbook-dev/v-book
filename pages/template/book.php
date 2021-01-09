@@ -1,9 +1,10 @@
 <?php
+require_once "../../config.php";
 if(isset($_POST['book']) && isset($_POST['file'])){
     if(isset($_COOKIE['userdata'])){
         $UID = $_COOKIE['userdata']['id'];
         $UName = $_COOKIE['userdata']['name'];
-        $UFolder = "{$UName}{$UID}";
+        $UFolder = DATAPATH;
     }
     $path = "../../json/users/bookdata/{$UFolder}/";
     $book = $_POST['book'];
@@ -316,9 +317,16 @@ h1{
 	max-width: 100%;
 }
 
+main.container-fluid{
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 1000px;
+}
+
 .paper-effect{
 	width: 100%;
     max-width: 750px;
+    padding-bottom: 100px;
 }
 body.book-open .custom-wrapper{
 	top: 0;
@@ -374,7 +382,7 @@ body.book-open .custom-wrapper:before, body.book-open .custom-wrapper:after{
 	position: relative;
 	perspective: 1000px;
     transition: 1s;
-    right: -18px;
+    right: -25%;
     overflow: hidden;
 }
 .book{
@@ -522,7 +530,7 @@ div.vbChapter-wrap li.tbcLink{
 
 /* Classes for Javascript use */
 
-.trnsf{
+/* .trnsf{
 	transform: translateX(375px);
 }
 
@@ -532,7 +540,7 @@ div.book-content{
 
 div.book-content.trnsf-reset{
 	transform: translateX(180px);
-}
+} */
 
 div#book-container div.ql-editor{
     padding:2rem 1rem!important;

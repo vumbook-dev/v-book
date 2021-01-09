@@ -29,11 +29,8 @@
             }else{ ?>
             let session = getCookie('sessiondata[session]');
             <?php if($page === 'usernotLoggedIn'){ ?>                
-                if(session != null){                 
-                  $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-danger" role="alert"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Your session expired please login to your account.</div>');
-                  setTimeout(function(){
-                    $("div#vbUpdateMessage>div").fadeOut(500);
-                  },1800);
+                if(session != null){      
+                  window.flashMessage('Your session expired please login to your account.','danger');       
                 }
                 history.replaceState(0, `V-Book > Home`, `/`);                
             <?php } ?>      
@@ -51,6 +48,7 @@
             $(document).on('click','li.account_dropdown',function(){
               $('ul.account_selection').toggleClass('show_dropdown');
             });
+            //console.log('<?php //echo getPermission(); ?>');
           });
     </script>
   </body>

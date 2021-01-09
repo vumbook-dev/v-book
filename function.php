@@ -78,60 +78,91 @@ function revertTextToEditor($post){
     return $new;
 }
 
+//GET FILE PERMISSION
+function getPermission(){
+    changeFilePermission("json/users/bookdata/".DATAPATH."/book-content/Thyroid-2a9364.json");
+    $sound = substr(sprintf('%o', fileperms("media/sounds/users/".DATAPATH)), -4);
+    $images = substr(sprintf('%o', fileperms("media/images/users/".DATAPATH)), -4);
+    $cover = substr(sprintf('%o', fileperms("media/bookcover/users/".DATAPATH)), -4);
+    $background = substr(sprintf('%o', fileperms("media/book-background/users/".DATAPATH)), -4);
+    $page = substr(sprintf('%o', fileperms("media/page-background/users/".DATAPATH)), -4);
+    $bookData = substr(sprintf('%o', fileperms("json/users/bookdata/".DATAPATH."/book-content/Thyroid-2a9364.json")), -4);
+    $json = [
+        "sound" => $sound,
+        "images" => $images,
+        "cover" => $cover,
+        "background" => $background,
+        "page" => $page,
+        "file" => $bookData,
+    ];
+    echo json_encode($json);
+}
+
+//CHANGE FILE PERMISSION
+function changeFilePermission($file){
+    $mode = 644;
+    chmod($file, octdec($mode));
+}
+
 //CREATE USER FOLDERS
 function createUserFolders(){
     if(isset($_COOKIE['userdata'])){
-        $UID = $_COOKIE['userdata']['id'];
-        $UName = $_COOKIE['userdata']['name'];
-        $UFolder = "{$UName}{$UID}";
-        $booklist = "json/users/bookdata/{$UFolder}/books-list-title.json";
-        $allUserFolders = array(
-            "book_background" => "media/book-background/{$UFolder}",
-            "page_cover" => "media/page-background/{$UFolder}",
-            "book_cover" => "media/bookcover/{$UFolder}",
-            "book_images" => "media/images/users/{$UFolder}",
-            "media_images" => "media/images/users/{$UFolder}",
-            "media_sounds" => "media/sounds/users/{$UFolder}",
-            "user_json" => "json/users/bookdata/{$UFolder}",
-            "media_json" => "json/users/bookdata/{$UFolder}/media",
-            "bookchapter_json" => "json/users/bookdata/{$UFolder}/book-chapter",
-            "bookcontent_json" => "json/users/bookdata/{$UFolder}/book-content",
-        );
+        $accountType = $_COOKIE['userdata']['account_type'];
+        if($accountType == 'author'){
+            $UID = $_COOKIE['userdata']['id'];
+            $UName = $_COOKIE['userdata']['name'];
+            $UFolder = DATAPATH;
+            $booklist = "json/users/bookdata/{$UFolder}/books-list-title.json";            
 
-        if(file_exists($booklist)){
-            return false;   
-        }else{
-            //Create User Folders
-            foreach($allUserFolders as $value){
-                if(!is_dir($value)){
-                    mkdir($value);            
-                }
-            }  
-            return true;
+            if(file_exists($booklist)){
+                return false;   
+            }else{
+                $allUserFolders = array(
+                    "book_background" => "media/book-background/{$UFolder}",
+                    "page_cover" => "media/page-background/{$UFolder}",
+                    "book_cover" => "media/bookcover/{$UFolder}",
+                    "book_images" => "media/images/users/{$UFolder}",
+                    "media_sounds" => "media/sounds/users/{$UFolder}",
+                    "user_json" => "json/users/bookdata/{$UFolder}",
+                    "media_json" => "json/users/bookdata/{$UFolder}/media",
+                    "bookchapter_json" => "json/users/bookdata/{$UFolder}/book-chapter",
+                    "bookcontent_json" => "json/users/bookdata/{$UFolder}/book-content",
+                );
+                //Create User Folders
+                foreach($allUserFolders as $value){
+                    if(!is_dir($value)){
+                        mkdir($value);            
+                    }
+                }  
+                return true;
+            }
         }
     }
 }
 
 //CREATE USER INITIAL NECESSARY FILES
 function createUserFiles(){
-    $UID = $_COOKIE['userdata']['id'];
-    $UName = $_COOKIE['userdata']['name'];
-    $UFolder = "{$UName}{$UID}";
-    $path = "json/users/bookdata/{$UFolder}";
-    $booklist = "{$path}/books-list-title.json";
-    $files = array(
-        "booklist" => "{$path}/books-list-title.json",
-        "archive" => "{$path}/archive-book-title.json",
-        "background" => "{$path}/media/user-background.json",
-        "cover" => "{$path}/media/user-bookcover.json",
-        "sounds" => "{$path}/media/user-sound.json"
-    );
+    $accountType = $_COOKIE['userdata']['account_type'];
+    if($accountType == 'author'){
+        $UID = $_COOKIE['userdata']['id'];
+        $UName = $_COOKIE['userdata']['name'];
+        $UFolder = DATAPATH;
+        $path = "json/users/bookdata/{$UFolder}";
+        $booklist = "{$path}/books-list-title.json";
+        $files = array(
+            "booklist" => "{$path}/books-list-title.json",
+            "archive" => "{$path}/archive-book-title.json",
+            "background" => "{$path}/media/user-background.json",
+            "cover" => "{$path}/media/user-bookcover.json",
+            "sounds" => "{$path}/media/user-sound.json"
+        );
 
-    if(!file_exists($booklist)){
-        //Create Initial Book List Files
-        foreach($files as $key => $value){
-            file_put_contents($value,"[]");
-        }    
-        return true;    
+        if(!file_exists($booklist)){
+            //Create Initial Book List Files
+            foreach($files as $key => $value){
+                file_put_contents($value,"[]");
+            }    
+            return true;    
+        }
     }
 }

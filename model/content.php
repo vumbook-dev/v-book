@@ -1,26 +1,10 @@
 <?php
+require_once "../config.php";
 if(isset($_COOKIE['userdata'])){
     $UID = $_COOKIE['userdata']['id'];
     $UName = $_COOKIE['userdata']['name'];
-    $UFolder = "{$UName}{$UID}";
+    $UFolder = DATAPATH;
     if(isset($_POST['action'])){
-        // function convertToVBPlayer($post){
-        //     $args = array();
-        //     $args[] = "/Dr. <\/span><span>/";
-        //     $args[] = "/Mr. <\/span><span>/";
-        //     $new = str_replace("<p>","<span> ",$post);
-        //     $new = str_replace("</p>"," </span>",$new);
-        //     $new = str_replace("<ol>","<span class='vb-textline'><ol>",$new);
-        //     $new = str_replace("</ol>","</ol></span>",$new);
-        //     $new = str_replace("<ul>","<span class='vb-textline'><ul>",$new);
-        //     $new = str_replace("</ul>","</ul></span>",$new);
-        //     $new = str_replace(",",", </span><span>",$new);
-        //     $new = str_replace(".",". </span><span>",$new);
-        //     $new = str_replace(":",": </span><span>",$new);
-        //     $new = str_replace(";","; </span><span>",$new);
-        //     $new = preg_replace($args,"Dr.",$new);
-        //     return $new;
-        // }
         $action = $_POST['action'];
         if($action == "add"){
             //ADD CONTENT CHAPTER
@@ -105,24 +89,19 @@ if(isset($_COOKIE['userdata'])){
                 $json = json_encode($contentlist);
                 file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
             }
-        }elseif($action == "update"){
-            //UPDATE CONTENT CHAPTER
+        }elseif($action == "update_sound"){
+            //UPDATE SOUND CHAPTER
             if(isset($_POST['file']) && isset($_POST['sound']) && isset($_POST['key'])){
                 $file = $_POST['file'];
                 $sound = $_POST['sound'];
                 $volume = $_POST['volume'];
                 $delay = $_POST['delay'];
-                $color = (isset($_POST['color'])) ? $_POST['color'] : "";
-                $key = $_POST['key'];
-                //$ch = $_POST['chapter'];                
+                $key = $_POST['key'];              
                 $allData = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");        
                 $section = json_decode($allData);
 
                 //SAVE DATA
                 if(!empty($sound) || is_numeric($sound)){
-                    // $bookKey = $_POST['book'];
-                    // $books = file_get_contents("../json/books-list-title.json");
-                    // $booklist = json_decode($books);
 
                     //SAVE SOUND
                     if($section[$key]->sound !== $sound){
@@ -137,32 +116,6 @@ if(isset($_COOKIE['userdata'])){
                     if($section[$key]->delay != $delay){
                         $section[$key]->delay = $delay;
                     }
-
-                    // if(!empty($color)){
-                    //     $book = $booklist[$bookKey];             
-                    //     $chapters = $book->chapter;
-                    //     $chInfo = json_decode($chapters[$ch]);
-                    //     $newChapter = array("name" => $chInfo->name, "bgType" => "color", "background" => $color);
-                    //     $newChapter = json_encode($newChapter);
-                    //     $chapters[$ch] = $newChapter;
-                    //     $chapters = array_values($chapters);
-                    //     $booklist[$bookKey]->chapter = $chapters;                    
-                    // }
-
-                    // $newUpdate = json_encode($booklist);
-                    // file_put_contents("../json/books-list-title.json",$newUpdate);
-
-
-                    if(!empty($color)){
-                        if($section[$key]->background != $color){
-                            $section[$key]->background = $color;
-                            $section[$key]->bgType = "color";
-                        }                   
-                    }
-
-                    if(isset($_POST['content'])){
-                        $section[$key]->content = $_POST['content'];
-                    }
                                             
                     $json = json_encode($section);
                     file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
@@ -171,6 +124,38 @@ if(isset($_COOKIE['userdata'])){
                     $status = "success";
                 }else{
                     $message = '<i class="fa fa-exclamation-circle" aria-hidden="true"></i> Something Went Wrong</i>';
+                    $status = "failed";
+                }
+
+                $arry = array("message" => $message, "status" => $status);
+                $arry = json_encode($arry);
+                echo $arry;
+            
+            }
+        }elseif($action == "update_color"){
+            //UPDATE SOUND CHAPTER
+            if(isset($_POST['file']) && isset($_POST['color']) && isset($_POST['key'])){
+                $file = $_POST['file'];
+                $color = (isset($_POST['color'])) ? $_POST['color'] : "";
+                $key = $_POST['key'];              
+                $allData = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");        
+                $section = json_decode($allData);
+
+                //SAVE DATA
+                if(!empty($color)){
+
+                    if($section[$key]->background != $color){
+                        $section[$key]->background = $color;
+                        $section[$key]->bgType = "color";
+                    }
+                                            
+                    $json = json_encode($section);
+                    file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
+
+                    $message = 'Content Successfully Updated';
+                    $status = "success";
+                }else{
+                    $message = 'Something Went Wrong</i>';
                     $status = "failed";
                 }
 
