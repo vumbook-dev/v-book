@@ -1,11 +1,11 @@
 <?php
-
+require_once "../config.php";
 if(isset($_POST['data'])){
     if(isset($_COOKIE['userdata'])){
         $UID = $_COOKIE['userdata']['id'];
         $UName = $_COOKIE['userdata']['name'];
     }
-    $UFolder = "{$UName}{$UID}";
+    $UFolder = DATAPATH;
     $book = $_POST['data'];
     $key = $book - 1;
     $allBooks = file_get_contents("../json/users/bookdata/{$UFolder}/books-list-title.json");
@@ -28,10 +28,10 @@ if(isset($_POST['data'])){
 <div class="lordicon-loader py-5">
 <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_30nris2g.json"  background="transparent"  speed="1"  style="width: 100px; height: 100px;"  loop  autoplay></lottie-player>
-<p class="text-center text-muted h5">Collecting Book Important Files...</p>
+<p class="text-center text-muted h5">Collecting Book's Important Files...</p>
 </div>
 <div id="vb-control-wrap" class="pb-4 pt-2 px-5">
-    <span id="vb-zoomvalue">160%</span> <input type="range" id="vb-sliderzoomer" value="6" min="0" max="10" step="2">
+    <span id="vb-zoomvalue">160%</span> <input type="range" id="vb-sliderzoomer" value="6" min="0" max="8" step="2">
 </div>
 <div <?php echo ($books[$key]->template == 'book') ? 'id="book-container"' : 'id="newspaper-container"'; ?>  data-actBG="0"></div>
 </div>
@@ -107,43 +107,6 @@ const bookDownloadData = function(){
 $(document).ready(function(){    
     loadBook(book,0,0,1);    
 });
-
-const PlaySound = function(File,Dir,vol,Status){    
-    
-    if(Status === 0){
-        let path = (Dir == 1) ? "user/" : "";
-        let Sound = $("#vb-audioplayer")[0];
-        Sound.src='../../media/sounds/'+path+File;
-        Sound.volume = vol;
-        Sound.loop = true;
-        $("div.vbPages").attr("data-status",0);
-        return Sound; 
-    }else{
-        return null;
-    }
-    
-}
-
-const ProcessSound = function(){
-    let active = $("div.activePage");
-    let File = active.data("sound");
-    let volume = active.data("volume");
-    let delay = active.data("delay");
-    let dir = active.data("sdir");
-    let status = active.data("status");    
-    if(status !== undefined){        
-        let Sound = PlaySound(File,dir,volume,status);
-        setTimeout(function(){        
-            if(status < 1){
-                Sound.play();
-                let = status = null;
-            }else{
-                Sound.pause();
-                let = status = null;
-            }
-        },delay);
-    }
-}
 
 <?php 
 if($books[$key]->template === 'newspaper'){ ?>
@@ -330,7 +293,6 @@ $(document).on('input', '#vb-sliderzoomer', function(){
         case 4: zoom = 120; pb = 0; break;
         case 6: zoom = 160; pb = 6; break;
         case 8: zoom = 200; pb = 12; break;
-        case 10: zoom = 240; pb = 15; break;
     }
     container.css("zoom",zoom+"%");
     container.css({"-moz-transform":"scale("+zoom+"%,"+zoom+"%)","-moz-transform-origin":"top"});
@@ -346,11 +308,13 @@ $(document).ready(function(){
     main.removeClass("container");
     main.addClass("container-fluid");
     main.addClass("p-fixed");
-    bookwrap.css({"-moz-transform":"scale(1)","zoom":"160%","-webkit-zoom":"160%","-ms-transform":"scale(1)"});
+    bookwrap.css({"-moz-transform":"scale(1.6)","-moz-transform-origin":"top","zoom":"160%","-webkit-zoom":"160%","-ms-transform":"scale(1.6)","-ms-transform-origin":"top"});
     $("#newspaper-container").css("padding-bottom","6rem");
 });
 </script>
 
 <?php
 
+}else{
+    echo "EMpty";
 }

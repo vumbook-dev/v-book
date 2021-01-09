@@ -131,6 +131,27 @@ div{
   position: relative;
 }
 
+/*** ALERT MESSAGE ***/
+.alert-success {
+  color: white;
+  background-color: rgb(40 167 69 / 65%);
+  border-color: #15572400;
+}
+
+.alert-danger {
+  color: white;
+  background-color: rgb(220 53 69 / 65%);
+  border-color: #721c2400;
+}
+
+.alert {
+  position: relative;
+  padding: .75rem 2.25rem .75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: .25rem 0 0 .25rem;
+}
+
 /*** CREATE BOOK PAGE ***/
 #vb-show-content .cb-wrap .form-group{
   display:flex;
@@ -345,10 +366,6 @@ span.vb-btn-wrap > span{
   height: 100px;
 }
 
-/* ::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-thumb:hover {
-  background: #007bff; 
-} */
-
 #vb-modal-preview .modal-title, #vb-modal-editstyle .modal-title{
   width: 100%;
   text-align: center;
@@ -368,17 +385,6 @@ button.vb-new-content, .bc-wrap button{
   z-index: 3;
   position: relative;
 }
-
-/* #vb-preview span, #style-preview span{
-  margin-bottom:1rem;
-  display: inline-block;
-  white-space: break-spaces;
-} */
-
-/* .text-justify #style-preview span{
-  display: unset!important;
-  line-height: 2.5rem;
-} */
 
 button.prev-close, button.editstyle-close {
   background-color: transparent;
@@ -1144,11 +1150,32 @@ div.colorPick-wrap div.pcr-selection{
   height: 30vh!important;
 }
 
+input.pckrbtn{
+  color: #fff!important;
+  background-color: #007bff!important;
+  border-color: #007bff!important;
+  display: inline-block!important;
+  font-weight: 400;
+  text-align: center!important;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none!important;
+  -moz-user-select: none!important;
+  -ms-user-select: none!important;
+  user-select: none!important;
+  border: 1px solid transparent;
+  padding: .375rem .75rem!important;
+  font-size: 1rem!important;
+  line-height: 1.5;
+  border-radius: .25rem!important;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out!important;
+}
+
 /*** UPDATE MESSAGE ***/
 div#vbUpdateMessage{
   position: fixed;
   right: 0;
-  margin: -25px 22px 0 25px;
+  margin: -25px 0px 0 25px;
   z-index: 10000;
   top: 90px;
 }

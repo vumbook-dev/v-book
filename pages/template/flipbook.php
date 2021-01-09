@@ -58,9 +58,11 @@ if(isset($_POST['book']) && isset($_POST['file'])){
     <?php 
     if($bookData[$book]->cover !== null){ ?>
         <!-- <div id="page0" class="vbBookCover-wrap vbPages" data-chapter="0"><img src="<?php echo 'media/bookcover/'.$UFolder.'/'.$bookCover[$coverKey]->filename; ?>" alt="'.$title.'"></div> -->
-        <div class="book" style="z-index: 1;">
-        <div class="book-wrap face-front active" id="front-cover">
-        <span class="right-control"><i class="fa fa-angle-right" aria-hidden="true"></i></span>
+        <div class="book page-0" style="z-index: 1; transform: rotateY(0deg);">
+        <div class="face-front" id="front-cover"></div>
+        <div class="face-back" id="trsf">
+            <div class="book-wrap">                            
+            </div>
         </div>
         </div>
     <?php    $xpage = 4;
@@ -85,13 +87,12 @@ if(isset($_POST['book']) && isset($_POST['file'])){
     }
 
      ?>
-<div class="book d-none" style="z-index: 0;">
+<div class="book page-1 d-none" style="z-index: 0;">
+<div class="face-front">
     <div class="book-wrap">
-        <span class="left-control"><i class="fa fa-angle-left" aria-hidden="true"></i></span>
-        <h1 class="vb-book-main-title text-center px-5"><?php echo $mainTitle; ?></h1>        
-        <span class="right-control sound-data-holder" data-volume="<?php echo $chVol; ?>" data-sound="<?php echo $chSnd; ?>" data-delay="<?php echo $chDelay; ?>" data-status="0" data-sdir="<?php echo $chDIR; ?>"><i class="fa fa-angle-right" aria-hidden="true"></i></span>
+        <h1 class="vb-book-main-title text-center px-5"><?php echo $mainTitle; ?></h1>
     </div>
-    <div class="page-arrow-wrap"></div>
+    <div class="page-arrow-wrap"><i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i></div>
 </div>
 <?php
     $html = '';
@@ -104,12 +105,14 @@ if(isset($_POST['book']) && isset($_POST['file'])){
         //TEMPLATE FRONT PAGE AND BACK PAGE
         $contentText = $contents[$cp]->content;
         foreach($contentText as $key => $value){
-            //$soundCPData = ($key === 0) ? ' sound-data-holder" data-sound="'.$sound.'" data-volume="'.$volume.'" data-delay="'.$delay.'" data-status="0"  data-sdir="'.$dir.'"' : '"';
             $getText = json_decode($value);
-            $html .= '<div class="book page-1 d-none" style="z-index: 0;">';
-            $html .= '<div class="book-wrap face-'.$chBgType.'" style="'.$copyrightPageBG.'"><span class="left-control"><i class="fa fa-angle-left" aria-hidden="true"></i></span>'.$getText->text;
-            $html .= '<span class="right-control"><i class="fa fa-angle-right" aria-hidden="true"></i></span></div>';
-            $html .= '<div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p></div></div>';
+            $face = ($n == 1) ? 'back' : 'front';
+            $arrow = ($n == 1) ? 'left' : 'right';
+            $html .= ($face == 'front') ? '<div class="book page-1 d-none" style="z-index: 0;">' : '';
+            $html .= '<div class="face-'.$face.' face-'.$chBgType.'" style="'.$copyrightPageBG.'"><div class="book-wrap">'.$getText->text.'</div>';
+            $html .= '<div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-'.$arrow.'" aria-hidden="true"></i></div></div>';
+            $html .= ($face == 'back') ? '</div>' : '';
+            $n = ($face == 'back') ? 0 : 1;
             $pageNumber += 1;
         }
     }
@@ -122,7 +125,10 @@ $line = 16;
             $x = json_decode($chapter[$key]);
             $chapterName = $x->name; 
             if($line > 15){
-                $html .= '<div class="book d-none" style="z-index: 0;"><div class="book-wrap"><span class="left-control"><i class="fa fa-angle-left" aria-hidden="true"></i></span>';
+                $face = ($n == 1) ? 'back' : 'front';
+                $arrow = ($n == 1) ? 'left' : 'right';
+                $html .= ($face == 'front') ? '<div class="book page-'.$key.' d-none" style="z-index: 0;">' : '';
+                $html .= '<div class="face-'.$face.'"><div class="book-wrap">';
             }
             if($key == 0){
                 $html .=  '<h2 class="text-center">Contents</h2>'; 
@@ -145,16 +151,19 @@ $line = 16;
                 }
             $html .= '</ul></div>';
             if($line < 5){
-                $html .= '<span class="right-control"><i class="fa fa-angle-right" aria-hidden="true"></i></span></div><div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p></div></div>';             
+                $html .= '</div><div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-'.$arrow.'" aria-hidden="true"></i></div></div>';
+                $html .= ($face == 'back') ? '</div>' : '';                
+                $n = ($face == 'back') ? 0 : 1;
                 $pageNumber += 1;
                 $line = 16;
             }
         } 
-        if($line > 5){
-            $html .= '<span class="right-control"><i class="fa fa-angle-right" aria-hidden="true"></i></span></div><div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p></div></div>';             
+        if($face != 'back'){            
+            $html .= '</div><div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i></div></div><div class="face-back"><div class="book-wrap"></div><div class="page-arrow-wrap">';
             $pageNumber += 1;
-            $line = 16;
-        }       
+            $html .= '<p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></div></div></div>';
+            $pageNumber += 1;
+        }        
         echo $html;  // SHOW TABLE OF CONTENTS
 
     $page = 3;
@@ -184,11 +193,15 @@ $line = 16;
             }else{
                 $chsound = null;
             }
-            $html .= '<div class="book d-none ql-snow" style="z-index: 0;">';
-            $html .= '<div class="book-wrap ql-editor btmp-content face-'.$chBgType.'" style="'.$rbPageBG.'"><span class="left-control"><i class="fa fa-angle-left" aria-hidden="true"></i></span>';
+            $face = ($n == 1) ? 'back' : 'front';
+            $arrow = ($n == 1) ? 'left' : 'right';
+            $html .= ($face == 'front') ? '<div class="book page-'.$key.' d-none ql-snow" style="z-index: 0;">' : '';
+            $html .= '<div class="face-'.$face.'"><div class="book-wrap ql-editor btmp-content face-'.$chBgType.'" style="'.$rbPageBG.'">';
             $html .= "<div class='vbPages vbPagesTitle' id='page{$page}' data-bgtype='{$chBgType}' data-background='{$chBackground}'>$i->name</div>";
             if($key > 1) $pageNumber += 1;
-            $html .= '<span class="right-control sound-data-holder" data-volume="'.$chvolume.'" data-sound="'.$chsound.'" data-delay="'.$chdelay.'" data-status="0" data-sdir="'.$dir.'"><i class="fa fa-angle-right aria-hidden="true"></i></span></div><div class="page-arrow-wrap"><p class="text-center page-number page-part-number" data-partpage="'.$key.'">'.$pageNumber.'</p></div></div>';    
+            $html .= '</div><div class="page-arrow-wrap"><p class="text-center page-number page-part-number" data-partpage="'.$key.'">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-right sound-data-holder" data-volume="'.$chvolume.'" data-sound="'.$chsound.'" data-delay="'.$chdelay.'" data-status="0" data-sdir="'.$dir.'" aria-hidden="true"></i></div></div><div class="face-back"><div class="book-wrap face-'.$chBgType.'" style="'.$rbPageBG.' height:100%;"></div>';        
+            $pageNumber += 1;
+            $html .= '<div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></div></div></div>';      
             $page = $page+1;            
         }
 
@@ -217,13 +230,24 @@ $line = 16;
                     $contentPage = count($contentText);
                     foreach($contentText as $ckey => $v){    
                         $pageNumber += 1;                  
-                        $soundData = ($ckey === 0) ? ' sound-data-holder" data-sound="'.$sound.'" data-volume="'.$volume.'" data-delay="'.$delay.'" data-status="0"  data-sdir="'.$dir.'"' : '"';
+                        $soundData = ($ckey === 0) ? 'sound-data-holder" data-sound="'.$sound.'" data-volume="'.$volume.'" data-delay="'.$delay.'" data-status="0"  data-sdir="'.$dir.'"' : '"';
                         $pgData = ($ckey == 0) ? ' page-chapter-number" data-chapterpage="'.$k.'"' : '"';
                         $getText = json_decode($v);                    
-                        $html .= '<div class="book page-'.$ckey.' d-none ql-snow" style="z-index: 0;">';
-                        $html .= '<div class="book-wrap ql-editor btmp-content face-'.$bgType.'" style="'.$rbPageBG.'"><span class="left-control"><i class="fa fa-angle-left" aria-hidden="true"></i></span>';
+                        $face = ($n == 1) ? 'back' : 'front';
+                        $arrow = ($n == 1) ? 'left' : 'right';
+                        $html .= ($face == 'front') ? '<div class="book page-'.$ckey.' d-none ql-snow" style="z-index: 0;">' : '';
+                        $html .= '<div class="face-'.$face.'"><div class="book-wrap ql-editor btmp-content face-'.$bgType.'" style="'.$rbPageBG.'">';
                         $html .= "<div class='vbPage{$value->id} vbPages vbPageContent{$contentPage}' id='page{$page}'  data-bgtype='{$bgType}' data-background='{$bgVal}'>{$getText->text}</div>";
-                        $html .= '<span class="right-control'.$soundData.'><i class="fa fa-angle-right" aria-hidden="true"></i></span></div><div class="page-arrow-wrap" '.$soundData.'><p class="text-center page-number'.$pgData.'>'.$pageNumber.'</p></div></div>';                      
+                        $html .= '</div><div class="page-arrow-wrap"><p class="text-center page-number'.$pgData.'>'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-'.$arrow.' '.$soundData.' aria-hidden="true"></i></div></div>';
+                        $html .= ($face == 'back') ? '</div>' : ''; 
+                        if($contentPage-1 === $ckey && $face !== 'back'){
+                            $pageNumber += 1;                          
+                            $html .= ($face == 'back') ? '' : '<div class="face-back"><div class="book-wrap  face-'.$bgType.'" style="'.$rbPageBG.' height:100%;"></div><div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></div></div></div>';
+                        }elseif($contentPage-1 < $ckey){
+                            $pageNumber += 1;
+                        }
+                                       
+                        $n = ($face == 'back') ? 0 : 1;                        
                     }
                     //$html .= ($face == 'back') ? : '</div><div class="page-arrow-wrap"><i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i></div></div><div class="face-back"><div class="book-wrap"></div><div class="page-arrow-wrap"><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></div></div></div>';
                 }
@@ -235,7 +259,7 @@ $line = 16;
     //$html .= ($face == 'back') ? : '</div><div class="page-arrow-wrap"><i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i></div></div><div class="face-back"><div class="book-wrap"></div><div class="page-arrow-wrap"><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></div></div></div>';
    echo $html;
     ?>
-</div></div>
+</div>
 <audio src="" id="vb-prevAudio" class="d-none"></audio>
 <style>
     /* div#book-container{
@@ -317,16 +341,9 @@ h1{
 	max-width: 100%;
 }
 
-main.container-fluid{
-    overflow-y: scroll;
-    overflow-x: hidden;
-    height: 1000px;
-}
-
 .paper-effect{
 	width: 100%;
     max-width: 750px;
-    padding-bottom: 100px;
 }
 body.book-open .custom-wrapper{
 	top: 0;
@@ -382,8 +399,7 @@ body.book-open .custom-wrapper:before, body.book-open .custom-wrapper:after{
 	position: relative;
 	perspective: 1000px;
     transition: 1s;
-    right: -25%;
-    overflow: hidden;
+    right: -18px;
 }
 .book{
 	position: absolute;
@@ -392,7 +408,6 @@ body.book-open .custom-wrapper:before, body.book-open .custom-wrapper:after{
 	transition: 1s;
 	transform-style: preserve-3d;
 	transform-origin: left; 
-    background: white;
 }
 .page-number{
 	position: absolute;
@@ -415,7 +430,8 @@ body.book-open .custom-wrapper:before, body.book-open .custom-wrapper:after{
 }
 .face-front, .face-back{
 	width: 100%;
-	height: 100%;	
+	height: 100%;
+	background: white;
 	box-sizing: border-box;
 	overflow: hidden;
 }
@@ -427,50 +443,36 @@ body.book-open .custom-wrapper:before, body.book-open .custom-wrapper:after{
 	position: absolute;
 	top: 0;
 	left: 0;
-	/* transform: translateZ(-1px) rotateY(180deg); */
+	transform: translateZ(-1px) rotateY(180deg);
 }
-div.book>div.book-wrap>span.left-control, div.book>div.book-wrap>span.right-control{
+div.book>div:before{
 	position: absolute;
     top: 0;
     z-index: 800;
-    width: 50px;
+    width: 100px;
+    height: 100%;
+    box-shadow: inset 30px 0 50px -20px rgba(0,0,0,.1);
+    content: '';
+    box-sizing: content-box;
+}
+div.book>div:after{
+	position: absolute;
+    top: 0;
+    z-index: 800;
+    width: 100px;
     height: 100%;
     content: '';
     box-sizing: content-box;
-    visibility: hidden;
 }
-div.book>div.book-wrap>span.left-control{
-    left: 0;
-    box-shadow: inset -20px 0 50px -20px rgba(0,0,0,.03);
+div.book>div.face-back:before{
+	right: 0;
+    box-shadow: inset -1px 0 0 rgba(0,0,0,.05), inset -30px 0 40px -20px rgba(0,0,0,.15);
 }
-div.book>div.book-wrap>span.right-control{
-    right: 0;
-    box-shadow: inset 20px 0 50px -20px rgba(0,0,0,.03);
+div.book>div.face-front:after{
+	right:0;
 }
-
-div.book>div.book-wrap:hover span.left-control, div.book>div.book-wrap:hover span.right-control{
-    visibility: visible;
-}
-
-div.book>div.book-wrap>span.left-control i{
-    left: 25%;
-} 
-
-div.book>div.book-wrap>span.right-control i{
-    right: 25%;
-}
-
-div.book>div.book-wrap>span.left-control i, div.book>div.book-wrap>span.right-control i{
-    position: absolute;
-    top: 50%;
-    font-size: 2rem;
-    opacity: .15;
-    cursor: pointer;
-}
-
 .book-wrap{
 	padding:2rem;
-    height: 100%;
 }
 .book-wrap > h6{
 	margin: .5rem 0;
@@ -516,7 +518,6 @@ div.rbook-template div.face-image{
     background-position: center!important;
     background-repeat: no-repeat!important;
     background-size: cover!important;
-    height: 100%;
 }
 
 span.prt-pg-number{
@@ -530,7 +531,7 @@ div.vbChapter-wrap li.tbcLink{
 
 /* Classes for Javascript use */
 
-/* .trnsf{
+.trnsf{
 	transform: translateX(375px);
 }
 
@@ -540,7 +541,7 @@ div.book-content{
 
 div.book-content.trnsf-reset{
 	transform: translateX(180px);
-} */
+}
 
 div#book-container div.ql-editor{
     padding:2rem 1rem!important;
@@ -586,7 +587,7 @@ jQuery(document).ready(function($){
             Sound.src='../../media/sounds/'+path+File;
             Sound.volume = vol;
             Sound.loop = true;
-            $("span.sound-act").attr("data-status",0);
+            $("i.sound-act").attr("data-status",0);
             return Sound; 
         }else{
             return null;
@@ -595,7 +596,7 @@ jQuery(document).ready(function($){
     }
 
     const ProcessSound = function(){
-        let active = $("span.sound-act");
+        let active = $("i.sound-act");
         let File = active.data("sound");
         let volume = active.data("volume");
         let delay = active.data("delay");
@@ -615,30 +616,25 @@ jQuery(document).ready(function($){
         }
     }
 
-	$(document).on('click','.book-wrap span.right-control',function(){
+	$(document).on('click','.face-front',function(){
 		parent = $(this).parents(".book");
 		front = $(this).attr("id");
-		// if(front == "front-cover"){			
-		// 	$(wrap).removeClass("trnsf-reset");
-		// 	setTimeout(function(){
-		// 		$("body").addClass("book-open");
-		// 	},1000);
-		// }
+		if(front == "front-cover"){			
+			$(wrap).removeClass("trnsf-reset");
+			setTimeout(function(){
+				$("body").addClass("book-open");
+			},1000);
+		}
 		if(page != pages.length-1){
 			page++;
 			$(".book").css("z-index","0");			
-			//$(parent).css({'transform':'rotateY(-180deg)','z-index':'1'});			
+			$(parent).css({'transform':'rotateY(-180deg)','z-index':'1'});			
             $(parent).removeClass("d-none");
-            $('span.sound-data-holder.sound-act').removeClass('sound-act');   
-            $(pages[page]).find('span.sound-data-holder').addClass('sound-act');         
+            $('i.sound-data-holder.sound-act').removeClass('sound-act');   
+            $(pages[page]).find('i.sound-data-holder').addClass('sound-act');         
 			setTimeout(function(){				
                 $(pages[page]).css("z-index",'2');
-                if($('span.sound-data-holder.sound-act').data('sound') !== ''){
-                    ProcessSound();
-                }else{
-                    $('span.sound-data-holder.sound-act').data('status',0);
-                    ProcessSound();
-                }
+                if($('i.sound-data-holder.sound-act').data('sound') !== '') ProcessSound();
 			},200);
             $(pages[page]).removeClass("d-none");            	
 			page = (page>pages.length) ? pages.length-1 : page;
@@ -651,15 +647,15 @@ jQuery(document).ready(function($){
 		}
 	});
 
-	$(document).on('click','.book-wrap span.left-control',function(){	
+	$(document).on('click','.face-back',function(){	
 		if(page > 0){			
 			back = $(this).attr("id");
-			// if(back == "trsf"){			
-			// 	$(wrap).addClass("trnsf-reset");				
-			// 	$("body").removeClass("book-open");				
-			// }
+			if(back == "trsf"){			
+				$(wrap).addClass("trnsf-reset");				
+				$("body").removeClass("book-open");				
+			}
 			$(".book").css("z-index","0");
-			//$(pages[page-1]).css({"transform":"rotateY(0deg)","z-index":"2"});	
+			$(pages[page-1]).css({"transform":"rotateY(0deg)","z-index":"2"});	
 			$(pages[page-2]).removeClass("d-none");						
 			setTimeout(function(){			
 				$(pages[page]).css("z-index","1");	

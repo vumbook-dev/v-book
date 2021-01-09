@@ -1,0 +1,5 @@
+@-moz-document url-prefix() {
+  ul.btmp-pagelist{
+    left: -4.65rem;
+  }
+}

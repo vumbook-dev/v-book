@@ -1,8 +1,9 @@
 <?php
+require_once "../config.php";
 if(isset($_COOKIE['userdata'])){
     $UID = $_COOKIE['userdata']['id'];
     $UName = $_COOKIE['userdata']['name'];
-    $UFolder = "{$UName}{$UID}";
+    $UFolder = DATAPATH;
     if(isset($_POST['action'])){
         $action = $_POST['action'];
         //$allbooks = file_get_contents("../json/books-list-title.json");

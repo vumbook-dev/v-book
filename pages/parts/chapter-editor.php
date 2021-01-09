@@ -1,10 +1,11 @@
 <?php
+require_once "../../config.php";
 if(isset($_POST['chapter']) && isset($_POST['book'])){
     if(isset($_COOKIE['userdata'])){
         $UID = $_COOKIE['userdata']['id'];
         $UName = $_COOKIE['userdata']['name'];
     }
-    $UFolder = "{$UName}{$UID}";
+    $UFolder = DATAPATH;
     $ch = $_POST['chapter']; 
     $bookKey = $_POST['book']; 
     $file = $_POST['file'];
@@ -96,7 +97,7 @@ if(isset($_POST['chapter']) && isset($_POST['book'])){
                         <div id="imgBackground-preview-wrap"  class="py-3" >
                             <span class="float-right" style="display:none;" id="rm-image-background" aria-hidden="true">×</span>
                             <i class="fa fa-picture-o <?php echo ($bgType == "image") ? "d-none" : ""; ?>" aria-hidden="true"></i>
-                            <img id="prev-img-background" class="clearfix <?php echo ($bgType != "image") ? "d-none" : ""; ?>" src="/media/background/<?php echo $background; ?>" alt="" />   
+                            <img id="prev-img-background" class="clearfix <?php echo ($bgType != "image") ? "d-none" : ""; ?> prev-chapter-bg" src="/media/background/<?php echo $background; ?>" alt="" />   
                         </div>
                         <div class="px-4" id="vbIMGbackground">
                             <input type="text" src="" placeholder="" class="d-none form-control rdnly-plchldr" readonly>
@@ -123,7 +124,7 @@ if(isset($_POST['chapter']) && isset($_POST['book'])){
                               else{ $noSound = "d-none"; $aSound = ""; }?>
                         <h4 class="text-center p-3 <?php echo $noSound; ?>" style="font-weight:200;">No Media Sound!</h4>
                         <div id="vbMediaPlayerWrap" class="<?php echo $aSound; ?> py-3 px-2">
-                            <div id="vbMyAudioWrap"><span id="vb-my-audio" class="slct-sounds-list act-sound h5" data-id="<?php echo $SoundID; ?>"><?php echo $alias; ?> <i class="fa fa-play" aria-hidden="true" data-dir="1" data-file="<?php echo $actSound->filename; ?>"></i></span></div>  
+                            <div id="vbMyAudioWrap"><span id="vb-my-audio" class="slct-sounds-list act-sound h5" data-id="<?php echo $SoundID; ?>"><?php echo $alias; ?> <i class="fa fa-play" aria-hidden="true" data-path="<?php echo $UFolder; ?>" data-dir="1" data-file="<?php echo $actSound->filename; ?>"></i></span></div>  
                             <div class="vb-volume-wrap"><i class="fa fa-volume-up" aria-hidden="true"></i> <input type="range" name="vb-volume-control" value="<?php echo $defaultVolume; ?>" min="0.0" max="1" step="0.01"></div>  
                         </div>
                         <div class="py-3 px-5 delay-wrap <?php echo $aSound; ?>"><span class="p-2 mx-0 h5">Sound Delay : </span><input type="number" name="delay" value="<?php echo $delay; ?>" min="1" max="100" class="form-control py-0"></div>
@@ -212,21 +213,6 @@ jQuery(document).ready(function($){
         let value = $("div.colorPick-wrap input.pcr-result").val();
         $("div#style-preview").css("background",value);
     });
-
-    //LOAD MY AUDIO
-    // const loadMyAudio = function(){
-    //     $.ajax({
-    //         url: "../../model/media.php",  
-    //         type: "POST",
-    //         data: {action: "load", file: "<?php //echo $file; ?>",key: "<?php //echo $key; ?>"},
-    //         dataType: "text",
-    //         success: function(data){
-    //             $("div#vb-my-audio").html(data);
-    //         }
-    //     });
-    // }
-
-    // loadMyAudio();
 
     setTimeout(function(){        
         <?php if($bgType == "color"){ ?>

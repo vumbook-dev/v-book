@@ -58,27 +58,18 @@ jQuery(document).ready(function($){
         // because unescape has been deprecated, replaced with decodeURI
         //return unescape(dc.substring(begin + prefix.length, end));
         return decodeURI(dc.substring(begin + prefix.length, end));
-    } 
+    }
 
-    //loadPage("home",vbloader);
-
-    // $(document).on("click","li.nav-item > a, a.navbar-brand",function(e){            
-    //         let link = $(this).data("nav");
-    //         let active = $(this).parent("li");
-    //         //window.location.hash = link;
-    //         e.preventDefault();
-
-    //         if(link == "home"){
-    //             $("li.active").removeClass("active");
-    //             $(".navbar-nav > li:first-child").addClass("active");
-    //             $('title').text(`V-Book`);
-    //             history.replaceState(0, '', './');
-    //         }else{
-    //             $("li.active").removeClass("active");
-    //             active.addClass("active");
-    //         }    
-
-    //         loadPage(link,vbloader);
-    // });
+    //MESSAGE FLASH
+    window.flashMessage = function(message,type){
+        let icon = (type === 'success') ? "fa-check-circle-o" : "fa-exclamation-circle";
+        $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-'+type+'" style="display:none;left:100px;" role="alert"><i class="fa '+icon+'" aria-hidden="true"></i> '+message+'</div>');
+        $("div.message-status").animate({left:0, opacity:"show"}, 500);
+        setTimeout(function(){
+            $("div.message-status").fadeOut(1500,function(){
+                $("div.message-status").remove();
+            });            
+        },2500);
+    }
 
 });

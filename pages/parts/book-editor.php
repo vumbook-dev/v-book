@@ -1,8 +1,9 @@
 <?php
+require_once "../../config.php";
 if(isset($_COOKIE['userdata'])){
     $UID = $_COOKIE['userdata']['id'];
     $UName = $_COOKIE['userdata']['name'];
-    $UFolder = "{$UName}{$UID}";
+    $UFolder = DATAPATH;
     if(isset($_POST['content']) && isset($_POST['title']) && isset($_POST['chapter']) && isset($_POST['file']) && isset($_POST['bookKey'])){
 
         $title = $_POST['title'];
@@ -53,7 +54,7 @@ if(isset($_COOKIE['userdata'])){
             <i class="fa fa-times-circle" aria-hidden="true"></i>
             </button>
             </div>
-            <button id="vb-save-styles" data-key="<?php echo $key; ?>" type="button" class="btn btn-primary px-3 mr-4">Update</button>
+            <button id="vb-save-styles" data-key="<?php echo $key; ?>" type="button" class="btn btn-primary px-3 mr-4 d-none">Update</button>
             <h5 class="modal-title">Book Editor</h5>            
         </div>
         <div class="modal-body p-4">
@@ -138,7 +139,7 @@ if(isset($_COOKIE['userdata'])){
                                             <input type="hidden" name="book" value="<?php echo $bookKey; ?>">
                                             <input type="hidden" name="file" value="<?php echo $file; ?>">
                                             <input type="file" accept="image/*" class="upload up" id="upbackground" name="background[]"/>
-                                        </span><!-- btn-orange -->
+                                        </span><!-- btn-orange -->                                        
                                     </div><!-- btn -->
                                     <button class="btn btn-primary d-none float-right" style="margin-top: -38px;">Save</button>
                                 </form>
@@ -165,8 +166,11 @@ if(isset($_COOKIE['userdata'])){
                                     <span class="upl" id="upload">Upload</span>
                                     <input type="file" accept="audio/*" class="upload up" id="up" name="audio[]"/>
                                 </span><!-- btn-orange -->
+                                <span class="save_changes btn btn-primary d-none" style="width:100%;">
+                                    Save Changes
+                                </span>
                             </div><!-- btn -->
-                            <button class="btn btn-primary d-none">Submit</button>
+                            <button id="vb-sound-upload" class="btn btn-primary d-none">Submit</button>
                             </form>
                             </div>
                         </div>
@@ -185,84 +189,67 @@ if(isset($_COOKIE['userdata'])){
 
     <script type="text/javascript">
     jQuery(document).ready(function($){
-        let chapterTitle = $(".ttl-<?php echo $chapter; ?>ch").text();
-        let title = "<?php echo $title ?>";     
-        let contentKey = <?php echo $key; ?>;
+    let chapterTitle = $(".ttl-<?php echo $chapter; ?>ch").text();
+    let title = "<?php echo $title ?>";     
+    let contentKey = <?php echo $key; ?>;
 
-        // QUILL EDITOR
-        let container = document.getElementById('style-preview');
-        let editor = QuillEditor(container,1300);
+    // QUILL EDITOR
+    let container = document.getElementById('style-preview');
+    let editor = QuillEditor(container,1300);
 
-        //COLOR PICKER
-        <?php
+    //COLOR PICKER
+    <?php
 
-        $defaultColor = ($bgType == "color") ? $background : "#fff";
-        echo "let defaultColor = '{$defaultColor}';";
+    $defaultColor = ($bgType == "color") ? $background : "#fff";
+    echo "let defaultColor = '{$defaultColor}';";
 
-        ?>
-        const pickr = Pickr.create({
-            el: '#colorPicker',
-            container: '#pickerApp',
-            theme: 'nano', // or 'monolith', or 'nano'
-            showAlways: true,
-            position: 'top-start',
-            useAsButton: false,
-            inline: true,
-            autoReposition: false,
-            default: defaultColor,
+    ?>
+    const pickr = Pickr.create({
+        el: '#colorPicker',
+        container: '#pickerApp',
+        theme: 'nano', // or 'monolith', or 'nano'
+        showAlways: true,
+        position: 'top-start',
+        useAsButton: false,
+        inline: true,
+        autoReposition: false,
+        default: defaultColor,
 
-            components: {
+        components: {
 
-                // Main components
-                preview: true,
-                opacity: true,
-                hue: true,
+            // Main components
+            preview: true,
+            opacity: true,
+            hue: true,
 
-                // Input / output Options
-                interaction: {
-                    hex: true,
-                    rgba: true,
-                    input: true,
-                    //save: true
-                },
+            // Input / output Options
+            interaction: {
+                hex: false,
+                rgba: false,
+                input: true,
+                save: false
+            },
 
-            }
-        });
+        }
+    });
 
-        pickr.on('save', (color, instance) => {
-            //console.log('save', color, instance);
-            let value = $("div.colorPick-wrap input.pcr-result").val();
-            let key = $("#vb-full-title").data("book");
-            saveBG(key,"color",value);
-        }).on('change', (color, instance) => {
-            //console.log('change', color, instance);
-            let value = $("div.colorPick-wrap input.pcr-result").val();
-            $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background-color",value);
-        });
+    pickr.on('save', (color, instance) => {
+        window.saveBG();
+    }).on('change', (color, instance) => {
+        //console.log('change', color, instance);
+        let value = $("div.colorPick-wrap input.pcr-result").val();
+        $('div.colorPick-wrap input.pcr-save').addClass('pckrbtn');
+        $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background-color",value);
+    });
 
-        //LOAD MY AUDIO
-        // const loadMyAudio = function(){
-        //     $.ajax({
-        //         url: "../../model/media.php",  
-        //         type: "POST",
-        //         data: {action: "load", file: "<?php echo $file; ?>",key: "<?php echo $key; ?>"},
-        //         dataType: "text",
-        //         success: function(data){
-        //             $("div#vb-my-audio").html(data);
-        //         }
-        //     });
-        // }
-
-        // loadMyAudio();
-
-        setTimeout(function(){            
-            <?php if($bgType == "color"){ ?>
-                let bgColor = $("div.colorPick-wrap input.pcr-result").val();
-                $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background",bgColor);
-            <?php }else{ ?>
-                $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background","url('../../media/page-background/<?php echo $UFolder."/".$background; ?>')");
-            <?php } ?>
-        },500);
+    setTimeout(function(){            
+        <?php if($bgType == "color"){ ?>
+            let bgColor = $("div.colorPick-wrap input.pcr-result").val();
+            $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background",bgColor);
+        <?php }else{ ?>
+            $("div#style-preview div.ql-editor, div.ql-editor.btmp-content").css("background","url('../../media/page-background/<?php echo $UFolder."/".$background; ?>')");
+        <?php } ?>
+    },500);
             
 
     //ZOOMER
@@ -288,6 +275,5 @@ if(isset($_COOKIE['userdata'])){
     </script>
     </div>
     <div class="modal-backdrop show"></div>
-
     <?php }
 }

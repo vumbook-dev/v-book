@@ -1,10 +1,11 @@
 <?php
+require_once "../config.php";
 if(isset($_POST['data'])){
     if(isset($_COOKIE['userdata'])){
         $UID = $_COOKIE['userdata']['id'];
         $UName = $_COOKIE['userdata']['name'];
     }
-    $UFolder = "{$UName}{$UID}";
+    $UFolder = DATAPATH;
     $key = $_POST['data'];
     $key = $key - 1;
     $list = file_get_contents("../json/users/bookdata/{$UFolder}/books-list-title.json");
