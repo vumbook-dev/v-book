@@ -4,8 +4,8 @@ if(isset($_GET['atr']) && isset($_GET['token'])){
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
 
-    include_once './config/Database.php';
-    include_once './models/Book.php';
+    require_once './config/Database.php';    
+    require_once './models/Book.php';
 
     // Instantiate DB & connect
     $database = new Database();

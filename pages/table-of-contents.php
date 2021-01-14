@@ -113,6 +113,12 @@ if(isset($_POST['data'])){
 <script type="text/javascript" src="/js/chapters.js"></script>
 <script type="text/javascript" src="/js/section.js"></script>
 <script type="text/javascript" src="/js/content.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function($){
+    let button = '<a class="btn btn-primary d-inline ml-1 nav-link text-white" data-nav="create" href="/read/book=<?php echo $key; ?>">Preview your book</a>';
+    $("#btn-nav-holder").append(button);
+})
+</script>
 <?php
 
 }else{

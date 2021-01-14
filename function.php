@@ -36,12 +36,12 @@ function redirectToPages($path = ""){
         }elseif(!empty($path)){
             //"history.pushState($state, `V-Book > $path`, `./$path/`);";
             //echo "history.replaceState($state, `V-Book > $path`, `./$path/`);";                     
-            if(createUserFolders()){
-                createUserFiles();
+            // if(createUserFolders()){
+            //     createUserFiles();
+            //     $html .= "loadPage('create',vbloader);";
+            // }else{
                 $html .= "loadPage('create',vbloader);";
-            }else{
-                $html .= "loadPage('create',vbloader);";
-            }  
+            //}  
         }        
     }else{
         $html .= 'usernotLoggedIn';

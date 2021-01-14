@@ -11,7 +11,8 @@ ul.navbar_user{
 }
 
 ul.navbar-nav{
-  width: 30%;
+  width: 100%;
+  justify-content: flex-end;
 }
 
 ul.navbar_user a:hover{

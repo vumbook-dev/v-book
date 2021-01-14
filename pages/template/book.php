@@ -320,7 +320,7 @@ h1{
 main.container-fluid{
     overflow-y: scroll;
     overflow-x: hidden;
-    height: 1000px;
+    height: 100%;
 }
 
 .paper-effect{

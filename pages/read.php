@@ -15,7 +15,7 @@ if(isset($_POST['data'])){
     $bookContents = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/$filename.json");
     $bookContents = json_decode($bookContents);
 ?>
-<div class="col-md-12" style="margin-top:120px;">
+<div class="col-md-12" style="margin-top:20vh;">
     <div class="bg-light mt-4 mb-3 px-5 py-2 d-none justify-content-between">
         <p class="m-0 p-2">Download as HTML5! </p>
         <button id="vb-download" class="btn btn-primary">Download</button>
