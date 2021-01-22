@@ -29,7 +29,7 @@ if(isset($_COOKIE['userdata'])){
             }
         }
 
-        $html .= '<li class="list-item-vbcontent text-right"><span class="show-section-field"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add New Section</span></li>';
+        $html .= '<li class="list-item-vbcontent text-right"><span class="show-section-field"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add New Chapter</span></li>';
         
         $html .= '</ul>';
 

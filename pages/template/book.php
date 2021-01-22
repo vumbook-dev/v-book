@@ -42,7 +42,7 @@ if(isset($_POST['book']) && isset($_POST['file'])){
         $dir = 1;
         $sound = $titleSound;
         $sound = ltrim($sound,"m");
-        $sound = $msound[$sound]->filename;
+        $sound = (!empty($msound[$sound]->filename)) ? $msound[$sound]->filename : 0;
     }else{
         $dir = 0;
         $sound = $titleSound;
@@ -280,12 +280,6 @@ $line = 16;
         top:60%;
         position:fixed;
     }
-    #vbPageNav > li.page-item:first-child{
-        left: 15rem;
-    }
-    #vbPageNav > li.page-item:last-child{
-        right: 15rem;
-    }
     <?php if(!empty($bookBackground)){ ?>
     html{
         background: url("../../media/book-background/<?php echo $UFolder."/".$bookBackground; ?>");
@@ -320,7 +314,7 @@ h1{
 main.container-fluid{
     overflow-y: scroll;
     overflow-x: hidden;
-    height: 1000px;
+    height: 100%;
 }
 
 .paper-effect{
@@ -438,6 +432,7 @@ div.book>div.book-wrap>span.left-control, div.book>div.book-wrap>span.right-cont
     content: '';
     box-sizing: content-box;
     visibility: hidden;
+    display:none!important;
 }
 div.book>div.book-wrap>span.left-control{
     left: 0;
@@ -551,7 +546,25 @@ div#book-container div.ql-editor{
 @media screen and (max-width: 800px){
 	p{
 		font-size: 12px;
-	}
+    }
+}
+
+@media screen and (min-width: 1900px){
+    #vbPageNav > li.page-item:first-child{
+        left: 30%;
+    }
+    #vbPageNav > li.page-item:last-child{
+        right: 30.67%;
+    }
+}
+
+@media screen and (max-width: 1440px){
+    #vbPageNav > li.page-item:first-child{
+        left: 335px;
+    }
+    #vbPageNav > li.page-item:last-child{
+        right: 348px;
+    }
 }
 
 
@@ -579,17 +592,16 @@ jQuery(document).ready(function($){
     
     //PLAY SOUND
     const PlaySound = function(File,Dir,vol,Status){    
-    
+        let Sound = $("#vb-audioplayer")[0];
         if(Status === 0){
-            let path = (Dir == 1) ? "users/<?php echo $UFolder; ?>/" : "";
-            let Sound = $("#vb-audioplayer")[0];
+            let path = (Dir == 1) ? "users/<?php echo $UFolder; ?>/" : "";            
             Sound.src='../../media/sounds/'+path+File;
             Sound.volume = vol;
             Sound.loop = true;
             $("span.sound-act").attr("data-status",0);
             return Sound; 
         }else{
-            return null;
+            return Sound;
         }
         
     }
@@ -602,16 +614,16 @@ jQuery(document).ready(function($){
         let dir = active.data("sdir");
         let status = active.data("status");    
         if(status !== undefined){        
-            let Sound = PlaySound(File,dir,volume,status);
-            setTimeout(function(){        
-                if(status < 1){
+            let Sound = PlaySound(File,dir,volume,status);                   
+            if(status < 1 && File !== ''){
+                setTimeout(function(){ 
                     Sound.play();
                     let = status = null;
-                }else{
-                    Sound.pause();
-                    let = status = null;
-                }
-            },delay*1000);
+                },delay*1000);
+            }else{
+                Sound.pause();
+                let = status = null;
+            }            
         }
     }
 
@@ -650,6 +662,79 @@ jQuery(document).ready(function($){
 			//console.log(page);
 		}
 	});
+
+    //Big screen navigation
+    $(document).on("click","ul#vbPageNav > li > a",function(e){
+        e.preventDefault();    
+        let nav = $(this).data("nav");
+        let i = $("#vbPageNav").data("next"); 
+        let allPages = pages.length - 1;
+        if(nav == "next"){
+            $(pages[i]).addClass("d-none");
+            $(pages[i]).removeClass("activePage");
+            i++;
+            $("#vbPageNav").data("next",i);
+            $(pages[i]).removeClass("d-none");
+            $(pages[i]).addClass("activePage");
+            if(i > 0) $("a.bookprev").css("display","block");
+            $('span.sound-data-holder.sound-act').removeClass('sound-act');   
+            $(pages[i]).find('span.sound-data-holder').addClass('sound-act'); 
+            setTimeout(function(){	   
+                $('span.sound-data-holder.sound-act').data('status',0);
+                ProcessSound();
+			},200);
+        }else if(i !== 0){
+            //console.log(i);
+            $(pages[i]).addClass("d-none");
+            $(pages[i]).removeClass("activePage");
+            i--;
+            $("#vbPageNav").data("next",i);
+            $(pages[i]).removeClass("d-none");        
+            $(pages[i]).addClass("activePage");
+            $('span.sound-data-holder.sound-act').data('status',2);
+            ProcessSound();
+        }
+
+    });
+
+    //Change Page by left and right keypress
+    document.onkeydown = function(e) {
+        let i = $("#vbPageNav").data("next"); 
+        let allPages = pages.length - 1;
+        switch(e.which) {
+            case 37: // left
+                if(i !== 0){
+                    $(pages[i]).addClass("d-none");
+                    $(pages[i]).removeClass("activePage");
+                    i--;
+                    $("#vbPageNav").data("next",i);
+                    $(pages[i]).removeClass("d-none");        
+                    $(pages[i]).addClass("activePage");
+                    $('span.sound-data-holder.sound-act').data('status',1);
+                    ProcessSound();
+                }
+            break;
+
+            case 39: // right
+                $(pages[i]).addClass("d-none");
+                $(pages[i]).removeClass("activePage");
+                i++;
+                $("#vbPageNav").data("next",i);
+                $(pages[i]).removeClass("d-none");
+                $(pages[i]).addClass("activePage");
+                if(i > 0) $("a.bookprev").css("display","block");
+                $('span.sound-data-holder.sound-act').removeClass('sound-act');   
+                $(pages[i]).find('span.sound-data-holder').addClass('sound-act'); 
+                setTimeout(function(){
+                    $('span.sound-data-holder.sound-act').data('status',0);
+                    ProcessSound();                    
+                },200);
+            break;
+
+            default: return; // exit this handler for other keys
+        }
+        e.preventDefault(); // prevent the default action (scroll / move caret)
+};
 
 	$(document).on('click','.book-wrap span.left-control',function(){	
 		if(page > 0){			

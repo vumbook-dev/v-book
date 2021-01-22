@@ -4,6 +4,36 @@ if(isset($_COOKIE['userdata'])){
     $UID = $_COOKIE['userdata']['id'];
     $UName = $_COOKIE['userdata']['name'];
     $UFolder = DATAPATH;
+
+    //CREATE BACKUP FILES
+    function createBackup($filename,$bookData,$folder){
+        $list = file_get_contents("../json/users/bookdata/{$folder}/book-content/backup/backup-data.json");
+        $backup = json_decode($list,true);
+        $time = date("Y-m-d H:i:s");
+        $integerTime = str_replace(" ","-",date("Y-m-d H-i-s"));        
+        if((!empty($backup[$filename])) ? $backup[$filename]['id'] === $filename : false){            
+            $seconds = strtotime(date("Y-m-d H:i:s")) - strtotime($backup[$filename]['time']);
+            $days    = floor($seconds / 86400);
+            $hours   = floor(($seconds - ($days * 86400)) / 3600);
+            $minutes = floor(($seconds - ($days * 86400) - ($hours * 3600))/60);
+            if($minutes < 30){
+                $backup[$filename]['time'] = $time;
+                $newBackup = json_encode($backup);
+                file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/backup-data.json",$newBackup);
+                file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/{$integerTime}backup-{$filename}.json",$bookData);
+                return true;
+            }else{
+                return false;                
+            }
+        }else{
+            $backup = array( $filename => ["id" => $filename,"time" => $time] );
+            $newBackup = json_encode($backup);
+            file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/backup-data.json",$newBackup);
+            file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/{$integerTime}backup-{$filename}.json",$bookData);
+            return true;
+        }
+    }
+
     if(isset($_POST['action'])){
         $action = $_POST['action'];
         if($action == "add"){
@@ -18,11 +48,11 @@ if(isset($_COOKIE['userdata'])){
                 $default = $bookData[$index];
                 $chapter = $_POST['chapter'];
                 $title = $_POST['title'];
-                $hshtitle = $default->storage;
+                $file = $default->storage;
                 $name = $_POST['name'];
-
-                $file = "{$hshtitle}-".substr($id,-6);
+                
                 $list = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");
+                createBackup($file,$list,$UFolder);
                 $contentlist = json_decode($list);      
                 $ACC = 0;      
 
@@ -38,7 +68,7 @@ if(isset($_COOKIE['userdata'])){
 
                 //SAVE CONTENT DATA          
                 $count = count($contentlist);
-                $json = json_encode($contentlist);
+                $json = json_encode($contentlist);                
                 file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
                 //print_r($bookData);
                 echo $count;
@@ -49,13 +79,14 @@ if(isset($_COOKIE['userdata'])){
                 $file = $_POST['file'];
                 $id = (isset($_POST['id'])) ? intval($_POST['id']) : "";
                 $list = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");
+                createBackup($file,$list,$UFolder);
                 $contentlist = json_decode($list);
                 $count = count($contentlist[$chapter]->content);
                 $newID = (!empty($id)) ? intval($id+1) : $count+1;
                 $content = array("id" => $newID, "text" => "");
                 $content = json_encode($content);
                 $contentlist[$chapter]->content[] = $content;
-                $json = json_encode($contentlist);
+                $json = json_encode($contentlist);                
                 file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
                 echo $newID;
             }
@@ -65,11 +96,12 @@ if(isset($_COOKIE['userdata'])){
                 $file = $_POST['file'];
                 $key = $_POST['key'];
                 $list = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");
+                createBackup($file,$list,$UFolder);
                 $contentlist = json_decode($list);
                 unset($contentlist[$chapter]->content[$key]);
                 $contentlist[$chapter]->content = array_values($contentlist[$chapter]->content);
                 $count = count($contentlist[$chapter]->content);
-                $json = json_encode($contentlist);
+                $json = json_encode($contentlist);                
                 file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
                 echo $count;
             }
@@ -80,6 +112,7 @@ if(isset($_COOKIE['userdata'])){
                 $key = $_POST['key'];
                 $content = $_POST['content'];
                 $list = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");
+                createBackup($file,$list,$UFolder);
                 $contentlist = json_decode($list);
                 $oldContent = $contentlist[$chapter]->content[$key];
                 $oldContent = json_decode($oldContent,true);
@@ -97,7 +130,8 @@ if(isset($_COOKIE['userdata'])){
                 $volume = $_POST['volume'];
                 $delay = $_POST['delay'];
                 $key = $_POST['key'];              
-                $allData = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");        
+                $allData = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");   
+                createBackup($file,$allData,$UFolder);     
                 $section = json_decode($allData);
 
                 //SAVE DATA
@@ -138,7 +172,8 @@ if(isset($_COOKIE['userdata'])){
                 $file = $_POST['file'];
                 $color = (isset($_POST['color'])) ? $_POST['color'] : "";
                 $key = $_POST['key'];              
-                $allData = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");        
+                $allData = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");    
+                createBackup($file,$allData,$UFolder);    
                 $section = json_decode($allData);
 
                 //SAVE DATA
@@ -149,7 +184,7 @@ if(isset($_COOKIE['userdata'])){
                         $section[$key]->bgType = "color";
                     }
                                             
-                    $json = json_encode($section);
+                    $json = json_encode($section);                    
                     file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
 
                     $message = 'Content Successfully Updated';
@@ -171,6 +206,7 @@ if(isset($_COOKIE['userdata'])){
                 $file = $_POST['lctn'];
 
                 $list = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");
+                createBackup($file,$list,$UFolder);
                 $content = json_decode($list);
                 unset($content[$key]);
                 $content = array_values($content);
@@ -185,7 +221,8 @@ if(isset($_COOKIE['userdata'])){
                 $key = $_POST['key'];
                 $file = $_POST['file'];
 
-                $list = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");
+                $list = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");                
+                createBackup($file,$list,$UFolder);
                 $content = json_decode($list);
                 $content = $content[$key];
                 //$response = json_encode($content);
@@ -196,7 +233,8 @@ if(isset($_COOKIE['userdata'])){
                 $key = $_POST['section'];
                 $file = $_POST['file'];
                 $fullTitle = $_POST['title'];
-                $allData = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");        
+                $allData = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");     
+                createBackup($file,$allData,$UFolder);   
                 $section = json_decode($allData);
 
                 $section[$key]->cpart = $fullTitle;                        

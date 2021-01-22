@@ -14,8 +14,8 @@
               <a class="nav-link" id="0" data-nav="home" href="/">Home</a>
             </li>
             <?php if(isset($_COOKIE['userdata'])) : ?>
-            <li class="nav-item">
-              <a class="nav-link btn btn-success text-white d-none" id="2" data-nav="create" href="/create/">Create G-Books</a>
+            <li id="btn-nav-holder" class="nav-item my-2">
+              <a class="nav-link btn btn-success text-white d-inline d-none" id="2" data-nav="create" href="/create/">Create G-Books</a>
             </li>
             <?php endif; ?>
             <ul class="navbar_user">

@@ -36,12 +36,12 @@ function redirectToPages($path = ""){
         }elseif(!empty($path)){
             //"history.pushState($state, `V-Book > $path`, `./$path/`);";
             //echo "history.replaceState($state, `V-Book > $path`, `./$path/`);";                     
-            if(createUserFolders()){
-                createUserFiles();
+            // if(createUserFolders()){
+            //     createUserFiles();
+            //     $html .= "loadPage('create',vbloader);";
+            // }else{
                 $html .= "loadPage('create',vbloader);";
-            }else{
-                $html .= "loadPage('create',vbloader);";
-            }  
+            //}  
         }        
     }else{
         $html .= 'usernotLoggedIn';
@@ -50,13 +50,13 @@ function redirectToPages($path = ""){
     return $html;
 }
 
-function contentForm($key = "", $vbID,$book,$bookIndex = ""){
+function contentForm($key = "", $vbID = "",$book = "",$bookIndex = ""){
     $html = '
     <div class="col-sm-12 tc-wrap d-none">        
         <div class="form-group">
         <form method="post" class="vb-new-section">
         <span class="vb-chapter'.$key.'">
-            <label for="Section">Add New Section</label>
+            <label for="Section">Add New Chapter</label>
             <input name="name'.$key.'" class="content-name form-control" type="text">
             <input type="hidden" data-bookIndex="'.$bookIndex.'" data-title="'.$book.'" value="'.$vbID.'">
         </span>

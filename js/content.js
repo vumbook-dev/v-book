@@ -33,17 +33,6 @@ jQuery(document).ready(function($){
         })
     }
 
-    //GET LIGHTBOX EDITOR
-    // $(document).on("click",".list-item-vbcontent span.showing-lightbox",function(){
-    //     let chapter = $(this).data("chapter");
-    //     let key = $(this).data("key");
-    //     let name = $(this).parents(".list-item-vbcontent").find("span:first-child").text();
-    //     let file = $(this).data("name");
-
-    //     showEditor(chapter,key,name,file);
-
-    // });
-
     //REMOVE LIGHTBOX
     $(document).on("click","#vb-modal-editor button.close, #vb-modal-preview button.close, #vb-modal-section button.close",function(){
         $("#vb-modal-editor, .modal-backdrop, #vb-modal-preview, #vb-modal-section").remove();
@@ -106,6 +95,61 @@ jQuery(document).ready(function($){
         let field = selector.find('div.tc-wrap');
         $(this).parent('li').addClass('d-none');
         field.removeClass('d-none');
+    });
+
+    //GET MODAL CHAPTER DELETE
+    function deleteChContent(chapter,content,title){
+        $.ajax({
+            method:"POST",
+            url:"../pages/parts/modal.php",
+            data: {chapter:chapter,content:content,title:title,action:"content_delete"},
+            dataType: "text",
+            success: function(data){                
+                $("#vb-modal-container").html(data);               
+                $("div.modal").addClass('d-block'); 
+                $("div.modal-backdrop").removeClass('d-none');
+            }            
+        });
+        //console.log(chapter + content + title);
+    }
+
+    //DELETE CHAPTER
+    $(document).on("click","span.vb-dlt-content",function(){        
+        let content = $(this).data("key");
+        let title = $(this).parents("li.list-item-vbcontent").find("span.vb-cnt-title").text();
+        let chapter = $(this).data("chapter");
+        deleteChContent(chapter,content,title);        
+    });
+
+    //DELETE BOOK CONTENT
+    function deleteContent(key,lctn){
+        let modal = $("#vb-delete-modal"); 
+        let chapter = modal.data('chapter');
+        let title = modal.find("span#vb-title-handler").text();
+        $.ajax({
+            method: "POST",
+            url: "../model/content.php",
+            data: {key:key,lctn:lctn,action:"delete"},
+            dataType: "text",
+            beforeSend: function(){
+            modal.find(".modal-body>p").html(`Deleting ... `+title);
+            },
+            success: function(data){
+            setTimeout(function(){
+                modal.find(".modal-body>p").html(data);            
+                setTimeout(function(){           
+                loadChapterPart(chapter);                        
+                $("#vb-modal-container>div").remove();          
+                },1000);   
+            },1500);            
+            }
+        });
+    }
+    
+    $(document).on('click','#content_deletevb-confirm-delete',function(){
+        let x = $(this).data("key");
+        let lctn = $("#vb-ttl-cdidtfyr").data("universal");
+        deleteContent(x,lctn);
     });
 
 });

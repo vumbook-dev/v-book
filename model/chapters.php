@@ -106,7 +106,7 @@ if(isset($_COOKIE['userdata'])){
             $newUpdate = json_encode($chapters);
             file_put_contents("../json/users/bookdata/{$UFolder}/book-chapter/{$file}.json",$newUpdate); 
 
-            $message = '<i class="fa fa-check-circle-o" aria-hidden="true"></i> Book Part Successfully Updated';
+            $message = 'Book Part Successfully Updated';
             $status = "success";
             $arry = array("message" => $message, "status" => $status, "filepath" => $UFolder);
             $arry = json_encode($arry);

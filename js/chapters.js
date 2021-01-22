@@ -79,11 +79,42 @@ jQuery(document).ready(function($){
             data: {chapter:chapter,book:book,title:title,file:bookData,action:"chapter_delete"},
             dataType: "text",
             success: function(data){
-                $("#vb-modal-container").html(data);                
-                //console.log("Delete Chapter");
-                //console.log(title);
+                $("#vb-modal-container").html(data);            
+                $("div.modal-backdrop").removeClass('d-none');
+                $("div.modal").addClass('d-block');
             }
         });
+    });
+
+    //DELETE CHAPTER
+    function deleteChapter(book,chapter,title){
+        let modal = $("#vb-delete-modal");         
+        let file = modal.data('file');
+        $.ajax({
+            method: "POST",
+            url: "../model/chapters.php",
+            data: {chapter:chapter,key:book,title:title,file:file,action:"delete"},
+            dataType: "text",
+            beforeSend: function(){
+            modal.find(".modal-body>p").html(`Deleting ... `+title);
+            },
+            success: function(data){
+            setTimeout(function(){
+                modal.find(".modal-body>p").html(data);            
+                setTimeout(function(){           
+                listBookChapters(book);                        
+                $("#vb-modal-container>div").remove();          
+                },1000);   
+            },1500);            
+            }
+        });
+    }
+
+    $(document).on('click','#chapter_deletevb-confirm-delete',function(){
+        let chapter = $(this).data("chapter");
+        let book = $(this).data("key");
+        let title = $('span#vb-title-handler').text();
+        deleteChapter(book,chapter,title);
     });
 
     //SHOW CHAPTER PARTS
@@ -109,28 +140,6 @@ jQuery(document).ready(function($){
     //     }
     //     //console.log(content.length);
     // });
-
-    //GET MODAL CHAPTER DELETE
-    function deleteChContent(chapter,content,title){
-        $.ajax({
-            method:"POST",
-            url:"../pages/parts/modal.php",
-            data: {chapter:chapter,content:content,title:title},
-            dataType: "text",
-            success: function(data){                
-                $("#vb-modal-container").html(data);                
-            }            
-        });
-        //console.log(chapter + content + title);
-    }
-
-    //DELETE CHAPTER PART
-    $(document).on("click","span.vb-dlt-content",function(){        
-        let content = $(this).data("key");
-        let title = $(this).parents("li.list-item-vbcontent").find("span.vb-cnt-title").text();
-        let chapter = $(this).data("chapter");
-        deleteChContent(chapter,content,title);        
-    });
 
     //PREVIEW CHAPTER PART
     // function previewPart(chapter,content,title,lctn){

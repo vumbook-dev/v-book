@@ -491,4 +491,9 @@ jQuery(document).ready(function($){
         }    
     }
 
+    //Cloase Modal
+    $(document).on("click","#vb-modal-container .close, #vb-modal-container .btn-secondary",function(){
+        $("#vb-modal-container>div").remove();
+    });
+
 });

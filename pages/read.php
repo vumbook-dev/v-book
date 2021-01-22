@@ -15,7 +15,7 @@ if(isset($_POST['data'])){
     $bookContents = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/$filename.json");
     $bookContents = json_decode($bookContents);
 ?>
-<div class="col-md-12" style="margin-top:120px;">
+<div class="col-md-12" style="margin-top:20vh;">
     <div class="bg-light mt-4 mb-3 px-5 py-2 d-none justify-content-between">
         <p class="m-0 p-2">Download as HTML5! </p>
         <button id="vb-download" class="btn btn-primary">Download</button>
@@ -36,21 +36,19 @@ if(isset($_POST['data'])){
 <div <?php echo ($books[$key]->template == 'book') ? 'id="book-container"' : 'id="newspaper-container"'; ?>  data-actBG="0"></div>
 </div>
 <div class="col-md-12">
-<nav class="p-5 <?php echo ($books[$key]->template == 'book') ? 'd-none' : ''; ?>" aria-label="Book page navigation">
+<nav class="p-5" aria-label="Book page navigation">
   <ul class="pagination" id="vbPageNav" data-prev="-1" data-next="0">
     <li class="page-item">
-        <a data-nav="prev" class="bookprev" href="#" style="display:none;">
+        <a data-nav="prev" class="bookprev" href="#">
             <span class="arrow">
-                <span class="tip"></span>
-                <span class="shaft"></span>
+                <i class="fa fa-angle-left" aria-hidden="true"></i>
             </span>
         </a>
     </li>
     <li class="page-item">
         <a data-nav="next" class="booknext" href="#">
             <span class="arrow">
-                <span class="tip"></span>
-                <span class="shaft"></span>
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
             </span>
         </a>
     </li>
@@ -229,57 +227,11 @@ const changeBG = function(x){
     //console.log(bgType,bgStyle,x);
 }
 
-$(document).on("click","#vbPageNav > li > a",function(e){
-    e.preventDefault();    
-    let nav = $(this).data("nav");
-    let i = $("#vbPageNav").data("next"); 
-    let pages = $("#bookWrapQuill > div.vbPages");
-    let actBG = $("div#book-container").data("actbg");
-    let crrntPg;
-    let allPages = pages.length - 1;
-    if(nav == "next"){
-        $(pages[i]).addClass("d-none");
-        $(pages[i]).removeClass("activePage");
-        i++;
-        $("#vbPageNav").data("next",i);
-        $(pages[i]).removeClass("d-none");
-        $(pages[i]).addClass("activePage");
-        changeBG(i);
-
-    }else{
-        $(pages[i]).addClass("d-none");
-        $(pages[i]).removeClass("activePage");
-        i--;
-        $("#vbPageNav").data("next",i);
-        $(pages[i]).removeClass("d-none");        
-        $(pages[i]).addClass("activePage");
-        changeBG(i);
-    }
-    
-    if(i > 0){
-        $("a.bookprev").css("display","block");
-    }else{
-        $("a.bookprev").css("display","none");
-    }
-    if(allPages === i){
-        $("a.booknext").addClass("d-none");
-        $("#vbPageNav > li:last-child").prepend("<span>End</span>");
-    }else if(allPages === i+1){
-        $("a.booknext").removeClass("d-none");
-        $("#vbPageNav > li:last-child > span").remove();
-    }
-    $('html, body, div#book-container').animate({scrollTop:0}, 250);
-
-    ProcessSound();
-});
-
 <?php } //END LOAD IF NEWSPAPER TEMPLATE 
 
 elseif($books[$key]->template == "book"){ ?>
 
 <?php } ?>
-
-
 
 //ZOOMER
 $(document).on('input', '#vb-sliderzoomer', function(){

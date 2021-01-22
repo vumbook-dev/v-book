@@ -6,7 +6,7 @@ if(isset($_COOKIE['userdata'])){
 }
 $UFolder = DATAPATH;
 
-function crud_btn($listKey,$action,$pages = 0,$template){
+function crud_btn($listKey = '',$action = '',$pages = 0,$template = ''){
     $na = ($pages == 0)? "vb-btn-disable" : "";
     $disable = ($pages == 0)? "disabled" : "";
     $icon = ($pages == 0)? "fa-eye-slash" : "fa-eye";
@@ -91,14 +91,6 @@ require_once "modal.php"; ?>
             let x = $(this).data("key");
             deleteBook(x);
         });
-
-        //ADD CONTENT
-        // $(document).on("click",".vb-link",function(){
-        //     let page = $(this).data("page");
-        //     let key = $(this).data("key");
-        //     history.pushState(4, `V-Book ${page}`, `./${page}`);
-        //     sendToPage(page,vbloader,key);
-        // });
 
     });
 </script>
