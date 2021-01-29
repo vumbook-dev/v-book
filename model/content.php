@@ -1,5 +1,6 @@
 <?php
 require_once "../config.php";
+require_once "./debug_helper.php";
 if(isset($_COOKIE['userdata'])){
     $UID = $_COOKIE['userdata']['id'];
     $UName = $_COOKIE['userdata']['name'];
@@ -9,24 +10,31 @@ if(isset($_COOKIE['userdata'])){
     function createBackup($filename,$bookData,$folder){
         $list = file_get_contents("../json/users/bookdata/{$folder}/book-content/backup/backup-data.json");
         $backup = json_decode($list,true);
-        $time = date("Y-m-d H:i:s");
-        $integerTime = str_replace(" ","-",date("Y-m-d H-i-s"));        
-        if((!empty($backup[$filename])) ? $backup[$filename]['id'] === $filename : false){            
-            $seconds = strtotime(date("Y-m-d H:i:s")) - strtotime($backup[$filename]['time']);
+        $time = date("F j, Y, g:i a");
+        $integerTime = str_replace(" ","-",date("Y-m-d H-i-s"));
+        $skey = 0;
+        foreach($backup as $f => $val){
+            if(!empty($backup[$f][$filename])){
+                $skey = ($val[$filename]['id'] === $filename) ? $f : 0;
+            }            
+        }
+        if((!empty($backup[$skey][$filename])) ? $backup[$skey][$filename]['id'] === $filename : false){                      
+            $seconds = strtotime(date("Y-m-d H:i:s")) - strtotime($backup[$skey][$filename]['time']);
             $days    = floor($seconds / 86400);
             $hours   = floor(($seconds - ($days * 86400)) / 3600);
             $minutes = floor(($seconds - ($days * 86400) - ($hours * 3600))/60);
-            if($minutes < 30){
-                $backup[$filename]['time'] = $time;
+            $timePassed = ($days > 0) ? ($days*24+$hours)*60+$minutes : $hours*60+$minutes;  
+            if($timePassed < 30){
+                return false;
+            }else{                  
+                $backup[$skey][$filename]['time'] = $time;
                 $newBackup = json_encode($backup);
                 file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/backup-data.json",$newBackup);
                 file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/{$integerTime}backup-{$filename}.json",$bookData);
-                return true;
-            }else{
-                return false;                
+                return true;                       
             }
         }else{
-            $backup = array( $filename => ["id" => $filename,"time" => $time] );
+            $backup[] = array( $filename => ["id" => $filename,"time" => $time] );
             $newBackup = json_encode($backup);
             file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/backup-data.json",$newBackup);
             file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/{$integerTime}backup-{$filename}.json",$bookData);
@@ -68,10 +76,17 @@ if(isset($_COOKIE['userdata'])){
 
                 //SAVE CONTENT DATA          
                 $count = count($contentlist);
-                $json = json_encode($contentlist);                
-                file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
-                //print_r($bookData);
-                echo $count;
+                $json = json_encode($contentlist);          
+                $helper = new Helper(FAILSAFE_DEBUG_MODE);
+                $helper->failSafe($json,81,"content.php");
+                if($helper->result){
+                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "data" => $json, "count" => $count);
+                }else{
+                    file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
+                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "count" => $count);                  
+                }       
+                echo json_encode($msg);         
+                die();
             }
         }elseif($action == "btmp_add"){
             if(isset($_POST['chapter']) && isset($_POST['file'])){
@@ -86,9 +101,17 @@ if(isset($_COOKIE['userdata'])){
                 $content = array("id" => $newID, "text" => "");
                 $content = json_encode($content);
                 $contentlist[$chapter]->content[] = $content;
-                $json = json_encode($contentlist);                
-                file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
-                echo $newID;
+                $json = json_encode($contentlist);           
+                $helper = new Helper(FAILSAFE_DEBUG_MODE);
+                $helper->failSafe($json,106,"content.php");
+                if($helper->result){
+                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "data" => $json, "newID" => $newID);
+                }else{
+                    file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
+                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "newID" => $newID);                  
+                }       
+                echo json_encode($msg);         
+                die();
             }
         }elseif($action == "btmp_delete"){
             if(isset($_POST['chapter']) && isset($_POST['file']) && isset($_POST['key'])){
@@ -101,9 +124,17 @@ if(isset($_COOKIE['userdata'])){
                 unset($contentlist[$chapter]->content[$key]);
                 $contentlist[$chapter]->content = array_values($contentlist[$chapter]->content);
                 $count = count($contentlist[$chapter]->content);
-                $json = json_encode($contentlist);                
-                file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
-                echo $count;
+                $json = json_encode($contentlist);            
+                $helper = new Helper(FAILSAFE_DEBUG_MODE);
+                $helper->failSafe($json,81,"content.php");
+                if($helper->result){
+                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "data" => $json, "newID" => $count);
+                }else{
+                    file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
+                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "newID" => $count);                  
+                }       
+                echo json_encode($msg);         
+                die();
             }
         }elseif($action == "btmp_update"){
             if(isset($_POST['chapter']) && isset($_POST['file']) && isset($_POST['key']) && isset($_POST['content'])){
@@ -114,13 +145,23 @@ if(isset($_COOKIE['userdata'])){
                 $list = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");
                 createBackup($file,$list,$UFolder);
                 $contentlist = json_decode($list);
-                $oldContent = $contentlist[$chapter]->content[$key];
+                $oldContent = $contentlist[$chapter]->content[$key];                
                 $oldContent = json_decode($oldContent,true);
                 $oldContent['text'] = $content;
                 $oldContent = json_encode($oldContent);
                 $contentlist[$chapter]->content[$key] = $oldContent;
+                $count = count($contentlist[$chapter]->content);
                 $json = json_encode($contentlist);
-                file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
+                $helper = new Helper(FAILSAFE_DEBUG_MODE);
+                $helper->failSafe($json,156,"content.php");
+                if($helper->result){
+                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "data" => $json, "newID" => $count);
+                }else{
+                    file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
+                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "newID" => $count);                  
+                }       
+                echo json_encode($msg);         
+                die();
             }
         }elseif($action == "update_sound"){
             //UPDATE SOUND CHAPTER
@@ -151,20 +192,20 @@ if(isset($_COOKIE['userdata'])){
                         $section[$key]->delay = $delay;
                     }
                                             
-                    $json = json_encode($section);
-                    file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
-
-                    $message = '<i class="fa fa-check-circle-o" aria-hidden="true"></i> Content Successfully Updated';
-                    $status = "success";
+                    $json = json_encode($section);                    
+                    $helper = new Helper(FAILSAFE_DEBUG_MODE);
+                    $helper->failSafe($json,197,"content.php");
+                    if($helper->result){
+                        $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "data" => $json);
+                    }else{
+                        file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
+                        $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "flashMSG" => 'Sound Successfully Updated.');                  
+                    } 
                 }else{
-                    $message = '<i class="fa fa-exclamation-circle" aria-hidden="true"></i> Something Went Wrong</i>';
-                    $status = "failed";
+                    $msg = array("mode" => "debug_disable", "flashMSG" => ' Something Went Wrong!', "errorType" => "danger");
                 }
-
-                $arry = array("message" => $message, "status" => $status);
-                $arry = json_encode($arry);
-                echo $arry;
-            
+                echo json_encode($msg);         
+                die();           
             }
         }elseif($action == "update_color"){
             //UPDATE SOUND CHAPTER
@@ -184,20 +225,21 @@ if(isset($_COOKIE['userdata'])){
                         $section[$key]->bgType = "color";
                     }
                                             
-                    $json = json_encode($section);                    
-                    file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
-
-                    $message = 'Content Successfully Updated';
-                    $status = "success";
+                    $json = json_encode($section);    
+                    $helper = new Helper(FAILSAFE_DEBUG_MODE);
+                    $helper->failSafe($json,230,"content.php");
+                    if($helper->result){
+                        $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "data" => $json);
+                    }else{
+                        file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
+                        $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "flashMSG" => 'Background Color Successfully Updated.');                  
+                    }  
                 }else{
-                    $message = 'Something Went Wrong</i>';
-                    $status = "failed";
+                    $msg = array("mode" => "debug_disable", "flashMSG" => ' Something Went Wrong!', "errorType" => "danger");
                 }
 
-                $arry = array("message" => $message, "status" => $status);
-                $arry = json_encode($arry);
-                echo $arry;
-            
+                echo json_encode($msg);         
+                die();            
             }
         }elseif($action == "delete"){
             //DELETE CHAPTER CONTENT
@@ -211,9 +253,17 @@ if(isset($_COOKIE['userdata'])){
                 unset($content[$key]);
                 $content = array_values($content);
 
-                $json = json_encode($content);
-                file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
-                echo "Deleted Successfully";
+                $json = json_encode($content);                
+                $helper = new Helper(FAILSAFE_DEBUG_MODE);
+                $helper->failSafe($json,257,"content.php");
+                if($helper->result){
+                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "data" => $json);
+                }else{
+                    file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
+                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "flashMSG" => "Deleted Successfully");                  
+                }       
+                echo json_encode($msg);         
+                die();
             }
             
         }elseif($action == "load"){
@@ -227,6 +277,7 @@ if(isset($_COOKIE['userdata'])){
                 $content = $content[$key];
                 //$response = json_encode($content);
                 echo $content->content;
+                die();
             }
         }elseif($action == "update_title"){
             if(isset($_POST['title']) && isset($_POST['book']) && isset($_POST['file']) && isset($_POST['chapter']) && isset($_POST['section'])){
@@ -236,11 +287,20 @@ if(isset($_COOKIE['userdata'])){
                 $allData = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");     
                 createBackup($file,$allData,$UFolder);   
                 $section = json_decode($allData);
+                $oldTitle = $section[$key]->cpart;
 
                 $section[$key]->cpart = $fullTitle;                        
-                $json = json_encode($section);
-                file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
-                echo "Section Updated to \"{$fullTitle}\"";
+                $json = json_encode($section);                
+                $helper = new Helper(FAILSAFE_DEBUG_MODE);
+                $helper->failSafe($json,294,"content.php");
+                if($helper->result){
+                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "data" => $json);
+                }else{
+                    file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
+                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "flashMSG" => "Chapter Title: \"{$oldTitle}\" is successfully updated to \"{$fullTitle}\"");                  
+                }       
+                echo json_encode($msg);         
+                die();
             }
         }
     }

@@ -42,6 +42,9 @@ if(isset($_COOKIE['userdata'])){
                 $json = json_encode($json);
 
                 echo $json;
+                die();           
+            }else{
+                die();
             }
         }elseif($action == "delete"){
 
@@ -72,6 +75,9 @@ if(isset($_COOKIE['userdata'])){
                 file_put_contents("{$path}book-chapter/{$file}.json",$newlist);             
 
                 echo $title." is Successfully Deleted.";
+                die();           
+            }else{
+                die();
             }
 
         }elseif($action == "update"){
@@ -81,36 +87,72 @@ if(isset($_COOKIE['userdata'])){
             $bk = $_POST['book'];
             $ch = $_POST['chapter'];
             $content = $_POST['content'];
-            
-            $sound = $_POST['sound'];
-            $volume = $_POST['volume'];    
-            $delay = $_POST['delay'];    
-            $color = (isset($_POST['color'])) ? $_POST['color'] : "";  
+            if($content != $chapters[$ch]['name']){
+                $chapters[$ch]['name'] = $content;
+                $newUpdate = json_encode($chapters);
+                file_put_contents("../json/users/bookdata/{$UFolder}/book-chapter/{$file}.json",$newUpdate); 
 
-            $newChapter = array();
-            ($content != $chapters[$ch]['name']) ? $newChapter['name'] = $content : $newChapter['name'] = $chapters[$ch]['name'];
-            if(!empty($color)){
-                $newChapter['bgType'] = "color";
-                $newChapter['background'] = $color;
+                $arry = array("message" => 'Book Part Successfully Updated', "status" => "success");
+                $arry = json_encode($arry);
+                echo $arry;
+                die();
             }else{
-                $newChapter['bgType'] = $chapters[$ch]['bgType'];
-                $newChapter['background'] = $chapters[$ch]['background'];
-            }    
-            if(!empty($sound) && !empty($volume) && !empty($delay)){
-                $newChapter['sound'] = $sound;
-                $newChapter['volume'] = $volume;
-                $newChapter['delay'] = $delay;
+                $arry = array("message" => 'Book Part Successfully Updated', "status" => "success");
+                $arry = json_encode($arry);
+                echo $arry;
+                die();
             }
-            $chapters[$ch] = $newChapter;
-            $chapters = array_values($chapters);
-            $newUpdate = json_encode($chapters);
-            file_put_contents("../json/users/bookdata/{$UFolder}/book-chapter/{$file}.json",$newUpdate); 
+        }elseif($action == "update_sound"){
+            if(!empty($_POST['sound']) && !empty($_POST['volume']) && !empty($_POST['delay'])){
+                $file = $_POST['file'];
+                $list = file_get_contents("../json/users/bookdata/{$UFolder}/book-chapter/{$file}.json");
+                $chapters = json_decode($list,true);
+                $bk = $_POST['book'];
+                $ch = $_POST['chapter'];
+                $sound = $_POST['sound'];
+                $volume = $_POST['volume'];    
+                $delay = $_POST['delay']; 
 
-            $message = 'Book Part Successfully Updated';
-            $status = "success";
-            $arry = array("message" => $message, "status" => $status, "filepath" => $UFolder);
-            $arry = json_encode($arry);
-            echo $arry;
+                $chapters[$ch]['sound'] = $sound;
+                $chapters[$ch]['volume'] = $volume;
+                $chapters[$ch]['delay'] = $delay;
+
+                $newUpdate = json_encode($chapters);
+                file_put_contents("../json/users/bookdata/{$UFolder}/book-chapter/{$file}.json",$newUpdate); 
+
+                $message = 'Sound Successfully Updated.';
+                $status = "success";
+                $arry = array("message" => $message, "status" => $status, "filepath" => $UFolder);
+                $arry = json_encode($arry);
+                echo $arry;
+                die();                
+            }else{
+                die("Empty");
+            }
+        }elseif($action == "update_color"){
+            if(!empty($_POST['color'])){
+                $file = $_POST['file'];
+                $list = file_get_contents("../json/users/bookdata/{$UFolder}/book-chapter/{$file}.json");
+                $chapters = json_decode($list,true);
+                $bk = $_POST['book'];
+                $ch = $_POST['chapter'];
+                $color = $_POST['color'];
+                if(!empty($color)){
+                    $chapters[$ch]['bgType'] = "color";
+                    $chapters[$ch]['background'] = $color;
+                    $newUpdate = json_encode($chapters);
+                    file_put_contents("../json/users/bookdata/{$UFolder}/book-chapter/{$file}.json",$newUpdate); 
+
+                    $message = 'Background Color Successfully Updated.';
+                    $status = "success";
+                    $arry = array("message" => $message, "status" => $status, "filepath" => $UFolder);
+                    $arry = json_encode($arry);
+                    echo $arry;                             
+                }    
+                die();   
+            }else{
+                die();
+            }
         }elseif($action == "update_title"){
             if(isset($_POST['title']) && isset($_POST['book']) && isset($_POST['file']) && isset($_POST['chapter'])){
                 $key = $_POST['book'];
@@ -134,6 +176,9 @@ if(isset($_COOKIE['userdata'])){
                 $newlist = json_encode($booklist);
                 file_put_contents("{$path}books-list-title.json",$newlist);    
                 echo "Chapter Updated to \"{$fullTitle}\"";             
+                die();           
+            }else{
+                die();
             }
         }
     }

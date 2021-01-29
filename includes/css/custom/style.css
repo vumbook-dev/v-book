@@ -134,14 +134,18 @@ div {
 /*** ALERT MESSAGE ***/
 .alert-success {
   color: white;
-  background-color: rgb(40 167 69 / 65%);
+  background-color: rgb(40 167 69 / 95%);
   border-color: #15572400;
 }
 
 .alert-danger {
   color: white;
-  background-color: rgb(220 53 69 / 65%);
+  background-color: rgb(220 53 69 / 95%);
   border-color: #721c2400;
+}
+
+.alert-danger.failsafe {
+  background-color: rgb(220 53 69 / 100%);
 }
 
 .alert {

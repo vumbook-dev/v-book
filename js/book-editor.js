@@ -20,6 +20,7 @@ jQuery(document).ready(function($){
         placeHolder.addClass("d-none");
         return true;
     }
+    
     //SUBMIT MULTI SOUND
     $(document).on("submit","#submit-audio",function(e){
         e.preventDefault();
@@ -32,8 +33,7 @@ jQuery(document).ready(function($){
             beforeSend: function(){
                 $('button#vb-sound-upload').html("<i class='bx bx-loader-circle bx-spin' ></i> Saving...");
             },
-            success: function(data){             
-                window.flashMessage("Audio Successfully Uploaded","success");
+            success: function(data){
                 $('button#vb-sound-upload').html("Saved");             
                 if(newAudio(data)){                          
                     UpdateSound();
@@ -91,7 +91,6 @@ jQuery(document).ready(function($){
 
     $(document).on('click','span.save_changes',function(){
         UpdateSound();
-        window.flashMessage('Sound Settings Updated','success');
         $("span.fileUpload").removeClass('d-none');
         $("span.save_changes").addClass('d-none');
     });
@@ -133,56 +132,64 @@ jQuery(document).ready(function($){
 
     //UPDATE SOUND
     const UpdateSound = function(){
-        $("div.ql-editor").append(" ");
         let key = $("#vb-save-styles").data("key");
         let parent = $("#vb-save-styles").parents('div.modal-content');
         let sound = parent.find("span#vb-my-audio.act-sound").data("id");
         let delay = parent.find('input[name=delay]').val();
         let volume = $("input[name=vb-volume-control]").val();
-        let chapter = $("input[name=chapter]").val();  
-        setTimeout(function(){            
-            $.ajax({
-                method: "POST",
-                url: "../model/content.php",
-                data: {sound:sound,volume:volume,delay:delay,key:key,file:bookFile,book:bookIndex,chapter:chapter,template:bookTemplate,action:"update_sound"},
-                dataType: "text",
-                success: function(data){
-                    console.log(data);
-                    let json = JSON.parse(data);
-                    if(json.status == "success"){
-                        return true;                        
+        let chapter = $("input[name=chapter]").val();             
+        $.ajax({
+            method: "POST",
+            url: "../model/content.php",
+            data: {sound:sound,volume:volume,delay:delay,key:key,file:bookFile,book:bookIndex,chapter:chapter,template:bookTemplate,action:"update_sound"},
+            dataType: "text",
+            success: function(data){
+                let json = JSON.parse(data);
+                let type = json.errorType;
+                //console.log(json.mode,type);
+                if(json.mode === "debug_enable" && type === "danger"){
+                    failSafeMessage(type,json.errorMSG,json.data);
+                }else{
+                    if(type === "success"){              
+                        window.flashMessage(json.flashMSG,type);
                     }else{
-                        return false;
+                        failSafeMessage('secondary',json.flashMSG);
                     }                    
-                }
-            });        
-        },500);
+                }                    
+            }
+        });        
     }
 
-    const UpdateColor = function(color,key,part){
-        $("div.ql-editor").append(" ");
-        setTimeout(function(){            
-            $.ajax({
-                method: "POST",
-                url: "../model/content.php",
-                data: {color:color,key:key,file:bookFile,book:bookIndex,chapter:part,template:bookTemplate,action:"update_color"},
-                dataType: "text",
-                beforeSend: function(){
-                    $('div.colorPick-wrap input.pcr-save').val('Saving...');
-                },
-                success: function(data){
-                    let json = JSON.parse(data);
-                    let state = (json.status == "success") ? "success" : "danger";
-                    $('div.colorPick-wrap input.pcr-save').val('Saved');
-                    setTimeout(function(){
-                        $('div.colorPick-wrap input.pcr-save').val('Save');                        
-                        $('div.colorPick-wrap input.pcr-save').removeClass('pckrbtn');
-                    },1500);
-                    window.flashMessage(json.message,state);                    
-                    $("li.apllySoundsToAll").remove();
-                }
-            });        
-        },500);
+    const UpdateColor = function(color,key,part){           
+        $.ajax({
+            method: "POST",
+            url: "../model/content.php",
+            data: {color:color,key:key,file:bookFile,book:bookIndex,chapter:part,template:bookTemplate,action:"update_color"},
+            dataType: "text",
+            beforeSend: function(){
+                $('div.colorPick-wrap input.pcr-save').val('Saving...');
+            },
+            success: function(data){
+                let json = JSON.parse(data);
+                let type = json.errorType;
+                //console.log(json.mode,type);
+                if(json.mode === "debug_enable" && type === "danger"){
+                    failSafeMessage(type,json.errorMSG,json.data);
+                }else{
+                    if(type === "success"){    
+                        $('div.colorPick-wrap input.pcr-save').val('Saved');
+                        setTimeout(function(){
+                            $('div.colorPick-wrap input.pcr-save').val('Save');                        
+                            $('div.colorPick-wrap input.pcr-save').removeClass('pckrbtn');
+                        },1500);          
+                        window.flashMessage(json.flashMSG,type);
+                        //$("li.apllySoundsToAll").remove();
+                    }else{
+                        failSafeMessage('secondary',json.flashMSG);
+                    }                    
+                }  
+            }
+        });
     }
 
     //UPDATE COLOR BUTTON
@@ -207,48 +214,61 @@ jQuery(document).ready(function($){
             url: "../model/content.php",
             data: {chapter:chapter,key:key,id:id,file:bookFile,content:text,action:action},
             dataType: "text",
-            success: function(data){
-                if(action == 'btmp_add'){
-                    let key = Number(data)-1;
-                    $("ul.btmp-pagelist").append('<li class="btmp-pages" data-pageid="'+data+'" data-key="'+key+'">'+data+'</li>');
-                    $("li#btmp-add-page-btn").appendTo("ul.btmp-pagelist");
-                    $("div.btmp-page>div.ql-snow").append('<div class="ql-editor btmp-content btmpPage'+key+'" data-key="'+key+'"></div>');    
-                    if(!$("ul.btmp-pagelist>li").hasClass('btmp-active')){
-                        $('div.bmtp-startpage').addClass('d-none');   
-                        $('div#bookTemplateEditorWrap, div#btmp-action-control-wrap, div#btmpZoomControl').removeClass('d-none');  
-                        $('ul.btmp-pagelist>li.btmp-pages:first-child').addClass('btmp-active');
-                    }
-                }else if(action == 'btmp_delete'){
-                    $('ul.btmp-pagelist>li[data-key='+key+']').remove();
-                    $('ul.btmp-pagelist>li').removeClass('btmp-active');
-                    $('ul.btmp-pagelist>li.btmp-pages:first-child').addClass('btmp-active');
-                    let dk = $('li.btmp-active');                    
-                    $('div.btmp-content[data-key='+key+']').remove();
-                    $('div.btmp-page div.btmp-content:first-child').removeClass('d-none');
-                    let newallList = $('li.btmp-pages');
-                    //console.log(newallList.length);
-                    for(i=0;i<newallList.length;i++){
-                        $(newallList[i]).attr('data-key',i);
-                    }
-                    $('span.btmp-ed-action').attr('data-key',dk.data('key'));
-                    $('span.btmp-ed-action>span').text(dk.text());
-                    //allList.forEach(element => console.log(element));
-                    if(!$("ul.btmp-pagelist>li").hasClass('btmp-active')){
-                        $('div.bmtp-startpage').removeClass('d-none');   
-                        $('div#bookTemplateEditorWrap, div#btmp-action-control-wrap, div#btmpZoomControl').addClass('d-none');  
-                    }
-                }else if(action == 'btmp_update'){
-                    setTimeout(function(){
-                        $('span.btmp-save-wrap').html("<i class='bx bx bx-save' ></i> Saved");
-                        setTimeout(function(){
-                            $('div.btmpPage'+key).html(text);
-                            $("div.btmp-page").toggleClass('d-none');
-                            $("div.btmp-editor-wrap>div:first-child").toggleClass('d-none');
-                            $('span.btmp-ed-action').toggleClass('d-none');
-                            $('span.btmp-save-wrap, span.btmp-cancel-wrap').toggleClass('d-none');
-                            $('span.btmp-save-wrap').html("<i class='bx bx bx-save' ></i> Save");
-                        },1000);
-                    },1500);
+            success: function(rdata){                
+                let json = JSON.parse(rdata);
+                let type = json.errorType;
+                //console.log(json.mode,type);
+                if(json.mode === "debug_enable" && type === "danger"){
+                    failSafeMessage(type,json.errorMSG,json.data);
+                }else{
+                    if(type === "success"){
+                        let data = json.newID;
+                        let key = Number(data)-1;
+                        console.log(json.mode,type);
+                        if(action == 'btmp_add'){                                                
+                            $("ul.btmp-pagelist").append('<li class="btmp-pages" data-pageid="'+data+'" data-key="'+key+'">'+data+'</li>');
+                            $("li#btmp-add-page-btn").appendTo("ul.btmp-pagelist");
+                            $("div.btmp-page>div.ql-snow").append('<div class="ql-editor btmp-content btmpPage'+key+'" data-key="'+key+'"></div>');    
+                            if(!$("ul.btmp-pagelist>li").hasClass('btmp-active')){
+                                $('div.bmtp-startpage').addClass('d-none');   
+                                $('div#bookTemplateEditorWrap, div#btmp-action-control-wrap, div#btmpZoomControl').removeClass('d-none');  
+                                $('ul.btmp-pagelist>li.btmp-pages:first-child').addClass('btmp-active');
+                            }
+                        }else if(action == 'btmp_delete'){
+                            $('ul.btmp-pagelist>li[data-key='+key+']').remove();
+                            $('ul.btmp-pagelist>li').removeClass('btmp-active');
+                            $('ul.btmp-pagelist>li.btmp-pages:first-child').addClass('btmp-active');
+                            let dk = $('li.btmp-active');                    
+                            $('div.btmp-content[data-key='+key+']').remove();
+                            $('div.btmp-page div.btmp-content:first-child').removeClass('d-none');
+                            let newallList = $('li.btmp-pages');
+                            //console.log(newallList.length);
+                            for(i=0;i<newallList.length;i++){
+                                $(newallList[i]).attr('data-key',i);
+                            }
+                            $('span.btmp-ed-action').attr('data-key',dk.data('key'));
+                            $('span.btmp-ed-action>span').text(dk.text());
+                            //allList.forEach(element => console.log(element));
+                            if(!$("ul.btmp-pagelist>li").hasClass('btmp-active')){
+                                $('div.bmtp-startpage').removeClass('d-none');   
+                                $('div#bookTemplateEditorWrap, div#btmp-action-control-wrap, div#btmpZoomControl').addClass('d-none');  
+                            }
+                        }else if(action == 'btmp_update'){
+                            setTimeout(function(){
+                                $('span.btmp-save-wrap').html("<i class='bx bx bx-save' ></i> Saved");
+                                setTimeout(function(){
+                                    $('div.btmpPage'+key).html(text);
+                                    $("div.btmp-page").toggleClass('d-none');
+                                    $("div.btmp-editor-wrap>div:first-child").toggleClass('d-none');
+                                    $('span.btmp-ed-action').toggleClass('d-none');
+                                    $('span.btmp-save-wrap, span.btmp-cancel-wrap').toggleClass('d-none');
+                                    $('span.btmp-save-wrap').html("<i class='bx bx bx-save' ></i> Save");
+                                },1000);
+                            },1500);
+                        }
+                    }else{
+                        failSafeMessage('secondary',json.errorMSG); 
+                    }                    
                 }
             }
         })
@@ -383,7 +403,6 @@ jQuery(document).ready(function($){
             submit.removeClass("d-none"); 
             $("img#prev-img-background").removeClass("d-none");
             parent.find("span#rm-image-background").css("display","block");       
-               
             //$("form.input-empty").removeClass("input-empty");
             $("#vbIMGbackground input.rdnly-plchldr").removeClass("d-none");
 
@@ -422,18 +441,29 @@ jQuery(document).ready(function($){
             beforeSend: function(){
                 $('#submit-background button.btn-primary').html("<i class='bx bx-loader-circle bx-spin' ></i> Saving...");
             },
-            success: function(){          
-                $('#submit-background button.btn-primary').html("Saved");     
-                window.flashMessage('Background Image Successfully Saved.','success');                                 
-                uploader.removeClass("d-none");
-                uploader.addClass("d-block");
-                readOnly.addClass("d-none");
-                $("span#rm-image-background").css("display","none");
-                submit.addClass("d-none");
-                setTimeout(function(data){
-                    $("input#upbackground").attr("data-image",data);     
-                    $('#submit-background button.btn-primary').html("Save");                 
-                },3000);
+            success: function(data){       
+                let json = JSON.parse(data);
+                let type = json.errorType;
+                //console.log(json.mode,type);
+                if(json.mode === "debug_enable" && type === "danger"){
+                    failSafeMessage(type,json.errorMSG,json.data);
+                }else{
+                    if(type === "success"){    
+                        $('#submit-background button.btn-primary').html("Saved");     
+                        window.flashMessage(json.flashMSG,type);                                 
+                        uploader.removeClass("d-none");
+                        uploader.addClass("d-block");
+                        readOnly.addClass("d-none");
+                        $("span#rm-image-background").css("display","none");
+                        submit.addClass("d-none");
+                        setTimeout(function(data){
+                            $("input#upbackground").attr("data-image",data);     
+                            $('#submit-background button.btn-primary').html("Save");                 
+                        },3000);
+                    }else{
+                        failSafeMessage('secondary',json.errorMSG);
+                    }                    
+                }
             }  
         });
     });

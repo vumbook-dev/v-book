@@ -1,6 +1,7 @@
 <?php
 set_include_path(get_include_path() . PATH_SEPARATOR . 'phpseclib');
 include('Net/SSH2.php');
+include('Crypt/RSA.php');
 require_once "./models/User.php";
 class Connect extends User{
 
@@ -14,7 +15,10 @@ class Connect extends User{
 	//PUBLIC
 	public $pwd;
 	public $log;
-	private $uFolder;
+	public $user;
+	public $tk;
+	public $uFolder;
+	private $_userData;
 	public $bookdata;
 	public $bookFileName;	
 	public static $version = "alpha-1.0.0";
@@ -23,16 +27,20 @@ class Connect extends User{
 	public $newFiles;
 
 	// Constructor with DB
-    public function __construct($db) {
+    public function __construct($db,$id,$tk) {
 		$this->_conn = $db;
-		$this->uFolder = USER::verifyToken(true);
+		$this->userID = $id;
+		$this->token = $tk;
+		$this->_userData = USER::verifyToken(true);
+		$this->uFolder = $this->_userData['userpath'];
 	}
 
-	private function updatePermission(){
+	private function performExecCommand(){
 		$this->_ssh = new Net_SSH2('192.168.1.138');
-		$this->_pkey = "rbKhpjWR6T9xKuLjwj8Ptwn5a8Pe332YRZHFekEGF2N3gdGz";
-		if (!$this->_ssh->login('gbeditor', $this->_pkey)) {
-		    exit('Login Failed');
+		$this->_pkey = new Crypt_RSA();
+		$this->_pkey->loadKey(file_get_contents('/var/www/g-book/alpha-1.0.0/api/config/gbook.pem'));
+		if (!$this->_ssh->login('vmbeditor', $this->_pkey)) {
+			exit('Login Failed');
 		}		
 		$this->_ssh->exec($this->_terminalCommand);
 		$this->pwd = $this->_ssh->exec('pwd');
@@ -41,12 +49,12 @@ class Connect extends User{
 
 	private function updateBookDirectoryPermission(){
 		$this->_terminalCommand = "find /var/www/g-book/".$this->version."/json/users/bookdata/".$this->uFolder."/. -type d -exec chmod 0777 {} \;";
-		$this->updatePermission();
+		$this->performExecCommand();
 	}
 
 	private function updateBookFilePermission(){
 		$this->_terminalCommand = "find /var/www/g-book/".$this->version."/json/users/bookdata/".$this->uFolder."/. -type f -exec chmod 0666 {} \;";
-		$this->updatePermission();
+		$this->performExecCommand();
 	}
 
 	private function updateMediaDirectoryPermission(){
@@ -56,25 +64,30 @@ class Connect extends User{
 		$this->_terminalCommand .= " find ".$this->mediaFolder."bookcover/".$this->uFolder."/. -type d -exec chmod 0777 {} \;";
 		$this->_terminalCommand .= " find ".$this->mediaFolder."images/users/".$this->uFolder."/. -type d -exec chmod 0777 {} \;";
 		$this->_terminalCommand .= " find ".$this->mediaFolder."sounds/users/".$this->uFolder."/. -type d -exec chmod 0777 {} \;";
-		$this->updatePermission();
+		$this->performExecCommand();
 	}
 
 	public function createNewUserDirectory(){
 		$this->_terminalCommand = "mkdir ". $this->newDirectory;
-		$this->updatePermission();
+		$this->performExecCommand();
 		$this->updateBookDirectoryPermission();
 		$this->updateMediaDirectoryPermission();
 	}
 
 	public function createNewUserFiles(){
 		$this->_terminalCommand = "touch ". $this->newFiles;
-		$this->updatePermission();
+		$this->performExecCommand();
 		$this->updateBookFilePermission();
 	}
 
 	public function updateNewBookFilePermission(){
 		$this->_terminalCommand = "find /var/www/g-book/".$this->version."/json/users/bookdata/".$this->uFolder."/ -iname ".$this->bookFileName."* -type f -exec chmod 0666 {} \;";
-		$this->updatePermission();
+		$this->performExecCommand();
+	}
+
+	public function testConnection(){
+		$this->_terminalCommand = "ip a";
+		$this->performExecCommand();
 	}
 
 }

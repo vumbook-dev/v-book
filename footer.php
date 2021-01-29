@@ -49,6 +49,14 @@
               $('ul.account_selection').toggleClass('show_dropdown');
             });
             //console.log('<?php //echo getPermission(); ?>');
+            <?php if(isset($_GET['failsafe_mode'])){ ?>
+              let testdata = '<?php echo failsafe_test(); ?>';
+              if(testdata !== ""){
+                let json = JSON.parse(testdata);
+                let type = json.errorType;              
+                failSafeMessage(type,json.errorMSG,json.data);
+              }
+            <?php } ?>
           });
     </script>
   </body>

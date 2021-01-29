@@ -19,6 +19,22 @@ jQuery(document).ready(function($){
     }
     listBookChapters(bookKey);
 
+    //PROCESS AUDIO
+    const newAudio = function(data){
+        let json = JSON.parse(data);
+        let placeHolder = $("#vbSelectSounds>h4");
+        let mediaPlayer = $("#vbMediaPlayerWrap");
+        let path = json.filepath;
+        let id = json.id;
+        let alias = (json.alias.length < 11) ? json.alias : json.alias.substr(0,11);
+        let filename = json.filename;
+        let sound = '<span id="vb-my-audio" class="slct-sounds-list act-sound h5" data-id="'+id+'">'+alias+' <i class="fa fa-play" aria-hidden="true" data-dir="1" data-path="'+path+'" data-file="'+filename+'"></i></span>';
+        $("#vbMyAudioWrap").html(sound);
+        mediaPlayer.removeClass("d-none");
+        placeHolder.addClass("d-none");
+        return true;
+    }
+
     //CREATE ADD BOOK CHAPTER
     function addBookChapter(chapter,input){
         $.ajax({
@@ -274,41 +290,128 @@ jQuery(document).ready(function($){
     });
 
     //UPDATE CHAPTER STYLE
-    const updateChPage = function(chapter,sound,volume,delay,color,title,subtitle) {
+    const updateChPage = function(chapter,title,subtitle) {
         let content = $("div.ql-editor").html();
         $.ajax({
             method: "POST",
             url: "/model/chapters.php",
-            data: {book:bookKey,file:bookData,chapter:chapter,sound:sound,volume:volume,delay:delay,color:color,title:title,subtitle:subtitle,content:content,action:"update"},
+            data: {book:bookKey,file:bookData,chapter:chapter,title:title,subtitle:subtitle,content:content,action:"update"},
             dataType: "text",
             success: function(data){
                 let json = JSON.parse(data);
                 let state = (json.status == "success") ? "success" : "danger";
                 window.flashMessage(json.message,state);
-                $("li.apllySoundsToAll").remove();
             }
         })
     }
 
-    $(document).on("click","#vb-save-chPage",function(){
-        let key = $(this).data("key");
-        let parent = $(this).parents('div.modal-content');
-        let title = $("h1.ch-main-title").text();
-        let subtitle = $("p.ch-subtitle").text();
-        //let file = $("input#vb-ttl-cdidtfyr").data("universal");
-        let actSound = $("span.act-sound").data("id");
-        let vol = $("input[name=vb-volume-control]").val();
-        let delay = parent.find('input[name=delay]').val();
+    //UPDATE SOUND STYLE
+    const updateChSound = function() {
+        let chapter = $("#vb-save-chPage").data("key");
+        let sound = $("span.act-sound").data("id");
+        let volume = $("input[name=vb-volume-control]").val();
+        let delay = $('div.delay-wrap input[name=delay]').val();
+        $.ajax({
+            method: "POST",
+            url: "/model/chapters.php",
+            data: {book:bookKey,file:bookData,chapter:chapter,sound:sound,volume:volume,delay:delay,action:"update_sound"},
+            dataType: "text",
+            success: function(data){
+                let json = JSON.parse(data);
+                let state = (json.status == "success") ? "success" : "danger";
+                window.flashMessage(json.message,state);
+            }
+        })
+    }
+
+    //UPDATE COLOR STYLE
+    const updateChColor = function(color,chapter) {        
+        $.ajax({
+            method: "POST",
+            url: "/model/chapters.php",
+            data: {book:bookKey,file:bookData,chapter:chapter,color:color,action:"update_color"},
+            dataType: "text",
+            success: function(data){
+                let json = JSON.parse(data);
+                let state = (json.status == "success") ? "success" : "danger";                
+                $('div.colorPick-wrap input.pcr-save').val('Saved');
+                setTimeout(function(){
+                    $('div.colorPick-wrap input.pcr-save').val('Save');                        
+                    $('div.colorPick-wrap input.pcr-save').removeClass('pckrbtn');
+                },1500);          
+                window.flashMessage(json.message,state);
+            }
+        })
+    }
+
+    //UPDATE COLOR BUTTON
+    window.saveCHBG = function(){
+        let chapter = $("#vb-save-chPage").data("key");
         let color;
         let inputColor = $("div.bgContainer>div.custom-radio input#bgColor:checked");
         if(inputColor.length > 0){
             color = $("div.colorPick-wrap input.pcr-result").val();
-        }
+        }           
+        updateChColor(color,chapter);
+    }
+
+    $(document).on("click","#vb-save-chPage",function(){
+        let key = $(this).data("key");
+        let title = $("h1.ch-main-title").text();
+        let subtitle = $("p.ch-subtitle").text();
         if(uploadQuillImage(bookData)){
-            updateChPage(key,actSound,vol,delay,color,title,subtitle);
+            updateChPage(key,title,subtitle);
         }else{
-            updateChPage(key,actSound,vol,delay,color,title,subtitle);
+            updateChPage(key,title,subtitle);
         }        
+    });
+
+    $(document).on('change','input[name=vb-volume-control]',function(){
+        let Sound = $("#vb-prevAudio")[0];
+        let vol = $(this).val();
+        $("span.fileUpload").addClass('d-none');
+        $("span.ch_save_changes").removeClass('d-none');
+        Sound.volume = vol;
+    });
+
+    $(document).on('change','input[name=delay]',function(){
+        $("span.fileUpload").addClass('d-none');
+        $("span.ch_save_changes").removeClass('d-none');
+    });
+
+    $(document).on('click','span.ch_save_changes',function(){
+        updateChSound();
+        $("span.fileUpload").removeClass('d-none');
+        $("span.ch_save_changes").addClass('d-none');
+    });
+
+    //SUBMIT BOOK PART SOUND
+    $(document).on("submit","#ch-submit-audio",function(e){
+        e.preventDefault();
+        window.selfsubmit = $.ajax({  
+            url: "../../model/media.php",  
+            type: "POST",  
+            data: new FormData(this),  
+            contentType: false,  
+            processData:false,  
+            beforeSend: function(){
+                $('button#vb-sound-upload').html("<i class='bx bx-loader-circle bx-spin' ></i> Saving...");
+            },
+            success: function(data){
+                $('button#vb-sound-upload').html("Saved");             
+                if(newAudio(data)){                          
+                    updateChSound();
+                    setTimeout(function(){
+                        $("form#ch-submit-audio").addClass("input-empty");
+                        $("#vbSelectSounds input.rdnly-plchldr").addClass("d-none");
+                        $("form#ch-submit-audio button.btn-primary").addClass("d-none");
+                        $("#vbSelectSounds span.fileUpload").removeClass("d-none");
+                        $("div.delay-wrap").removeClass("d-none");
+                        $('button#vb-sound-upload').html("Submit");  
+                    },1500);
+                }
+            }  
+        }); 
     });
 
     //ENABLE EDITABLE BOOK TITLE
@@ -401,8 +504,19 @@ jQuery(document).ready(function($){
             url: "/model/"+modelname+".php",
             data: {title:newTitle,book:bookKey,file:bookData,chapter:chapter,section:section,action:"update_title"},
             dataType: "text",            
-            success: function(data){
-                window.flashMessage(data,'success');
+            success: function(data){                
+                let json = JSON.parse(data);
+                let type = json.errorType;
+                //console.log(json.mode,type);
+                if(json.mode === "debug_enable" && type === "danger"){
+                    failSafeMessage(type,json.errorMSG,json.data);
+                }else{
+                    if(type === "success"){              
+                        window.flashMessage(json.flashMSG,type);
+                    }else{
+                        failSafeMessage('secondary',json.errorMSG);
+                    }                    
+                }
             }
         });
         return true;

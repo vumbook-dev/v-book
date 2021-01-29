@@ -41,9 +41,11 @@ if(isset($_COOKIE['userdata'])){
                 file_put_contents("{$path}books-list-title.json",$json);
                 file_put_contents("{$path}book-content/{$storage}.json",$contentSection);
                 file_put_contents("{$path}book-chapter/{$storage}.json","[{$bookInformation}]");
-                echo $countBook;
-                //$_POST = array();
-            }
+                echo $countBook;     
+                die();           
+            }else{
+                die();
+            }            
         }
 
         elseif($action == "delete"){
@@ -74,6 +76,9 @@ if(isset($_COOKIE['userdata'])){
                 echo $archive['title'];
                 //print_r($data);
                 //$_POST = array();
+                die();           
+            }else{
+                die();
             }
         }
 
@@ -98,6 +103,9 @@ if(isset($_COOKIE['userdata'])){
                 $newUpdate = json_encode($booklist);
                 file_put_contents($path,$newUpdate);
                 echo "Book Title Updated to \"{$title} {$subtitle}\"";
+                die();           
+            }else{
+                die();
             }
         }elseif($action == "loadBC"){
             if(isset($_POST['file']) && isset($_POST['path']) && isset($_POST['section'])){
@@ -110,8 +118,10 @@ if(isset($_COOKIE['userdata'])){
                 $book = $booklist[$section];
                 $json = array("id" => $book->id, "content" => $book->content);
                 echo json_encode($json);
+                die();           
+            }else{
+                die();
             }
-            
         }
 
         // elseif($action == 'update'){
@@ -138,20 +148,20 @@ if(isset($_COOKIE['userdata'])){
         //$new_count = null;
 
         //foreach ($_FILES['book-cover']['name'] as $key => $value){
-            $og_name = $_FILES['book-cover']['name'][0];
-            $file_name = explode(".", $_FILES['book-cover']['name'][0]);
-            $new_name = md5(rand()) . '.' . $file_name[1];  
-            $new_name = "{$file_name[0]}-".substr($new_name,-11);
-            $new_name = str_replace(" ","-",$new_name);
-            $sourcePath = $_FILES['book-cover']['tmp_name'][0];  
-            $targetPath = "../media/bookcover/{$UFolder}/".$new_name;  
+        $og_name = $_FILES['book-cover']['name'][0];
+        $file_name = explode(".", $_FILES['book-cover']['name'][0]);
+        $new_name = md5(rand()) . '.' . $file_name[1];  
+        $new_name = "{$file_name[0]}-".substr($new_name,-11);
+        $new_name = str_replace(" ","-",$new_name);
+        $sourcePath = $_FILES['book-cover']['tmp_name'][0];  
+        $targetPath = "../media/bookcover/{$UFolder}/".$new_name;  
 
-            if(move_uploaded_file($sourcePath, $targetPath)){
-                $new_count = $og_count;
-                $fileData = array("id" => $new_count, "alias" => $file_name[0], "filename" => $new_name, "book" => $book);
-                $media[] = $fileData;
-                $arrayData[$book]->cover = $new_count;                        
-            }
+        if(move_uploaded_file($sourcePath, $targetPath)){
+            $new_count = $og_count;
+            $fileData = array("id" => $new_count, "alias" => $file_name[0], "filename" => $new_name, "book" => $book);
+            $media[] = $fileData;
+            $arrayData[$book]->cover = $new_count;                        
+        }
         //}
 
         if(is_numeric($new_count)){
@@ -161,6 +171,9 @@ if(isset($_COOKIE['userdata'])){
             file_put_contents("../json/users/bookdata/{$UFolder}/media/user-bookcover.json",$json);
             $result = array("target" => $targetPath, "type" => "cover", "message" => "Cover");
             echo json_encode($result);
+            die();           
+        }else{
+            die();
         }
     }elseif(isset($_FILES['book-background']) && $_FILES['book-background']['name'] != ''){
         $media = file_get_contents("../json/users/bookdata/{$UFolder}/media/user-bookcover.json");
@@ -193,6 +206,9 @@ if(isset($_COOKIE['userdata'])){
             
             $result = array("target" => $targetPath, "type" => "background", "message" => "Background");
             echo json_encode($result);
+            die();           
+        }else{
+            die();
         }
     }
 }

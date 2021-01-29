@@ -13,10 +13,12 @@ function get_string_between($string, $start, $end){
 
 function redirectToPages($path = ""){
     $html = "";
-    $url = $_SERVER['REQUEST_URI'];
-    $path = get_string_between($url,"/","/");
+    $url = rtrim($_SERVER['REQUEST_URI'],"/");
+    $failsafe = (isset($_GET['failsafe_mode'])) ? $_GET['failsafe_mode'] : "";
+    $path = explode('/', $url);
+    $path = (empty($path[1])) ? "" : $path[1];
     //$template = get_string_between($url,"/","=");
-    $book = substr($url, strpos($url, "=") + 1);
+    $book = (empty($failsafe)) ? substr($url, strpos($url, "=") + 1) : str_replace("?failsafe_mode=".$failsafe,"",substr($url, strpos($url, "=") + 1));
     switch($path){
         case "editor"; $state = 1; break;
         case "create"; $state = 2; break;
@@ -29,9 +31,9 @@ function redirectToPages($path = ""){
             //$html .= "history.pushState($state, `V-Book > $path`, `./$path/book={$book}`);";
             //echo "history.replaceState($state, `V-Book > $path`, `./$path/book={$book}`);";
             if($path == "download"){
-                $html .= "sendToPage('$path',vbloader,$book,'download');";
+                $html .= "sendToPage('$path[1]',vbloader,$book,'download');";
             }else{
-                $html .= "sendToPage('$path',vbloader,$book);";
+                $html .= "sendToPage('$path[1]',vbloader,$book);";
             }            
         }elseif(!empty($path)){
             //"history.pushState($state, `V-Book > $path`, `./$path/`);";
@@ -164,5 +166,27 @@ function createUserFiles(){
             }    
             return true;    
         }
+    }
+}
+
+
+//TEST FAIL SAFE FUNCTION
+function failsafe_test(){
+    $msg = "";            
+    if($_GET['failsafe_mode'] === 'enabled' || $_GET['failsafe_mode'] === 'disabled'){
+        require_once "./model/debug_helper.php";
+        $debug = ($_GET['failsafe_mode'] == 'enabled') ? true : false;
+        $json = "Some bunch of dummy text Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce eu orci in magna pulvinar volutpat a et nunc. Sed mattis vitae erat ac pellentesque.";
+        $helper = new Helper($debug);
+        $helper->failSafe($json,197,"content.php");
+        if($debug){
+            $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "data" => $json);
+        }else{
+            $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG);
+        }
+        
+        return json_encode($msg);
+    }else{
+        return $msg;
     }
 }

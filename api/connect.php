@@ -12,11 +12,9 @@ require_once "./models/Connect.php";
 $database = new Database();
 $db = $database->connect();
 
-$connect = new Connect($db);
-$connect->userID = trim($_GET['atr']);
-$connect->token = trim($_GET['token']);
+$connect = new Connect($db,$_GET['atr'],$_GET['token']);
 $UFolder = $connect->uFolder;
-$version = $connect->version;
+$version = $connect::$version;
 
 $path = "/var/www/g-book/".$version;
 
@@ -48,6 +46,11 @@ case "new_user";
 $directory = ""; foreach($allUserFolders as $val){ $directory .= $val." "; } $connect->newDirectory = $directory; $connect->createNewUserDirectory();
 //Create New User Files
 $newFiles = ""; foreach($files as $file){ if(!file_exists($file)) $newFiles .= $file." "; } $connect->newFiles = $newFiles; $connect->createNewUserFiles();
+break;
+//Test Connection
+case "test_connection";
+$connect->testConnection();
+die("PWD: ".$connect->pwd."<br> Log: ".$connect->log);
 break;
 endswitch;
 

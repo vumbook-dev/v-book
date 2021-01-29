@@ -1,37 +1,52 @@
 jQuery(document).ready(function($){
+    //Get Book Template Value
     const bookTemplate = $("h1#vb-full-title").data("template");
-    /*** START CONTENT ***/
-
-    //SHOW LIGHTBOX EDITOR
-    // window.showEditor = function(chapter,key,name,file){
-    //     $.ajax({
-    //         method: "POST",
-    //         url: "../pages/parts/lightbox-editor.php",
-    //         data: {chapter:chapter,key:key,name:name,file:file},
-    //         dataType: "text",
-    //         success: function(data){
-    //             $("#vb-modal-container").html(data);                 
-    //         }
-    //     });
-    // }
 
     //ADD CONTENT IN DATABASE
-    window.addContent = function(id,name,chapter,book,file = "",bookIndex){
+    addContent = function(id,name,chapter,book,bookIndex){
         $.ajax({
             method: "POST",
             url: "../model/content.php",
             data: {id:id,index:bookIndex,name:name,chapter:chapter,title:book,template:bookTemplate,action:"add"},
             dataType: "text",
             success: function(data){
-                let key = data - 1;
-                loadChapterPart(chapter);
-                if(file.length > 0){
-                    showEditor(chapter,key,name,file);                    
-                }
-                //$("body").prepend(data);
+                let json = JSON.parse(data);
+                let type = json.errorType;
+                //console.log(json.mode,type);
+                if(json.mode === "debug_enable" && type === "danger"){
+                    failSafeMessage(type,json.errorMSG,json.data);
+                }else{
+                    if(type === "success"){       
+                        loadChapterPart(chapter);                 
+                        window.flashMessage(name+' Successfully Added','success');
+                    }else{
+                        failSafeMessage('secondary',json.errorMSG);
+                    }                    
+                }                
             }
         })
     }
+
+    //SUBMIT SECTION TITLE
+    $(document).on('submit','.vb-new-section',function(e){
+        e.preventDefault();
+        let selector = $(this).parents("div.card-body");
+        let parent = $(this).parents(".tc-wrap");
+        let input = parent.find("input.content-name");
+        let content = input.val();
+        let id = parent.find("input[type=hidden]").val();
+        let key = parent.find("button.vb-new-content").data("key");
+        let title = parent.find("input[type=hidden]").data("title");
+        let bookIndex = parent.find("input[type=hidden]").data("bookindex");
+        parent.addClass('d-none');
+        selector.find('li.d-none').removeClass('d-none');
+
+        if(content.length != 0){
+            addContent(id,content,key,title,bookIndex);
+        }        
+
+        input.val("");
+    });
 
     //REMOVE LIGHTBOX
     $(document).on("click","#vb-modal-editor button.close, #vb-modal-preview button.close, #vb-modal-section button.close",function(){
@@ -135,13 +150,24 @@ jQuery(document).ready(function($){
             modal.find(".modal-body>p").html(`Deleting ... `+title);
             },
             success: function(data){
-            setTimeout(function(){
-                modal.find(".modal-body>p").html(data);            
-                setTimeout(function(){           
-                loadChapterPart(chapter);                        
-                $("#vb-modal-container>div").remove();          
-                },1000);   
-            },1500);            
+                let json = JSON.parse(data);
+                let type = json.errorType;
+                //console.log(json.mode,type);
+                if(json.mode === "debug_enable" && type === "danger"){
+                    failSafeMessage(type,json.errorMSG,json.data);
+                }else{
+                    if(type === "success"){              
+                        setTimeout(function(){
+                            modal.find(".modal-body>p").html(json.flashMSG);            
+                            setTimeout(function(){           
+                                loadChapterPart(chapter);                        
+                                $("#vb-modal-container>div").remove();          
+                            },1000);   
+                        },1500);
+                    }else{
+                        failSafeMessage('secondary',json.flashMSG);
+                    }                    
+                }                        
             }
         });
     }

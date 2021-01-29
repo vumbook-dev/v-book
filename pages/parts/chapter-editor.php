@@ -97,7 +97,7 @@ if(isset($_POST['chapter']) && isset($_POST['book'])){
                         <div id="imgBackground-preview-wrap"  class="py-3" >
                             <span class="float-right" style="display:none;" id="rm-image-background" aria-hidden="true">×</span>
                             <i class="fa fa-picture-o <?php echo ($bgType == "image") ? "d-none" : ""; ?>" aria-hidden="true"></i>
-                            <img id="prev-img-background" class="clearfix <?php echo ($bgType != "image") ? "d-none" : ""; ?> prev-chapter-bg" src="/media/background/<?php echo $background; ?>" alt="" />   
+                            <img id="prev-img-background" class="clearfix <?php echo ($bgType != "image") ? "d-none" : ""; ?> prev-chapter-bg" src="/media/page-background/<?php echo $UFolder."/".$background; ?>" alt="" />   
                         </div>
                         <div class="px-4" id="vbIMGbackground">
                             <input type="text" src="" placeholder="" class="d-none form-control rdnly-plchldr" readonly>
@@ -120,8 +120,7 @@ if(isset($_POST['chapter']) && isset($_POST['book'])){
                 <div class="form-group text-center sound-option-wrap">
                     <span class="h6"><i class="fa fa-music" aria-hidden="true"></i> Page Sounds</span>                    
                     <div class="vbSoundDemo form-group" id="vbSelectSounds">
-                        <?php if($actSound === null){ $noSound = ""; $aSound = "d-none"; }
-                              else{ $noSound = "d-none"; $aSound = ""; }?>
+                        <?php if($actSound === null){ $noSound = ""; $aSound = "d-none"; }else{ $noSound = "d-none"; $aSound = ""; }?>
                         <h4 class="text-center p-3 <?php echo $noSound; ?>" style="font-weight:200;">No Media Sound!</h4>
                         <div id="vbMediaPlayerWrap" class="<?php echo $aSound; ?> py-3 px-2">
                             <div id="vbMyAudioWrap"><span id="vb-my-audio" class="slct-sounds-list act-sound h5" data-id="<?php echo $SoundID; ?>"><?php echo $alias; ?> <i class="fa fa-play" aria-hidden="true" data-path="<?php echo $UFolder; ?>" data-dir="1" data-file="<?php echo $actSound->filename; ?>"></i></span></div>  
@@ -130,12 +129,13 @@ if(isset($_POST['chapter']) && isset($_POST['book'])){
                         <div class="py-3 px-5 delay-wrap <?php echo $aSound; ?>"><span class="p-2 mx-0 h5">Sound Delay : </span><input type="number" name="delay" value="<?php echo $delay; ?>" min="1" max="100" class="form-control py-0"></div>
                         <div class="input-group">
                         <input type="text" class="form-control d-none rdnly-plchldr" readonly>
-                        <form class="input-empty" id="submit-audio" method="post" action="">
+                        <form class="input-empty" id="ch-submit-audio" method="post" action="">
                         <div class="input-group-btn" style="margin-left:-2px;">
                             <span class="fileUpload btn btn-info">
                                 <span class="upl" id="upload">Upload</span>
                                 <input type="file" accept="audio/*" class="upload up" id="up" name="audio[]"/>
                             </span><!-- btn-orange -->
+                            <span class="ch_save_changes btn btn-primary d-none" style="width:100%;">Save Changes</span>
                         </div><!-- btn -->
                         <button class="btn btn-primary d-none">Submit</button>
                         </form>
@@ -194,23 +194,20 @@ jQuery(document).ready(function($){
 
             // Input / output Options
             interaction: {
-                hex: true,
-                rgba: true,
+                hex: false,
+                rgba: false,
                 input: true,
-                //save: true
+                save: false
             },
 
         }
     });
 
     pickr.on('save', (color, instance) => {
-        //console.log('save', color, instance);
-        let value = $("div.colorPick-wrap input.pcr-result").val();
-        let key = $("#vb-full-title").data("book");
-        saveBG(key,"color",value);
+        window.saveCHBG();
     }).on('change', (color, instance) => {
-        //console.log('change', color, instance);
         let value = $("div.colorPick-wrap input.pcr-result").val();
+        $('div.colorPick-wrap input.pcr-save').addClass('pckrbtn');
         $("div#style-preview").css("background",value);
     });
 
@@ -219,7 +216,7 @@ jQuery(document).ready(function($){
             let bgColor = $("div.colorPick-wrap input.pcr-result").val();
             $("div#style-preview").css("background",bgColor);
         <?php }else{ ?>
-            $("div#style-preview").css("background","url('../../media/background/<?php echo $background; ?>')");
+            $("div#style-preview").css("background","url('/media/page-background/<?php echo $UFolder."/".$background; ?>')");
         <?php } ?>
     },500);
         

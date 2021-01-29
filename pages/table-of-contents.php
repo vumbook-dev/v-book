@@ -32,8 +32,6 @@ if(isset($_POST['data'])){
         $BBGkey = null;
     }
 ?>
-<div id="vbUpdateMessage">
-</div>
 <div class="col-sm-12 my-5 pt-5">    
     <label for="Book Title" class="d-none text-right editable-label-title"><small>Put text inside <strong class="h4">{...}</strong> for book subtitle</small></label>
     <h1 id="vb-full-title" data-template="<?php echo $btmp; ?>" data-cover="<?php echo $book[$key]->cover; ?>" data-book="<?php echo $key; ?>" data-title="<?php echo $book[$key]->title; ?>" class="text-monospace text-center p-1 mb-5"><?php echo $book[$key]->title ?> <span class="editable-title"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></span><small class="d-block h6"><?php echo $book[$key]->subtitle ?></small></h1>  
@@ -111,7 +109,6 @@ if(isset($_POST['data'])){
 <div id="vb-modal-container"></div>
 <script type="text/javascript" src="/js/<?php echo $btmp; ?>-editor.js"></script>
 <script type="text/javascript" src="/js/chapters.js"></script>
-<script type="text/javascript" src="/js/section.js"></script>
 <script type="text/javascript" src="/js/content.js"></script>
 <script type="text/javascript">
 jQuery(document).ready(function($){

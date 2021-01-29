@@ -1,6 +1,7 @@
 <?php
 //DEFINE APP ROOT LINK
 require_once "../config.php";
+require_once "./debug_helper.php";
 
 if(isset($_COOKIE['userdata'])){
     $UID = $_COOKIE['userdata']['id'];
@@ -11,24 +12,31 @@ if(isset($_COOKIE['userdata'])){
     function createBackup($filename,$bookData,$folder){
         $list = file_get_contents("../json/users/bookdata/{$folder}/book-content/backup/backup-data.json");
         $backup = json_decode($list,true);
-        $time = date("Y-m-d H:i:s");
-        $integerTime = str_replace(" ","-",date("Y-m-d H-i-s"));        
-        if((!empty($backup[$filename])) ? $backup[$filename]['id'] === $filename : false){            
-            $seconds = strtotime(date("Y-m-d H:i:s")) - strtotime($backup[$filename]['time']);
+        $time = date("F j, Y, g:i a");
+        $integerTime = str_replace(" ","-",date("Y-m-d H-i-s"));
+        $skey = 0;
+        foreach($backup as $f => $val){
+            if(!empty($backup[$f][$filename])){
+                $skey = ($val[$filename]['id'] === $filename) ? $f : 0;
+            }            
+        }
+        if((!empty($backup[$skey][$filename])) ? $backup[$skey][$filename]['id'] === $filename : false){            
+            $seconds = strtotime(date("Y-m-d H:i:s")) - strtotime($backup[$skey][$filename]['time']);
             $days    = floor($seconds / 86400);
             $hours   = floor(($seconds - ($days * 86400)) / 3600);
             $minutes = floor(($seconds - ($days * 86400) - ($hours * 3600))/60);
-            if($minutes < 30){
-                $backup[$filename]['time'] = $time;
+            $timePassed = ($days > 0) ? ($days*24+$hours)*60+$minutes : $hours*60+$minutes;            
+            if($timePassed < 30){
+                return false;
+            }else{                  
+                $backup[$skey][$filename]['time'] = $time;
                 $newBackup = json_encode($backup);
                 file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/backup-data.json",$newBackup);
                 file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/{$integerTime}backup-{$filename}.json",$bookData);
-                return true;
-            }else{
-                return false;                
+                return true;              
             }
         }else{
-            $backup = array( $filename => ["id" => $filename,"time" => $time] );
+            $backup[] = array( $filename => ["id" => $filename,"time" => $time] );
             $newBackup = json_encode($backup);
             file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/backup-data.json",$newBackup);
             file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/{$integerTime}backup-{$filename}.json",$bookData);
@@ -69,6 +77,7 @@ if(isset($_COOKIE['userdata'])){
             $newUpload = json_encode($fileData);
             file_put_contents("../json/users/bookdata/{$UFolder}/media/user-sound.json",$json);
             echo $newUpload;
+            die();
         }
 
     }elseif(isset($_POST['action']) && isset($_POST['file']) && isset($_POST['key'])){
@@ -89,11 +98,13 @@ if(isset($_COOKIE['userdata'])){
                 echo '<li class="slct-sounds-list '.$activeSound.'" data-id="'.$value->id.'">'.$value->alias.' '.$icon;
             }
             echo '</ul>';
+            die();
         }else{
             echo '<span class="my-4 d-block">No Media Available!</span>';
+            die();
         }
     }elseif(isset($_POST['section']) && $_FILES['background']['name'] != "" && isset($_POST['book']) && isset($_POST['file'])){
-        //SAVE SECTION BACKGROUND IMAGE
+        //SAVE PART BACKGROUND IMAGE
         $media = file_get_contents("../json/users/bookdata/{$UFolder}/media/user-background.json");
         $media = json_decode($media);
         $og_count = count($media);
@@ -129,23 +140,17 @@ if(isset($_COOKIE['userdata'])){
             file_put_contents("../json/users/bookdata/{$UFolder}/media/user-background.json",$json);
             $section[$k]->background = $new_name;
             $section[$k]->bgType = "image";
-                
-            // $bookData = file_get_contents("../json/books-list-title.json");
-            // $booklist = json_decode($bookData); 
-            // $book = $booklist[$bkey];             
-            // $chapters = $book->chapter;
-            // $chInfo = json_decode($chapters[$k]);
-            // $newChapter = array("name" => $chInfo->name, "bgType" => "image", "background" => $new_name);
-            // $newChapter = json_encode($newChapter);
-            // $chapters[$k] = $newChapter;
-            // $chapters = array_values($chapters);
-            // $booklist[$bkey]->chapter = $chapters;
-            // $newUpdate = json_encode($booklist);
-            // file_put_contents("../json/books-list-title.json",$newUpdate); 
-            $newUpdate = json_encode($section);     
-            file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$newUpdate);  
-            echo $new_name;
-
+            $newUpdate = json_encode($section);            
+            $helper = new Helper(FAILSAFE_DEBUG_MODE);
+            $helper->failSafe($newUpdate,155,"media.php");            
+            if($helper->result){
+                $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "data" => $newUpdate);
+            }else{
+                file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$newUpdate);
+                $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "flashMSG" => "Background Image Successfully Saved.");                  
+            }       
+            echo json_encode($msg);         
+            die();
         }
     }elseif(isset($_POST['chapter']) && $_FILES['background']['name'] != "" && isset($_POST['book']) && isset($_POST['file'])){
         //SAVE CHAPTER BACKGROUND IMAGE
@@ -167,7 +172,7 @@ if(isset($_COOKIE['userdata'])){
             $new_name = str_replace("(","",$new_name);
             $new_name = str_replace(")","",$new_name);
             $sourcePath = $_FILES['background']['tmp_name'][$key];  
-            $targetPath = URLROOT."media/page-background/{$UFolder}/".$new_name;  
+            $targetPath = "../media/page-background/{$UFolder}/".$new_name;  
 
             if(move_uploaded_file($sourcePath, $targetPath)){
                 $new_count = $og_count + $key;
@@ -178,18 +183,22 @@ if(isset($_COOKIE['userdata'])){
 
         if(is_numeric($new_count)){
             $json = json_encode($media);
-            file_put_contents("../json/users/bookdata/{$UFolder}/media/user-background.json",$json);
-            // $section[$k]->background = $new_name;
-            // $section[$k]->bgType = "image";
-                
+            file_put_contents("../json/users/bookdata/{$UFolder}/media/user-background.json",$json);                
             $chapterData = file_get_contents("../json/users/bookdata/{$UFolder}/book-chapter/{$file}.json");
             $chapters = json_decode($chapterData,true);
-            $newChapter = array("name" => $chapters[$k]['name'], "bgType" => "image", "background" => $new_name);
-            $chapters[$k] = $newChapter;
-            $chapters = array_values($chapters);
-            $newUpdate = json_encode($chapters);
-            file_put_contents("../json/users/bookdata/{$UFolder}/book-chapter/{$file}.json",$newUpdate);              
-            echo $new_name;
+            $chapters[$k]['bgType'] = "image";
+            $chapters[$k]['background'] = $new_name;
+            $newUpdate = json_encode($chapters);             
+            $helper = new Helper(FAILSAFE_DEBUG_MODE);
+            $helper->failSafe($newUpdate,155,"media.php");            
+            if($helper->result){
+                $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "data" => $newUpdate);
+            }else{
+                file_put_contents("../json/users/bookdata/{$UFolder}/book-chapter/{$file}.json",$newUpdate);
+                $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "flashMSG" => "Background Image Successfully Saved.");                  
+            }       
+            echo json_encode($msg);
+            die();
         }
     }elseif(isset($_FILES['image']) && isset($_POST['dir'])){
         $dir = $_POST['dir'];
@@ -225,5 +234,6 @@ if(isset($_COOKIE['userdata'])){
         //echo $_FILES['image']['name'][0];
         $arry = json_encode($data);
         echo $arry;    
+        die();
     }
 }

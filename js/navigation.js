@@ -72,4 +72,11 @@ jQuery(document).ready(function($){
         },2500);
     }
 
+    //FAIL SAFE MESSAGE
+    window.failSafeMessage = function(type,message,data = ""){
+        let icon = "fa-exclamation-circle";
+        let addData = (data !== "") ? '<p class="h5 mt-2 mb-0">Broken Data:</p><br>'+data : "";
+        $("div#vbUpdateMessage").prepend('<div class="message-status alert alert-'+type+' failsafe" role="alert"><p class="h5 mt-0 mb-0"><i class="fa '+icon+'" aria-hidden="true"></i> '+message+'</p>'+addData+'</div>');
+    }
+
 });
