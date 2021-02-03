@@ -2,7 +2,7 @@
     <h1 class="text-monospace text-center p-5 mb-0 mt-5"> G-BOOK EDITOR <small class="d-block h6">Here you can create your own gamified books: children's books, novels, adventure books, manuals, guides and much more. Once the book is finished you can publish and sell it on vumbook.com</small></h1>
 
 
-<img src="https://editor.vumbook.com/pages/Images/editor_1.gif" alt="photo">
+<img src="https://editor.vumbook.com/media/web/images/editor_1.gif" alt="photo">
 
 
     <h1 class="text-monospace text-center p-5 mb-0 mt-5"> How to use the editor? <small class="d-block h6">The editor allows you to create books that have a combination of text, images, animations, videos and sound which makes it unique and you can take advantage of this.

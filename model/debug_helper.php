@@ -18,7 +18,7 @@ class Helper {
             //Perform Checking Error
             if(strlen($data) < 240){
                 $this->result = true;
-                $this->errorMSG = "Fail Safe Mode is Enabled: <br> Error found in /model/{$phpfilename} on line {$line}!";
+                $this->errorMSG = "Fail Safe Debug Mode is Enabled: <br> Error found in /model/{$phpfilename} on line {$line}!";
                 $this->errorType = "danger";
             }else{
                 $this->result = false;

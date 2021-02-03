@@ -176,7 +176,6 @@ $(document).on("click","ul.vb-section-list-nav li",function(){
         $("#book-navigation-container").addClass("d-none");
         $("div#book-container").html(vbloader);
         $("div#heading"+chapter+" button.collapsed").click();
-               
         setTimeout(function(){
             loadBook(book,chapter,section,1);
         },700);

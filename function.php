@@ -17,6 +17,7 @@ function redirectToPages($path = ""){
     $failsafe = (isset($_GET['failsafe_mode'])) ? $_GET['failsafe_mode'] : "";
     $path = explode('/', $url);
     $path = (empty($path[1])) ? "" : $path[1];
+    //$book = substr($url, strpos($url, "=") + 1);
     //$template = get_string_between($url,"/","=");
     $book = (empty($failsafe)) ? substr($url, strpos($url, "=") + 1) : str_replace("?failsafe_mode=".$failsafe,"",substr($url, strpos($url, "=") + 1));
     switch($path){
@@ -31,20 +32,20 @@ function redirectToPages($path = ""){
             //$html .= "history.pushState($state, `V-Book > $path`, `./$path/book={$book}`);";
             //echo "history.replaceState($state, `V-Book > $path`, `./$path/book={$book}`);";
             if($path == "download"){
-                $html .= "sendToPage('$path[1]',vbloader,$book,'download');";
+                $html .= "sendToPage('$path',vbloader,$book,'download');";
             }else{
-                $html .= "sendToPage('$path[1]',vbloader,$book);";
+                $html .= "sendToPage('$path',vbloader,$book);";
             }            
         }elseif(!empty($path)){
             //"history.pushState($state, `V-Book > $path`, `./$path/`);";
-            //echo "history.replaceState($state, `V-Book > $path`, `./$path/`);";                     
+            //echo "history.replaceState($state, `V-Book > $path`, `./$path/`);";        
             // if(createUserFolders()){
             //     createUserFiles();
             //     $html .= "loadPage('create',vbloader);";
             // }else{
                 $html .= "loadPage('create',vbloader);";
-            //}  
-        }        
+            //} 
+        }
     }else{
         $html .= 'usernotLoggedIn';
     }    
