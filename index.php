@@ -18,19 +18,26 @@
               <a class="nav-link btn btn-success text-white d-inline d-none" id="2" data-nav="create" href="/create/">Create G-Books</a>
             </li>
             <?php endif; ?>
-            <ul class="navbar_user">
-        <li class="account_dropdown"><span class="pr-2"><a href="<?php echo VUMBOOK; ?>user/account"><i class="fa fa-user pr-1" aria-hidden="true"></i> <?php if(isset($_COOKIE['userdata']['name'])) echo $_COOKIE['userdata']['name']; ?></a></span><i class="fa fa-angle-down"></i></li>
-        <li class="account">
-            <ul class="account_selection">
-              <?php if(!isset($_COOKIE['userdata'])) : ?>
-              <li><a href="<?php echo VUMBOOK; ?>user/login"><i class="fa fa-sign-in" aria-hidden="true"></i>Login</a></li>
-              <li><a href="<?php echo VUMBOOK; ?>user/signup"><i class="fa fa-user-plus" aria-hidden="true"></i>Sign Up</a></li>
-              <?php else : ?>
-                <li><a href="<?php echo VUMBOOK; ?>user/account">My Account</a></li>
-              <li><a href="<?php echo VUMBOOK; ?>user/logout"><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</a></li>
-              <?php endif; ?>
+            <ul class="navbar_user <?php echo (!isset($_COOKIE['userdata'])) ? "d-none" : ""; ?>">
+              <li class="account_dropdown"><span class="pr-2"><a href="<?php echo VUMBOOK; ?>user/account"><i class="fa fa-user pr-1" aria-hidden="true"></i> <?php if(isset($_COOKIE['userdata']['name'])) echo $_COOKIE['userdata']['name']; ?></a></span><i class="fa fa-angle-down"></i></li>
+              <li class="account">
+                  <ul class="account_selection">
+                    <?php if(!isset($_COOKIE['userdata'])) : ?>
+                    <li><a href="<?php echo VUMBOOK; ?>user/login"><i class="fa fa-sign-in" aria-hidden="true"></i> Login</a></li>
+                    <li><a href="<?php echo VUMBOOK; ?>user/signup"><i class="fa fa-user-plus" aria-hidden="true"></i> Sign Up</a></li>
+                    <?php else : ?>
+                      <li><a href="<?php echo VUMBOOK; ?>user/account">My Account</a></li>
+                    <li><a href="<?php echo VUMBOOK; ?>user/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a></li>
+                    <?php endif; ?>
+                  </ul>
+              </li>
             </ul>
-        </li>
+        <?php if(!isset($_COOKIE['userdata'])) : ?>
+        <li class="min-screen"><a href="<?php echo VUMBOOK; ?>user/login"><i class="fa fa-sign-in" aria-hidden="true"></i> Login</a></li>
+        <li class="min-screen"><a href="<?php echo VUMBOOK; ?>user/signup"><i class="fa fa-user-plus" aria-hidden="true"></i> Sign Up</a></li>
+        <?php else : ?>
+          <li class="min-screen"><a href="<?php echo VUMBOOK; ?>user/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a></li>
+        <?php endif; ?>
         </ul>
         </div>
       </nav>

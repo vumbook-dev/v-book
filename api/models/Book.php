@@ -9,6 +9,7 @@
     private $_userVerified;
 
     // Book Content Holder
+    public $bookID;
     public $book_content;
     public $book_info;
     public $book_chapter;
@@ -33,7 +34,7 @@
         $query .= $this->_purchasedTable . ' p INNER JOIN ' . $this->_userTable . ' u ON u.id = p.author_id WHERE p.book_id = :bookID AND p.user_id = :userID';
         // Prepare statement
         $stmt = $this->_conn->prepare($query);
-        $stmt->bindParam(':bookID', $this->id);
+        $stmt->bindParam(':bookID', $this->bookID);
         $stmt->bindParam(':userID', $this->userID);
         // Execute query
         $stmt->execute();
@@ -44,7 +45,7 @@
           $this->attempt = "success";
 
         //Fetch Book Data
-        if($this->author ===  $row['author'] && $this->id === $row['book']){
+        if($this->author ===  $row['author'] && $this->bookID === $row['book']){
             //Load Necessary Files
             $path = "{$this->path}{$this->pathname}";
             $booklist = json_decode(file_get_contents($path."/books-list-title.json"),true);

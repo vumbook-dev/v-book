@@ -1063,10 +1063,6 @@ div#style-bookview {
   height: 100%;
 }
 
-#vbPageNav {
-  justify-content: space-between;
-}
-
 h1.vb-book-main-title {
   vertical-align: middle;
   display: table-cell;
@@ -1108,103 +1104,10 @@ div.lordicon-loader lottie-player {
   margin: 0 auto 2rem;
 }
 
-/*** BOOK PAGINATION ***/
-a.bookprev,
-.bookprev .label,
-.bookprev .arrow {
-  float: left;
-  color: #000;
-  font-size: 1.25em;
-}
-
-a.booknext,
-.booknext .label,
-.booknext .arrow {
-  float: right;
-  color: #000;
-  font-size: 1.25em;
-}
-
-a.booknext,
-a.bookprev,
-#pagination-container .arrow {
-  display: inline-block;
-  height: 3.5em;
-  line-height: 1em;
-  padding: 0 0.5rem 0 1rem;
-  text-decoration: none;
-  box-sizing: content-box;
-  opacity: 0.8;
-}
-
-a.booknext {
-  box-shadow: inset -20px 0 50px -20px rgba(0, 0, 0, 0.4);
-}
-
-a.bookprev {
-  box-shadow: inset 20px 0 50px -20px rgba(0, 0, 0, 0.4);
-}
-
-a.booknext:hover,
-a.bookprev:hover {
-  opacity: 1;
-}
-
-.bookprev .arrow,
-.booknext .arrow {
-  padding: 0 0.67em;
-  margin-top: -14px;
-  font-size: 3rem;
-}
-
-.bookprev .arrow > i,
-.booknext .arrow > i {
-  position: absolute;
-  bottom: 21%;
-  opacity: 0.4;
-}
-
-.bookprev .arrow > i {
-  left: 22px;
-}
-
-.bookprev .tip {
-  float: left;
-  border-right: 0.33em solid #000;
-}
-
-.booknext .tip {
-  float: right;
-  border-left: 0.33em solid #000;
-}
-
-.bookprev .tip,
-.booknext .tip {
-  display: inline-block;
-  border-bottom: 0.17em solid transparent;
-  border-top: 0.17em solid transparent;
-}
-
 #vbPageNav > li:last-child > span {
   color: #000;
   font-size: 1.25em;
   font-weight: 600;
-}
-
-#pagination-container .arrow .tip {
-  display: inline-block;
-  border-bottom: 0.17em solid transparent;
-  border-top: 0.17em solid transparent;
-}
-
-.bookprev .arrow .shaft,
-.booknext .arrow .shaft {
-  background-color: #000;
-  border-bottom: 3px solid #fff;
-  border-top: 3px solid #fff;
-  float: left;
-  height: 0.33em;
-  width: 0.66em;
 }
 
 .tbcLink {

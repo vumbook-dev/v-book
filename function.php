@@ -17,8 +17,6 @@ function redirectToPages($path = ""){
     $failsafe = (isset($_GET['failsafe_mode'])) ? $_GET['failsafe_mode'] : "";
     $path = explode('/', $url);
     $path = (empty($path[1])) ? "" : $path[1];
-    //$book = substr($url, strpos($url, "=") + 1);
-    //$template = get_string_between($url,"/","=");
     $book = (empty($failsafe)) ? substr($url, strpos($url, "=") + 1) : str_replace("?failsafe_mode=".$failsafe,"",substr($url, strpos($url, "=") + 1));
     switch($path){
         case "editor"; $state = 1; break;
@@ -29,26 +27,17 @@ function redirectToPages($path = ""){
     }
     if(!empty($_COOKIE['userdata'])){
         if((!empty($book) && $state === 3) || (!empty($book) && $state === 4)){
-            //$html .= "history.pushState($state, `V-Book > $path`, `./$path/book={$book}`);";
-            //echo "history.replaceState($state, `V-Book > $path`, `./$path/book={$book}`);";
             if($path == "download"){
                 $html .= "sendToPage('$path',vbloader,$book,'download');";
             }else{
                 $html .= "sendToPage('$path',vbloader,$book);";
-            }            
+            }
         }elseif(!empty($path)){
-            //"history.pushState($state, `V-Book > $path`, `./$path/`);";
-            //echo "history.replaceState($state, `V-Book > $path`, `./$path/`);";        
-            // if(createUserFolders()){
-            //     createUserFiles();
-            //     $html .= "loadPage('create',vbloader);";
-            // }else{
                 $html .= "loadPage('create',vbloader);";
-            //} 
         }
     }else{
         $html .= 'usernotLoggedIn';
-    }    
+    }
 
     return $html;
 }

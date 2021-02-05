@@ -33,4 +33,4 @@
 </div>
 
 
-<script type="text/javascript" src="../js/books.js"></script>
+<script type="text/javascript" src="../js-<?php echo "1.0.0"; ?>/books.js"></script>

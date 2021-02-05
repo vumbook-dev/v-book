@@ -107,9 +107,9 @@ if(isset($_POST['data'])){
 <input id="vb-ttl-cdidtfyr" data-bookid="<?php echo $book[$key]->id; ?>" data-universal="<?php echo $file; ?>" type="hidden">
 
 <div id="vb-modal-container"></div>
-<script type="text/javascript" src="/js/<?php echo $btmp; ?>-editor.js"></script>
-<script type="text/javascript" src="/js/chapters.js"></script>
-<script type="text/javascript" src="/js/content.js"></script>
+<script type="text/javascript" src="/js-<?php echo VERSION; ?>/<?php echo $btmp; ?>-editor.js"></script>
+<script type="text/javascript" src="/js-<?php echo VERSION; ?>/chapters.js"></script>
+<script type="text/javascript" src="/js-<?php echo VERSION; ?>/content.js"></script>
 <script type="text/javascript">
 jQuery(document).ready(function($){
     let button = '<a class="btn btn-primary d-inline ml-1 nav-link text-white" data-nav="create" href="/read/book=<?php echo $key + 1; ?>">Preview your book</a>';

@@ -17,7 +17,8 @@ if(isset($_COOKIE['userdata'])){
         foreach($contentlist as $key => $value){
             $cond = ($template == 'book') ? count($value->content) : strlen($value->content);
             if($value->chapter == $chapter){
-                $hide = ($value->id == 01) ? "d-none" : "d-flex";
+                //$hide = ($value->id == 01) ? "d-none" : "d-flex";
+                $hide = "d-flex";
                 if($cond > 0){                    
                     //$viewbtn = '<button class="d-inline-block btn btn-secondary edit-vb-style px-2 py-1" data-key="'.$key.'" data-chapter="'.$chapter.'">Edit Style</button>';
                     $viewbtn = '<span class="vb-view-content" data-title="'.$value->cpart.'" data-chapter="'.$chapter.'" data-key="'.$key.'"><i class="fa fa-eye text-primary" aria-hidden="true"></i></span>';

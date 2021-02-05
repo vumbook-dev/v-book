@@ -84,8 +84,9 @@ if(isset($_COOKIE['userdata'])){
                                             foreach($content[$key]->content as $xy => $val){
                                                 $n = json_decode($val);
                                                 $active = ($xy == 0) ? "btmp-active" : "";
+                                                $textIndex = $xy+1;
                                                 $np = $n->id;
-                                                echo "<li class='btmp-pages {$active}' data-pageid='{$np}' data-key='{$xy}'>$np</li>";
+                                                echo "<li class='btmp-pages {$active}' data-pageid='{$np}' data-key='{$xy}'>{$textIndex}</li>";
                                             }
                                         ?>
                                         <li id="btmp-add-page-btn" data-lastKey="<?php echo $np; ?>"><i class='bx bx-plus p-relative' style="left:3px"></i></li>

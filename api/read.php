@@ -13,7 +13,7 @@ $db = $database->connect();
 
 // Instantiate blog post object
 $book = new Book($db);
-$book->id = trim($_GET['bkey']);
+$book->bookID = trim($_GET['bkey']);
 $book->token = trim($_GET['token']);
 $book->author = trim($_GET['atr']);
 $book->userID = trim($_GET['user']);
@@ -23,7 +23,7 @@ $bookInfo = $book->getSingleBook();
 $singleBook = [];
 $data = [
 "index" => "",
-"purchase_id" => $book->id,
+"purchase_id" => $book->bookID,
 "author_id" => $book->author,
 "pathname" => $book->pathname,
 "book_info" => $book->book_info,

@@ -208,6 +208,8 @@ jQuery(document).ready(function($){
     const UpdateContentArray = function(chapter,key,action){
         let allList = $('li.btmp-pages');
         let id = $('ul.btmp-pagelist>li.btmp-pages:nth-child('+allList.length+')').data('pageid');
+        console.log(key);
+        //console.log(id);
         let text = (action == 'btmp_update') ? $('div#style-preview>div.ql-editor').html() : "";
         $.ajax({
             method: "POST",
@@ -223,36 +225,53 @@ jQuery(document).ready(function($){
                 }else{
                     if(type === "success"){
                         let data = json.newID;
-                        let key = Number(data)-1;
-                        console.log(json.mode,type);
-                        if(action == 'btmp_add'){                                                
+                        let key = Number(data)-1;  
+                        let x = 0;
+                        //console.log(json.mode,type);                     
+                        if(action == 'btmp_add'){                                
                             $("ul.btmp-pagelist").append('<li class="btmp-pages" data-pageid="'+data+'" data-key="'+key+'">'+data+'</li>');
                             $("li#btmp-add-page-btn").appendTo("ul.btmp-pagelist");
                             $("div.btmp-page>div.ql-snow").append('<div class="ql-editor btmp-content btmpPage'+key+'" data-key="'+key+'"></div>');    
+                            let newallList = $(document).find('li.btmp-pages');
+                            for(i=0;i<newallList.length;i++){
+                                $(newallList[i]).attr('data-key',x);
+                                $(newallList[i]).attr('data-pageid',x);
+                                $(newallList[i]).text(x+1);
+                                x++;
+                            }                            
                             if(!$("ul.btmp-pagelist>li").hasClass('btmp-active')){
-                                $('div.bmtp-startpage').addClass('d-none');   
-                                $('div#bookTemplateEditorWrap, div#btmp-action-control-wrap, div#btmpZoomControl').removeClass('d-none');  
+                                $('div#bookTemplateEditorWrap, div#btmp-action-control-wrap, div#btmpZoomControl, div.bmtp-startpage').toggleClass('d-none');  
                                 $('ul.btmp-pagelist>li.btmp-pages:first-child').addClass('btmp-active');
                             }
-                        }else if(action == 'btmp_delete'){
-                            $('ul.btmp-pagelist>li[data-key='+key+']').remove();
-                            $('ul.btmp-pagelist>li').removeClass('btmp-active');
-                            $('ul.btmp-pagelist>li.btmp-pages:first-child').addClass('btmp-active');
-                            let dk = $('li.btmp-active');                    
-                            $('div.btmp-content[data-key='+key+']').remove();
-                            $('div.btmp-page div.btmp-content:first-child').removeClass('d-none');
-                            let newallList = $('li.btmp-pages');
-                            //console.log(newallList.length);
-                            for(i=0;i<newallList.length;i++){
-                                $(newallList[i]).attr('data-key',i);
-                            }
-                            $('span.btmp-ed-action').attr('data-key',dk.data('key'));
-                            $('span.btmp-ed-action>span').text(dk.text());
-                            //allList.forEach(element => console.log(element));
-                            if(!$("ul.btmp-pagelist>li").hasClass('btmp-active')){
-                                $('div.bmtp-startpage').removeClass('d-none');   
-                                $('div#bookTemplateEditorWrap, div#btmp-action-control-wrap, div#btmpZoomControl').addClass('d-none');  
-                            }
+                        }else if(action == 'btmp_delete'){                                                        
+                            if($(document).find('li.btmp-pages').length === 1) {
+                                $("div.bmtp-startpage, div#bookTemplateEditorWrap, div#btmp-action-control-wrap, div#btmpZoomControl").toggleClass('d-none');
+                                $('ul.btmp-pagelist>li:first-child').remove();
+                                $('li#btmp-add-page-btn').data('lastkey',0);
+                                x = 0;
+                            }else{                                
+                                $('ul.btmp-pagelist>li[data-key='+key+']').remove();                                
+                                $('ul.btmp-pagelist>li').removeClass('btmp-active');
+                                    $('ul.btmp-pagelist>li.btmp-pages:first-child').addClass('btmp-active');
+                                    let dk = $('li.btmp-active');                    
+                                    $('div.btmp-content[data-key='+key+']').remove();
+                                    $('div.btmp-page div.btmp-content:first-child').removeClass('d-none');                                
+                                    $('span.btmp-ed-action').attr('data-key',dk.data('key'));
+                                    $('span.btmp-ed-action>span').text(dk.text());
+                                    if(!$("ul.btmp-pagelist>li").hasClass('btmp-active')){
+                                        $('div.bmtp-startpage').removeClass('d-none');   
+                                        $('div#bookTemplateEditorWrap, div#btmp-action-control-wrap, div#btmpZoomControl').addClass('d-none');  
+                                    }
+                                setTimeout(function(){
+                                    let newallList = $(document).find('li.btmp-pages');
+                                    for(i=0;i<newallList.length;i++){
+                                        $(newallList[x]).attr('data-key',x);
+                                        $(newallList[x]).attr('data-pageid',x);
+                                        $(newallList[x]).text(x+1);
+                                        x++;                                    
+                                    }
+                                },200);
+                            }                            
                         }else if(action == 'btmp_update'){
                             setTimeout(function(){
                                 $('span.btmp-save-wrap').html("<i class='bx bx bx-save' ></i> Saved");
@@ -307,7 +326,7 @@ jQuery(document).ready(function($){
 
     //DELETE CONTENT
     $(document).on('click','span.btn-danger.btmp-ed-action',function(){
-        let key = $('li.btmp-active').data('key');
+        let key = $(document).find('ul.btmp-pagelist > li.btmp-active').data('key');
         let chapter = $("#vb-save-styles").data('key');
         UpdateContentArray(chapter,key,'btmp_delete');
     });
@@ -522,7 +541,7 @@ jQuery(document).ready(function($){
     }
 
     //Cloase Modal
-    $(document).on("click","#vb-modal-container .close, #vb-modal-container .btn-secondary",function(){
+    $(document).on("click","#vb-modal-container .close, #vb-modal-container > div.modal-footer .btn-secondary",function(){
         $("#vb-modal-container>div").remove();
     });
 

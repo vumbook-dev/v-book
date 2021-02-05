@@ -22,7 +22,8 @@ class Connect extends User{
 	public $bookdata;
 	public $bookFileName;	
 	public static $version = "alpha-1.0.0";
-	private $mediaFolder;
+	private static $_versionfilepath = "/var/www/g-book/alpha-1.0.0";
+	private $_mediaFolder;
 	public $newDirectory;
 	public $newFiles;
 
@@ -48,17 +49,17 @@ class Connect extends User{
 	}
 
 	private function updateBookDirectoryPermission(){
-		$this->_terminalCommand = "find /var/www/g-book/".$this->version."/json/users/bookdata/".$this->uFolder."/. -type d -exec chmod 0777 {} \;";
+		$this->_terminalCommand = "find ".$this->_versionfilepath."/json/users/bookdata/".$this->uFolder."/. -type d -exec chmod 0777 {} \;";
 		$this->performExecCommand();
 	}
 
 	private function updateBookFilePermission(){
-		$this->_terminalCommand = "find /var/www/g-book/".$this->version."/json/users/bookdata/".$this->uFolder."/. -type f -exec chmod 0666 {} \;";
+		$this->_terminalCommand = "find ".$this->_versionfilepath."/json/users/bookdata/".$this->uFolder."/. -type f -exec chmod 0666 {} \;";
 		$this->performExecCommand();
 	}
 
 	private function updateMediaDirectoryPermission(){
-		$this->mediaFolder = "/var/www/g-book/".$this->version."/media/";
+		$this->mediaFolder = "".$this->_versionfilepath."/media/";
 		$this->_terminalCommand = "find ".$this->mediaFolder."book-background/".$this->uFolder."/. -type d -exec chmod 0777 {} \;";
 		$this->_terminalCommand .= " find ".$this->mediaFolder."page-background/".$this->uFolder."/. -type d -exec chmod 0777 {} \;";
 		$this->_terminalCommand .= " find ".$this->mediaFolder."bookcover/".$this->uFolder."/. -type d -exec chmod 0777 {} \;";
@@ -81,7 +82,7 @@ class Connect extends User{
 	}
 
 	public function updateNewBookFilePermission(){
-		$this->_terminalCommand = "find /var/www/g-book/".$this->version."/json/users/bookdata/".$this->uFolder."/ -iname ".$this->bookFileName."* -type f -exec chmod 0666 {} \;";
+		$this->_terminalCommand = "find ".$this->_versionfilepath."/json/users/bookdata/".$this->uFolder."/ -iname ".$this->bookFileName."* -type f -exec chmod 0666 {} \;";
 		$this->performExecCommand();
 	}
 

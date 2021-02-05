@@ -12,7 +12,6 @@ if(isset($_POST['book']) && isset($_POST['file'])){
     $file = $_POST['file'];
     $bkBG = file_get_contents("{$path}media/user-background.json");
     $bkBG = json_decode($bkBG);
-      
     $listChapter = file_get_contents("{$path}book-chapter/{$file}.json");
     $bookData = file_get_contents("{$path}books-list-title.json");
     $bookCover = file_get_contents("{$path}media/user-bookcover.json");
@@ -83,8 +82,7 @@ if(isset($_POST['book']) && isset($_POST['file'])){
         $chDIR = 0;
         $chSnd = (!empty($dsound[$chSnd]->filename)) ? $dsound[$chSnd]->filename : null;
     }
-
-     ?>
+?>
 <div class="book d-none" style="z-index: 0;">
     <div class="book-wrap">
         <span class="left-control"><i class="fa fa-angle-left" aria-hidden="true"></i></span>
@@ -118,45 +116,46 @@ echo $html;//SHOW BOOK INFORMATION
 $html = '';
 $n = 0;
 $line = 16;
-        foreach($chapter as $key => $xi){             
-            $x = json_decode($chapter[$key]);
-            $chapterName = $x->name; 
-            if($line > 15){
-                $html .= '<div class="book d-none" style="z-index: 0;"><div class="book-wrap"><span class="left-control"><i class="fa fa-angle-left" aria-hidden="true"></i></span>';
+if(empty($contents[1]->content)){
+    foreach($chapter as $key => $xi){             
+        $x = json_decode($chapter[$key]);
+        $chapterName = $x->name; 
+        if($line > 15){
+            $html .= '<div class="book d-none" style="z-index: 0;"><div class="book-wrap"><span class="left-control"><i class="fa fa-angle-left" aria-hidden="true"></i></span>';
+        }
+        if($key == 0){
+            $html .=  '<h2 class="text-center">Contents</h2>'; 
+            $line -= 4;
+        }
+        
+        $html .= '<div class="vbChapter-wrap pb-2">';
+        if($key != 0){
+            $html .= "<h5 class='tbcLink part-page$key' data-page='$xpage'><div>$chapterName</div></h5>";
+            $xpage = $xpage+1;
+            $line -= 2;
+        }
+        $html .= '<ul>';            
+            foreach($contents as $k => $val){
+                if($val->chapter == $key && $val->id != 00 && $val->id != 01){
+                    $html .= "<li class='tbcLink chapter-page$k' data-page='$xpage'>$val->cpart</li>";
+                    $xpage = $xpage+1;
+                    $line -= 1;
+                }                
             }
-            if($key == 0){
-                $html .=  '<h2 class="text-center">Contents</h2>'; 
-                $line -= 4;
-            }
-            
-            $html .= '<div class="vbChapter-wrap pb-2">';
-            if($key != 0){
-                $html .= "<h5 class='tbcLink part-page$key' data-page='$xpage'><div>$chapterName</div></h5>";
-                $xpage = $xpage+1;
-                $line -= 2;
-            }
-            $html .= '<ul>';            
-                foreach($contents as $k => $val){
-                    if($val->chapter == $key && $val->id != 00 && $val->id != 01){
-                        $html .= "<li class='tbcLink chapter-page$k' data-page='$xpage'>$val->cpart</li>";
-                        $xpage = $xpage+1;
-                        $line -= 1;
-                    }                
-                }
-            $html .= '</ul></div>';
-            if($line < 5){
-                $html .= '<span class="right-control"><i class="fa fa-angle-right" aria-hidden="true"></i></span></div><div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p></div></div>';             
-                $pageNumber += 1;
-                $line = 16;
-            }
-        } 
-        if($line > 5){
+        $html .= '</ul></div>';
+        if($line < 5){
             $html .= '<span class="right-control"><i class="fa fa-angle-right" aria-hidden="true"></i></span></div><div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p></div></div>';             
             $pageNumber += 1;
             $line = 16;
-        }       
-        echo $html;  // SHOW TABLE OF CONTENTS
-
+        }
+    } 
+    if($line > 5){
+        $html .= '<span class="right-control"><i class="fa fa-angle-right" aria-hidden="true"></i></span></div><div class="page-arrow-wrap"><p class="text-center page-number">'.$pageNumber.'</p></div></div>';             
+        $pageNumber += 1;
+        $line = 16;
+    }       
+    echo $html;  // SHOW TABLE OF CONTENTS
+}
     $page = 3;
     $chx = "x";
     $html = '';
@@ -233,8 +232,7 @@ $line = 16;
         }
     }
     //$html .= ($face == 'back') ? : '</div><div class="page-arrow-wrap"><i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i></div></div><div class="face-back"><div class="book-wrap"></div><div class="page-arrow-wrap"><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i></div></div></div>';
-   echo $html;
-    ?>
+echo $html; ?>
 </div></div>
 <audio src="" id="vb-prevAudio" class="d-none"></audio>
 <style>
@@ -277,12 +275,21 @@ $line = 16;
         border-color: #e7e7e7;
     }
     #vbPageNav > li.page-item{
-        top:60%;
-        position:fixed;
+        z-index: 1;
+        position: absolute;
+        top: 250px;
+    }
+    #vbPageNav > li.page-item:first-child{
+        left:0;
+    }
+    #vbPageNav > li.page-item:last-child{
+        right:-5px;
     }
     <?php if(!empty($bookBackground)){ ?>
     html{
         background: url("../../media/book-background/<?php echo $UFolder."/".$bookBackground; ?>");
+        background-size: auto;
+        background-repeat: no-repeat;
     }
 <?php } ?>
 
@@ -321,6 +328,7 @@ main.container-fluid{
 	width: 100%;
     max-width: 750px;
     padding-bottom: 100px;
+    margin:0 auto;
 }
 body.book-open .custom-wrapper{
 	top: 0;
@@ -522,49 +530,206 @@ span.prt-pg-number{
 div.vbChapter-wrap li.tbcLink{
     margin-bottom: .2rem;
 }
-
-/* Classes for Javascript use */
-
-/* .trnsf{
-	transform: translateX(375px);
+/*** BOOK PAGINATION ***/
+a.bookprev,
+.bookprev .label,
+.bookprev .arrow {
+    float: left;
+    color: #000;
+    font-size: 1.25em;
 }
 
-div.book-content{
-    transform: translateX(360px);
+a.booknext,
+.booknext .label,
+.booknext .arrow {
+    float: right;
+    color: #000;
+    font-size: 1.25em;
 }
 
-div.book-content.trnsf-reset{
-	transform: translateX(180px);
-} */
+a.booknext,
+a.bookprev,
+#pagination-container .arrow {
+    display: inline-block;
+    height: 3.5em;
+    line-height: 1em;
+    text-decoration: none;
+    box-sizing: content-box;
+    opacity: 0.8;
+}
+
+a.booknext {
+    box-shadow: inset -20px 0 50px -20px rgba(0, 0, 0, 0.4);
+}
+
+a.bookprev {
+    box-shadow: inset 20px 0 50px -20px rgba(0, 0, 0, 0.4);
+}
+
+a.booknext:hover,
+a.bookprev:hover {
+    opacity: 1;
+}
+
+.bookprev .arrow,
+.booknext .arrow {
+    padding: 0 0.67em;
+    margin-top: -14px;
+    font-size: 3rem;
+}
+
+.bookprev .arrow > i,
+.booknext .arrow > i {
+    position: absolute;
+    bottom: 21%;
+    opacity: 0.4;
+}
+
+.bookprev .arrow > i {
+    left: 16px;
+}
 
 div#book-container div.ql-editor{
     padding:2rem 1rem!important;
 }
 
-/* @media para hacer el texto responsivo */
+#vbPageNav {
+    justify-content: space-between;
+    width: 60%;
+    max-width: 525px;
+    position: relative;
+    margin: 0 auto;
+}
 
-@media screen and (max-width: 800px){
+#download-wrap{
+    margin-top:10rem;
+}
+
+/* @media para hacer el texto responsivo */
+/* IPAD PORTRAIT */
+@media screen and (max-width: 770px) and (min-width: 767px){
+	div#book-container.two-hundred{
+        margin-left: -54.5%!important;
+    }
+    div#book-container.sixteen-hundred{
+        margin-left: -34.5%!important;
+    }
+    div#book-container.twelve-hundred{
+        margin-left: -14%!important;
+    }
+    #download-wrap{
+        margin-top:12vh;
+    }
+    div#book-container{
+        margin-top: 1rem;
+    }
+    div#book-container.two-hundred .bookprev .arrow > i{
+        left: 2.2rem;
+    }
+    div#book-container.two-hundred #vbPageNav > li.page-item:first-child {
+        left: 1.1rem;
+    }
+    div#book-container.two-hundred .booknext .arrow > i{
+        right: 2.2rem;
+    }
+    div#book-container.two-hundred #vbPageNav > li.page-item:last-child {
+        right: .8rem;
+    }
+    div#book-container.two-hundred #vbPageNav > li.page-item{
+        opacity:.3;
+    }
+}
+
+/* IPAD LANDSCAPE */
+@media screen and (max-width: 1024px) and (min-width: 1015px){
+    div#book-container.two-hundred{
+        margin-left: -29%!important;
+    }
+    div#book-container.sixteen-hundred{
+        margin-left: -14%!important;
+    }
+    div#book-container.twelve-hundred{
+        margin-left: auto!important;
+    }
+    div#book-container {
+        margin-top: 5vh;
+    }
+}
+
+@media screen and (max-width: 800px) and (min-width: 771px){
+    div#book-container.sixteen-hundred{
+        margin-left: -31%!important;
+    }
 	p{
 		font-size: 12px;
     }
 }
 
-@media screen and (min-width: 1900px){
-    #vbPageNav > li.page-item:first-child{
-        left: 30%;
+@media screen and (max-width: 600px){
+    #download-wrap{
+        margin-top:6rem;
+    }
+	#vb-control-wrap{
+        display:none;
+    }
+    #book-container{
+        zoom:100%!important;
+        margin-left: -45%!important;
+    }
+    #vbPageNav > li.page-item{
+        opacity:.5;
     }
     #vbPageNav > li.page-item:last-child{
-        right: 30.67%;
+        right: 10px;
+    }
+    #vbPageNav > li.page-item:first-child {
+        left: 14px;
+    }
+    .bookprev .arrow > i{
+        left: 1.1rem;
+    }
+    .booknext .arrow > i{
+        right: 1rem;
     }
 }
 
+@media screen and (max-width: 420px){
+    #book-container{
+        zoom:97%!important;
+    }
+}
+
+@media screen and (max-width: 375px){
+    #book-container{
+        zoom:96%!important;
+        margin-left: -52.8%!important;
+    }
+    .booknext .arrow > i {
+        right: 2.1rem;
+    }
+    .bookprev .arrow > i {
+        left: 2.15rem;
+    }
+}
+
+@media screen and (max-width: 360px){
+    #book-container{
+        zoom:92%!important;
+    }
+}
+
+@media screen and (max-width: 320px){
+    #book-container{
+        zoom:82%!important;
+    }
+}
+
+@media screen and (min-width: 1900px){
+    
+}
+
 @media screen and (max-width: 1440px){
-    #vbPageNav > li.page-item:first-child{
-        left: 335px;
-    }
-    #vbPageNav > li.page-item:last-child{
-        right: 348px;
-    }
+
 }
 
 

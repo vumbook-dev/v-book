@@ -1,7 +1,6 @@
 <?php 
 class User {
-    // Required Data To Set Request
-    public $id;
+    // Required Data To Set Request    
     public $userID;
     public $author;
     public $account;

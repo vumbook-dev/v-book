@@ -1,0 +1,53 @@
+@media screen and (max-width: 1024px) {
+  ul.navbar_user li.account {
+    min-width: unset;
+  }
+  ul.navbar_user ul.account_selection {
+    right: 0;
+    top: 35px !important;
+  }
+  ul.navbar_user ul.account_selection li {
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 764px) {
+  ul.navbar-nav {
+    text-align: right;
+  }
+  .navbar-nav li#btn-nav-holder .nav-link {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+  .navbar-nav li#btn-nav-holder {
+    margin-right: 0 !important;
+  }
+  ul.navbar-nav > li {
+    margin-right: 0.5rem !important;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+  ul.navbar-nav li.account_dropdown {
+    margin-right: -14px !important;
+  }
+  ul.navbar_user {
+    padding: 0.5rem 0rem;
+    margin-right: 0.5rem;
+  }
+  li.account_dropdown {
+    float: right;
+  }
+  ul.navbar_user ul.account_selection,
+  ul.navbar_user i.fa-angle-down {
+    display: none;
+  }
+  li.min-screen > a {
+    color: white;
+  }
+}
+
+@media screen and (min-width: 765px) {
+  li.min-screen {
+    display: none;
+  }
+}
