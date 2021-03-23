@@ -1,6 +1,6 @@
-<?php $version = "1.0.0"; ?>
 <!doctype html>
 <html lang="en">
+<?php $version = "1.0.0"; ?>
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">

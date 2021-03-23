@@ -18,6 +18,9 @@ if(isset($_COOKIE['userdata'])){
                 $skey = ($val[$filename]['id'] === $filename) ? $f : 0;
             }            
         }
+        if(!is_dir("../json/users/bookdata/{$folder}/book-content/backup/{$filename}")){
+            mkdir("../json/users/bookdata/{$folder}/book-content/backup/{$filename}");            
+        }
         if((!empty($backup[$skey][$filename])) ? $backup[$skey][$filename]['id'] === $filename : false){                      
             $seconds = strtotime(date("Y-m-d H:i:s")) - strtotime($backup[$skey][$filename]['time']);
             $days    = floor($seconds / 86400);
@@ -28,16 +31,16 @@ if(isset($_COOKIE['userdata'])){
                 return false;
             }else{                  
                 $backup[$skey][$filename]['time'] = $time;
-                $newBackup = json_encode($backup);
+                $newBackup = json_encode($backup);                
                 file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/backup-data.json",$newBackup);
-                file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/{$integerTime}backup-{$filename}.json",$bookData);
+                file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/{$filename}/{$integerTime}backup-{$filename}.json",$bookData);
                 return true;                       
             }
         }else{
             $backup[] = array( $filename => ["id" => $filename,"time" => $time] );
             $newBackup = json_encode($backup);
             file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/backup-data.json",$newBackup);
-            file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/{$integerTime}backup-{$filename}.json",$bookData);
+            file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/{$filename}/{$integerTime}backup-{$filename}.json",$bookData);
             return true;
         }
     }
@@ -92,12 +95,11 @@ if(isset($_COOKIE['userdata'])){
             if(isset($_POST['chapter']) && isset($_POST['file'])){
                 $chapter = $_POST['chapter'];
                 $file = $_POST['file'];
-                $id = (isset($_POST['id'])) ? intval($_POST['id']) : "";
                 $list = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json");
                 createBackup($file,$list,$UFolder);
                 $contentlist = json_decode($list);
                 $count = count($contentlist[$chapter]->content);
-                $newID = (!empty($id)) ? intval($id+1) : $count+1;
+                $newID = $count;
                 $content = array("id" => $newID, "text" => "");
                 $content = json_encode($content);
                 $contentlist[$chapter]->content[] = $content;
@@ -150,15 +152,14 @@ if(isset($_COOKIE['userdata'])){
                 $oldContent['text'] = $content;
                 $oldContent = json_encode($oldContent);
                 $contentlist[$chapter]->content[$key] = $oldContent;
-                $count = count($contentlist[$chapter]->content);
                 $json = json_encode($contentlist);
                 $helper = new Helper(FAILSAFE_DEBUG_MODE);
                 $helper->failSafe($json,156,"content.php");
                 if($helper->result){
-                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "data" => $json, "newID" => $count);
+                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "data" => $json, "newID" => $key);
                 }else{
                     file_put_contents("../json/users/bookdata/{$UFolder}/book-content/{$file}.json",$json);
-                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "newID" => $count);                  
+                    $msg = array("mode" => $helper->mode, "errorType" => $helper->errorType, "errorMSG" => $helper->errorMSG, "newID" => $key);                  
                 }       
                 echo json_encode($msg);         
                 die();

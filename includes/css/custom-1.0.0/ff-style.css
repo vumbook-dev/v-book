@@ -1,5 +1,48 @@
 @-moz-document url-prefix() {
-  ul.btmp-pagelist{
+  ul.btmp-pagelist {
     left: -4.65rem;
+  }
+  #bookTemplateEditorWrap {
+    z-index: 0;
+  }
+  div#btmp-action-control-wrap {
+    z-index: 1;
+  }
+  #bookTemplateEditorWrap > div.bookTempZoomer {
+    margin-top: 5% !important;
+  }
+  #bookTemplateEditorWrap > div.bookTempZoomer div#style-preview {
+    height: 580px;
+    -moz-transform: scale(1.205);
+    -moz-transform-origin: top;
+    width: 380px;
+    margin: 0 auto;
+  }
+  div.bookTempZoomer.book-editable div.ql-toolbar.ql-snow {
+    -moz-transform: scale(0.788);
+    -moz-transform-origin: bottom;
+  }
+  #bookTemplateEditorWrap > div.bookTempZoomer.book-editable {
+    height: 780px;
+    width: 580px;
+  }
+  div.btmp-page > div.ql-snow {
+    height: 780px;
+  }
+  span.charLimiter {
+    top: 68px;
+    right: 61px;
+  }
+  #bookTemplateEditorWrap > div.bookTempZoomer.book-editable div#style-preview {
+    height: 580px;
+    -moz-transform: scale(1.205);
+    -moz-transform-origin: top;
+    width: 380px;
+    margin: 0 auto;
+    border-top: 1px solid #eee;
+  }
+  div.bookTempZoomer.book-editable div.btmp-editor-wrap div.ql-toolbar {
+    -moz-transform: scale(0.788);
+    -moz-transform-origin: bottom;
   }
 }

@@ -191,7 +191,7 @@ if(isset($_COOKIE['userdata'])){
     <script type="text/javascript">
     jQuery(document).ready(function($){
     let chapterTitle = $(".ttl-<?php echo $chapter; ?>ch").text();
-    let title = "<?php echo $title ?>";     
+    //let title = "<?php //echo $title ?>";     
     let contentKey = <?php echo $key; ?>;
 
     // QUILL EDITOR

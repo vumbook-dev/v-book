@@ -2,7 +2,7 @@
   class Database {
     // DB Params
     private $host = 'localhost';
-    private $db_name = 'vumbook';
+    private $db_name = 'db_vumbook';
     private $username = 'root';
     private $password = '';
     private $conn;

@@ -205,16 +205,12 @@ jQuery(document).ready(function($){
     }
 
     //UPDATE BOOK TEMPLATE CONTENT
-    const UpdateContentArray = function(chapter,key,action){
-        let allList = $('li.btmp-pages');
-        let id = $('ul.btmp-pagelist>li.btmp-pages:nth-child('+allList.length+')').data('pageid');
-        console.log(key);
-        //console.log(id);
-        let text = (action == 'btmp_update') ? $('div#style-preview>div.ql-editor').html() : "";
+    const UpdateContentArray = function(chapter,key,text,action){
+        let allList = $('li.btmp-pages');    
         $.ajax({
             method: "POST",
             url: "../model/content.php",
-            data: {chapter:chapter,key:key,id:id,file:bookFile,content:text,action:action},
+            data: {chapter:chapter,key:key,file:bookFile,content:text,action:action},
             dataType: "text",
             success: function(rdata){                
                 let json = JSON.parse(rdata);
@@ -225,7 +221,8 @@ jQuery(document).ready(function($){
                 }else{
                     if(type === "success"){
                         let data = json.newID;
-                        let key = Number(data)-1;  
+                        let noPageExist = ($('ul.btmp-pagelist li').hasClass('btmp-pages') && Number(data) == 0) ?  true : false;
+                        let key = (noPageExist) ? Number(data)+1 : Number(data);  
                         let x = 0;
                         //console.log(json.mode,type);                     
                         if(action == 'btmp_add'){                                
@@ -276,11 +273,15 @@ jQuery(document).ready(function($){
                             setTimeout(function(){
                                 $('span.btmp-save-wrap').html("<i class='bx bx bx-save' ></i> Saved");
                                 setTimeout(function(){
+                                    let key = Number(data);
                                     $('div.btmpPage'+key).html(text);
+                                    $('div.btmpPage'+key).removeClass('d-none');
                                     $("div.btmp-page").toggleClass('d-none');
+                                    $('div#style-preview>div.ql-editor').html('');
                                     $("div.btmp-editor-wrap>div:first-child").toggleClass('d-none');
                                     $('span.btmp-ed-action').toggleClass('d-none');
                                     $('span.btmp-save-wrap, span.btmp-cancel-wrap').toggleClass('d-none');
+                                    $('div.bookTempZoomer').toggleClass('book-editable');
                                     $('span.btmp-save-wrap').html("<i class='bx bx bx-save' ></i> Save");
                                 },1000);
                             },1500);
@@ -296,7 +297,7 @@ jQuery(document).ready(function($){
     //START A NEW PAGE 
     $(document).on('click','div.bmtp-startpage>span.btn, li#btmp-add-page-btn',function(){
         let chapter = $("#vb-save-styles").data('key');
-        UpdateContentArray(chapter,"",'btmp_add');
+        UpdateContentArray(chapter,"","",'btmp_add');
     });
 
     //NAVIGATE PAGES
@@ -322,28 +323,32 @@ jQuery(document).ready(function($){
         $("div.btmp-editor-wrap>div:first-child").toggleClass('d-none');
         $('span.btmp-ed-action').toggleClass('d-none');
         $('span.btmp-save-wrap, span.btmp-cancel-wrap').toggleClass('d-none');
+        $('div.bookTempZoomer').toggleClass('book-editable');
     });
 
     //DELETE CONTENT
     $(document).on('click','span.btn-danger.btmp-ed-action',function(){
         let key = $(document).find('ul.btmp-pagelist > li.btmp-active').data('key');
         let chapter = $("#vb-save-styles").data('key');
-        UpdateContentArray(chapter,key,'btmp_delete');
+        UpdateContentArray(chapter,key,"",'btmp_delete');
     });
 
     //UPDATE CONTENT
     $(document).on('click','span.btmp-save-wrap',function(){
         let key = $('li.btmp-active').data('key');
         let chapter = $("#vb-save-styles").data('key'); 
-        let images;
+        let images;        
         $('span.btmp-save-wrap').html("<i class='bx bx-loader-circle bx-spin' ></i> Saving...");    
         images = $("div#style-preview div.ql-editor img");   
-        if(images.length > 0 && uploadQuillImage(bookFile)){            
+        if(images.length > 0){            
             setTimeout(function(){
-                UpdateContentArray(chapter,key,'btmp_update');
+                uploadQuillImage(bookFile,(text) => {
+                    UpdateContentArray(chapter,key,text,'btmp_update');
+                });
             },2500);
         }else{
-            UpdateContentArray(chapter,key,'btmp_update');
+            let text = $('div#style-preview>div.ql-editor').html();
+            UpdateContentArray(chapter,key,text,'btmp_update');
         }                 
     });
 
@@ -501,10 +506,12 @@ jQuery(document).ready(function($){
     }
 
     //PROCESS QUILL IMAGE FORM
-    window.uploadQuillImage = function(directory){
+    window.uploadQuillImage = function(directory,callback){
         let image = $("div#style-preview div.ql-editor img");
         let allImageCount = image.length;        
         let file;
+        let text;
+        let processIMG;
         if(allImageCount > 0){
             for(let i=0; i <= allImageCount; i++){
                 if(i != allImageCount){
@@ -525,13 +532,17 @@ jQuery(document).ready(function($){
                             data: dataIMG,
                             success: function(data){
                                 let rs = JSON.parse(data);                            
-                                $(image[i]).attr("src",rs.url);
-                                //console.log(rs);                            
+                                processIMG = $(image[i]).attr("src",rs.url);                          
                             }
                         });                                          
                     }  
                 }else{
-                    return true;
+                    $(image[i-1]).promise().done(function(){
+                        setTimeout(function(){
+                            text = $('div#style-preview>div.ql-editor').html();
+                            callback(text);
+                        },5000)
+                    });                 
                 }                               
             }   
             return true;                           

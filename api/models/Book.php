@@ -66,6 +66,7 @@
             $file = $this->_singleBook['storage'];
             $this->filename = $file;
             $this->book_chapter = json_decode(file_get_contents($path."/book-chapter/{$file}.json"),true);
+            //$this->book_content = array_values(array_slice(json_decode(file_get_contents($path."/book-content/{$file}.json"),true),-4,3,true));
             $this->book_content = json_decode(file_get_contents($path."/book-content/{$file}.json"),true);
             $this->user_sound = json_decode(file_get_contents($path."/media/user-sound.json"),true);        
             $this->book_info = $this->_singleBook;

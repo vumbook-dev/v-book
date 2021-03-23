@@ -10,7 +10,7 @@ class User {
     public $attempt;
 
     //DB Privates
-    protected $_purchasedTable = 'purchased';
+    protected $_purchasedTable = 'book_purchased';
     protected $_userTable = 'users';
     protected $_groupTable = 'group_teams';
     public $_conn;

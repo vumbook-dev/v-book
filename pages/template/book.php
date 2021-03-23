@@ -288,7 +288,7 @@ echo $html; ?>
     <?php if(!empty($bookBackground)){ ?>
     html{
         background: url("../../media/book-background/<?php echo $UFolder."/".$bookBackground; ?>");
-        background-size: auto;
+        background-size: cover;
         background-repeat: no-repeat;
     }
 <?php } ?>
@@ -485,9 +485,9 @@ div.book>div.book-wrap>span.left-control i, div.book>div.book-wrap>span.right-co
 #front-cover{
 	background-image: url('../../media/bookcover/<?php echo "{$UFolder}/{$bookCoverFile}"; ?>');
 }
-#back-cover{
+/* #back-cover{
 	background: url('../img/portadaBack.jpg');
-}
+} */
 #front-cover, #back-cover{
 	background-size: 100% 100%;
 }

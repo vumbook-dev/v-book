@@ -359,11 +359,16 @@ jQuery(document).ready(function($){
         let key = $(this).data("key");
         let title = $("h1.ch-main-title").text();
         let subtitle = $("p.ch-subtitle").text();
-        if(uploadQuillImage(bookData)){
-            updateChPage(key,title,subtitle);
+        let images = $("#style-preview div.ql-editor img");
+        if(images.length > 0){            
+            setTimeout(function(){
+                uploadQuillImage(bookFile,(text) => {
+                    updateChPage(key,title,subtitle);
+                });
+            },2500);
         }else{
             updateChPage(key,title,subtitle);
-        }        
+        }      
     });
 
     $(document).on('change','input[name=vb-volume-control]',function(){

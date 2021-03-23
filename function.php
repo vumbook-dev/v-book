@@ -180,3 +180,25 @@ function failsafe_test(){
         return $msg;
     }
 }
+
+function divide_content(){
+    $x = array();
+    $files = json_decode(file_get_contents("./json/users/bookdata/jojimer11/book-content/Thyroid-2a9364.json"),true);
+    //$replacer = file_get_contents("./json/users/bookdata/jojimer11/book-content/Thyroid-2a9364/chapter_21.json");
+    foreach($files as $k => $file){
+        $filename = "chapter_".$file['id'].".json";
+        $content = json_encode($file['content']);
+        // echo $file['id']."<br>";
+        file_put_contents("./json/users/bookdata/jojimer11/book-content/Thyroid-2a9364/".$filename,$content);     
+        // if($file['id'] >= 22 && $file['id'] < 30){
+        //     $files[$k]['content'] = [];
+        //     if(file_put_contents("./json/users/bookdata/jojimer11/book-content/Thyroid-2a9364.json",json_encode($files))){
+        //         //die('Success');
+        //     }
+        //     //die(print_r($files[$k]));
+        // }
+    }
+    
+}
+
+//divide_content();

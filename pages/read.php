@@ -10,10 +10,11 @@ if(isset($_POST['data'])){
     $key = $book - 1;
     $allBooks = file_get_contents("../json/users/bookdata/{$UFolder}/books-list-title.json");
     $books = json_decode($allBooks);
+    echo count($books);
     $thisChapters = $books[$key]->chapter;
     $filename = $books[$key]->storage;
-    $bookContents = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/$filename.json");
-    $bookContents = json_decode($bookContents);
+    // $bookContents = file_get_contents("../json/users/bookdata/{$UFolder}/book-content/$filename.json");
+    // $bookContents = json_decode($bookContents);
 ?>
 <div class="col-md-12" id="download-wrap">
     <div class="bg-light mt-4 mb-3 px-5 py-2 d-none justify-content-between">
@@ -58,12 +59,12 @@ if(isset($_POST['data'])){
 
 <script type="text/javascript">
 const book = <?php echo $key; ?>;
-const loadBook = function(book = <?php echo $key; ?>, chapter = 0, section = 0, parts = 0){
+const loadBook = function(book = <?php echo $key; ?>){
     let url = "<?php echo $books[$key]->template; ?>.php";
     $.ajax({
         url: "/pages/template/"+url,
         method: "POST",
-        data: {book:book,chapter:chapter,section:section,file: "<?php echo $books[$key]->storage; ?>"},
+        data: {book:book,file: "<?php echo $books[$key]->storage; ?>"},
         dataType: "text",
         beforeSend: function(){
             $('div#vb-control-wrap, div#book-container, div#newspaper-container').addClass('d-none');
@@ -102,128 +103,122 @@ const bookDownloadData = function(){
 }
 
 $(document).ready(function(){    
-    loadBook(book,0,0,1);    
+    loadBook(book);    
 });
-
-<?php 
-if($books[$key]->template === 'newspaper'){ ?>
-
-<?php } ?>
-
 
 $("main.main-editor").removeClass("main-editor");
 
-<?php if($books[$key]->template == "newspaper"){ ?>
-const viewContent = function(container){
-    let editor = QuillEditor(container,null,true,false);
-    return editor;
-}
-
-const loadBooksContent = function(){
-    let contentPage = $('div.vbPageContent');
-    let content = contentPage.length;
-    let view;
-    for(i=0;content>i;i++){
-        $.ajax({
-            url: "../model/books.php",
-            method: "POST",
-            data: {file:"<?php echo $filename; ?>",path:"<?php echo $UFolder; ?>",section:i,action:"loadBC"},
-            dataType: "text",
-            success: function(data){            
-                    let obj = JSON.parse(data);                
-                    let container = ".vbPage"+obj.id;
-                    let text = obj.content;
-                    text = JSON.parse(text);
-                    view = viewContent(container);
-                    view.setContents(text);      
-                    //console.log(obj);     
-            }
-        });
+<?php if($books[$key]->template === "newspaper"){ ?>
+    const viewContent = function(container){
+        let editor = QuillEditor(container,null,true,false);
+        return editor;
     }
-}
 
-//PAGINATION
-setTimeout(function(){ 
-    loadBooksContent();
-    <?php if($books[$key]->template == 'newspaper') echo 'changeBG(0);'; ?>
-},1000);
+    const loadBooksContent = function(){
+        let contentPage = $('div.vbPageContent');
+        let content = contentPage.length;
+        let view;
+        for(i=0;content>i;i++){
+            $.ajax({
+                url: "../model/books.php",
+                method: "POST",
+                data: {file:"<?php echo $filename; ?>",path:"<?php echo $UFolder; ?>",section:i,action:"loadBC"},
+                dataType: "text",
+                success: function(data){            
+                        let obj = JSON.parse(data);                
+                        let container = ".vbPage"+obj.id;
+                        let text = obj.content;
+                        text = JSON.parse(text);
+                        view = viewContent(container);
+                        view.setContents(text);      
+                        //console.log(obj);     
+                }
+            });
+        }
+    }
 
-$(document).on("click","ul.vb-section-list-nav li",function(){
-    if(!$(this).hasClass("act-section")){
-        let File = $(this).data("sound");
-        let dir = $(this).data("sdir");
-        //let delay = $(this).data("delay");
-        let status = $("ul.vb-section-list-nav > li").data("status");
-        let index = $(this).data("nav");
-        let chapter = $(this).data("chapter");
-        let section = $(this).data("section");
-        let Sound = PlaySound(File,dir,status);
-        //setTimeout(function(){        
-            if(status < 1){
-                Sound.play();
-                let = status = null;
-            }else{
-                Sound.pause();
-                let = status = null;
-            }
-            console.log("Played");
-        //},delay);
-        pageNav(index,"",false);
-        console.log(index);
-        $("ul.vb-section-list-nav > li").removeClass("act-section");
-        $(this).addClass("act-section");
+    //PAGINATION
+    setTimeout(function(){ 
+        loadBooksContent();
+        <?php if($books[$key]->template == 'newspaper') echo 'changeBG(0);'; ?>
+    },1000);
+
+    $(document).on("click","ul.vb-section-list-nav li",function(){
+        if(!$(this).hasClass("act-section")){
+            let File = $(this).data("sound");
+            let dir = $(this).data("sdir");
+            //let delay = $(this).data("delay");
+            let status = $("ul.vb-section-list-nav > li").data("status");
+            let index = $(this).data("nav");
+            let chapter = $(this).data("chapter");
+            let section = $(this).data("section");
+            let Sound = PlaySound(File,dir,status);
+            //setTimeout(function(){        
+                if(status < 1){
+                    Sound.play();
+                    let = status = null;
+                }else{
+                    Sound.pause();
+                    let = status = null;
+                }
+                console.log("Played");
+            //},delay);
+            pageNav(index,"",false);
+            console.log(index);
+            $("ul.vb-section-list-nav > li").removeClass("act-section");
+            $(this).addClass("act-section");
+            $("#book-navigation-container").addClass("d-none");
+            $("div#book-container").html(vbloader);
+            $("div#heading"+chapter+" button.collapsed").click();
+            setTimeout(function(){
+                loadBook(book);
+            },700);
+        }else{
+            let Sound = null;
+            let status = null;
+        }
+    });
+
+    $(document).on("click","span.x-close, #vbBookCover",function(){
         $("#book-navigation-container").addClass("d-none");
-        $("div#book-container").html(vbloader);
-        $("div#heading"+chapter+" button.collapsed").click();
-        setTimeout(function(){
-            loadBook(book,chapter,section,1);
-        },700);
-    }else{
-        let Sound = null;
-        let status = null;
+    });
+
+    $(document).on("click","#vb-showMenu",function(){
+        $("#book-navigation-container").removeClass("d-none");
+    });
+
+    $(document).on("click","button#vb-download",function(){
+        bookDownloadData();
+    });
+
+    $(document).on('click','div.vbChapter-wrap .tbcLink',function(){
+        let n = $(this).data("page");
+        let pages = $("#bookWrapQuill > div.vbPages");
+        let allPages = pages.length - 1;
+        $("#vbPageNav").data("next",n);
+        $("div.vbPages").addClass("d-none");
+        $("div.vbPages").removeClass("activePage");
+        $(pages[n]).removeClass("d-none");
+        $(pages[n]).addClass("activePage");
+        if(allPages === n){
+            $("a.booknext").addClass("d-none");
+            $("#vbPageNav > li:last-child").prepend("<span>End</span>");
+        }
+        $('html, body, div#book-container').animate({scrollTop:0}, 250);
+        ProcessSound();
+    });
+
+    //CHANGE BG
+    const changeBG = function(x){
+        let bgData = $("#bookWrapQuill > div.vbPages");
+        let bgType = $(bgData[x]).data("bgtype");
+        let bgValue = $(bgData[x]).data("background");
+        let bgStyle = (bgType == "color") ? bgValue : "url(../../media/background/"+bgValue+")";
+        let bgResult = (bgValue != "") ? bgStyle : "#fff";
+        $("div#newspaper-container").css("background",bgResult);
+        //$("div#book-container").data("actbg",x);
+        //console.log(bgType,bgStyle,x);
     }
-});
-
-$(document).on("click","span.x-close, #vbBookCover",function(){
-    $("#book-navigation-container").addClass("d-none");
-});
-
-$(document).on("click","#vb-showMenu",function(){
-    $("#book-navigation-container").removeClass("d-none");
-});
-
-$(document).on("click","button#vb-download",function(){
-    bookDownloadData();
-});
-
-$(document).on('click','div.vbChapter-wrap .tbcLink',function(){
-    let n = $(this).data("page");
-    let pages = $("#bookWrapQuill > div.vbPages");
-    let allPages = pages.length - 1;
-    $("#vbPageNav").data("next",n);
-    $("div.vbPages").addClass("d-none");
-    $("div.vbPages").removeClass("activePage");
-    $(pages[n]).removeClass("d-none");
-    $(pages[n]).addClass("activePage");
-    if(allPages === n){
-        $("a.booknext").addClass("d-none");
-        $("#vbPageNav > li:last-child").prepend("<span>End</span>");
-    }
-    $('html, body, div#book-container').animate({scrollTop:0}, 250);
-    ProcessSound();
-});
-
-//CHANGE BG
-const changeBG = function(x){
-    let bgData = $("#bookWrapQuill > div.vbPages");
-    let bgType = $(bgData[x]).data("bgtype");
-    let bgValue = $(bgData[x]).data("background");
-    let bgStyle = (bgType == "color") ? bgValue : "url(../../media/background/"+bgValue+")";
-    let bgResult = (bgValue != "") ? bgStyle : "#fff";
-    $("div#newspaper-container").css("background",bgResult);
-    //$("div#book-container").data("actbg",x);
-    //console.log(bgType,bgStyle,x);
-}
 
 <?php } //END LOAD IF NEWSPAPER TEMPLATE 
 

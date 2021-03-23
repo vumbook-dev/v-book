@@ -20,26 +20,29 @@ if(isset($_COOKIE['userdata'])){
                 $skey = ($val[$filename]['id'] === $filename) ? $f : 0;
             }            
         }
-        if((!empty($backup[$skey][$filename])) ? $backup[$skey][$filename]['id'] === $filename : false){            
+        if(!is_dir("../json/users/bookdata/{$folder}/book-content/backup/{$filename}")){
+            mkdir("../json/users/bookdata/{$folder}/book-content/backup/{$filename}");            
+        }
+        if((!empty($backup[$skey][$filename])) ? $backup[$skey][$filename]['id'] === $filename : false){                      
             $seconds = strtotime(date("Y-m-d H:i:s")) - strtotime($backup[$skey][$filename]['time']);
             $days    = floor($seconds / 86400);
             $hours   = floor(($seconds - ($days * 86400)) / 3600);
             $minutes = floor(($seconds - ($days * 86400) - ($hours * 3600))/60);
-            $timePassed = ($days > 0) ? ($days*24+$hours)*60+$minutes : $hours*60+$minutes;            
+            $timePassed = ($days > 0) ? ($days*24+$hours)*60+$minutes : $hours*60+$minutes;  
             if($timePassed < 30){
                 return false;
             }else{                  
                 $backup[$skey][$filename]['time'] = $time;
-                $newBackup = json_encode($backup);
+                $newBackup = json_encode($backup);                
                 file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/backup-data.json",$newBackup);
-                file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/{$integerTime}backup-{$filename}.json",$bookData);
-                return true;              
+                file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/{$filename}/{$integerTime}backup-{$filename}.json",$bookData);
+                return true;                       
             }
         }else{
             $backup[] = array( $filename => ["id" => $filename,"time" => $time] );
             $newBackup = json_encode($backup);
             file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/backup-data.json",$newBackup);
-            file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/{$integerTime}backup-{$filename}.json",$bookData);
+            file_put_contents("../json/users/bookdata/{$folder}/book-content/backup/{$filename}/{$integerTime}backup-{$filename}.json",$bookData);
             return true;
         }
     }

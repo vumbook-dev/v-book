@@ -561,19 +561,15 @@ div#style-preview div.ql-editor {
   margin: 0 auto;
   zoom: 240%;
   -webkit-zoom: 240%;
-  -moz-transform: scale(2);
+  /* -moz-transform: scale(2);
   -moz-transform-origin: top;
   -ms-transform: scale(2);
-  -ms-transform-origin: top;
+  -ms-transform-origin: top; */
 }
 
 div.btmp-editor-wrap div#style-preview.editstyle-page div.ql-editor {
   zoom: 0%;
   -webkit-zoom: 0%;
-  -moz-transform: scale(0);
-  -moz-transform-origin: top;
-  -ms-transform: scale(0);
-  -ms-transform-origin: top;
 }
 
 div.ql-editor h1,
@@ -671,8 +667,8 @@ div.btmp-page {
   height: 100%;
   zoom: 0%;
   -webkit-zoom: 240%;
-  -moz-transform: scale(2);
-  -moz-transform-origin: top;
+  /* -moz-transform: scale(2);
+  -moz-transform-origin: top; */
   -ms-transform: scale(2);
   -ms-transform-origin: top;
 }
@@ -760,7 +756,7 @@ ul.btmp-pagelist {
   list-style: none !important;
   top: 0px;
   left: -3.3rem;
-  height: 580px;
+  height: 100%;
   overflow-y: scroll;
   z-index: 0;
   zoom: 240%;
